@@ -1,2 +1,0 @@
-() =>
-	Date.From(DateTime.FixedLocalNow())

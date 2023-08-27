@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors Comments Feed" href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/5408" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=5408' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F09%2F03%2F5408%2Fpower-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F09%2F03%2F5408%2Fpower-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-5408 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-5408" class="post-5408 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m tag-types">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2020-09-03T13:50:19-05:00">September 3, 2020</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a>, <a href="https://bengribaudo.com/blog/tag/types" rel="tag">Types</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p>At first glance, it seems logical to expect the mashup engine to error if you attempt to ascribe a seemingly incompatible type to a value. Surprisingly, this doesn&#8217;t always occur.</p>
+
+
+
+<p>During ascription, the engine validates that the type&#8217;s base type matches the value&#8217;s base type (so, for example, you can&#8217;t ascribe <code>type logical</code> onto a date value because the two base types are different). However, for types with children, those child types (list&#8217;s item type, record&#8217;s field types, table&#8217;s column types and function&#8217;s argument and return type assertions) have no effect on mashup engine behavior and are not validated for compatibility. What?!</p>
+
+
+
+<p>For example, you can ascribe an item type of text onto a list of numbers, and the mashup engine won&#8217;t complain. Ascribe a column type of logical onto a column containing dates and M will comply. Similar holds true for records: a field type of duration can be ascribed onto a field containing a function and no error is raised.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType({1, 2, 3 }, type { text })
+Value.ReplaceType(#table({&quot;Col1&quot;}, {{ #date(2020, 6, 24)}}), type table &#91;Col1 = logical])
+Value.ReplaceType(&#91;FieldA = () =&gt; ...], type &#91;FieldA = duration])
+</pre></div>
+
+
+<p>For functions, the newly ascribed type&#8217;s argument and return type assertions aren&#8217;t validated or enforced; instead, the assertions specified when the function was originally defined continue to be what the engine follows. Take a function argument originally defined <code>as number</code> and ascribe <code>as text</code> to it. Despite the ascription, the mashup engine will expect the argument&#8217;s value to be compatible with <code>number</code>, not <code>text</code>, when the function is invoked.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Func = (input as number) as number =&gt; input,
+  NewType = type function (input as text) as text,
+  Ascribed = Value.ReplaceType(Func, NewType)
+in
+  Ascribed(&quot;hi&quot;) // errors
+  // Ascribed(1) // works fine  
+</pre></div>
+
+
+<p>These behaviors seem strange—and they aren&#8217;t the only strangeness related to Power Query&#8217;s types. Comparing type values may also not work the way you expect. Think <code>TypeValueA = TypeValueB</code> will return true if the two types are identical? Maybe. Maybe not!</p>
+
+
+
+<p>Fasten your seat belt. We&#8217;ll try to define and then clear up a bit of this confusion. It will be a journey! Here we go….</p>
+
+
+
+<span id="more-5408"></span>
+
+
+
+<h2 class="wp-block-heading" id="series-index">Series Index</h2>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets" data-type="5009">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" data-type="post" data-id="5259">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li>Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors (part 19) [this post]</li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" data-type="post" data-id="5523">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809"></a><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="type-equality">Type Equality</h2>
+
+
+
+<p>If you compare two type values using the equality operator (<code>=</code>), what result do you think you&#8217;ll receive back? Why, true if the two values describe the same type and false if they do not, right?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  TypeValueA = type ..., // some type value
+  TypeValueB = type ... // some type value
+in
+  TypeValueA = TypeValueB
+</pre></div>
+
+
+<p>Surprisingly, with one exception, it is <strong>valid for <em>false</em> to be returned <em>any time </em>type values are compared for equality</strong>. The M language specification does not define rules for determining type equivalence, but the equality operator (<code>=</code>) still needs to produce a response, so according to the language spec, it can simply <strong><em>always</em> return false</strong> (again, with one exception). Yes, false—even if you would consider the values being compared to be equal.</p>
+
+
+
+<p>This seems most strange. Why not require the equality operator to work the way you&#8217;d expect for type values, so that <code>someTypeValue = anotherTypeValue</code> works the way you&#8217;d naturally assume it would?</p>
+
+
+
+<p>Let&#8217;s think through type equality.</p>
+
+
+
+<p>If you were defining type equivalence comparison rules, what would you expect the below to output? Why true, of course! <code>type number</code> obviously should be equal to <code>type number</code>, so it seems logical for this expression to evaluate to true.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+type number = type number
+</pre></div>
+
+
+<p>A challenge with type equality is that the correct result isn&#8217;t always unambiguously obvious, like it is above. Or, to put it in other words, what you&#8217;d expect isn&#8217;t always what another person would expect. To illustrate, let&#8217;s make the scenario a little more complex: Should these two type values be considered equal? Why or why not?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+type number = Currency.Type
+</pre></div>
+
+
+<p>Some of you are probably saying, &#8220;Yes—because <code>Currency.Type</code> is <code>type number</code> decorated with a sub-type claim. Since a sub-type claim has no effect on mashup engine behavior, it should be ignored when comparing the values. If it&#8217;s ignored, the comparison becomes the equivalent of <code>type number = type number </code>and so should evaluate to true.&#8221; Other readers are probably thinking, &#8220;But wait—the two type values are defined differently. Even though the <code>Currency.Type</code> claim on the one does not affect the mashup engine, a type with that claim is still describing something different from plain <code>type number</code> and so comparing the two should evaluate to false.&#8221;</p>
+
+
+
+<p>Since we might differ in opinion as to the expected behavior, to make equality comparisons like these practical, precise rules need to be authoritatively defined that specify the expected outcomes. The language specification could have done this—but it doesn&#8217;t.</p>
+
+
+
+<h3 class="wp-block-heading" id="do-it-yourself">Do It Yourself</h3>
+
+
+
+<p>Instead of picking winners and losers, as far as preferences on how type equality should be defined, the Power Query language stays out of the argument. Instead, it leaves it to you to compare the specific aspects of the type values you consider important in your context when checking for equality. </p>
+
+
+
+<p>How do you do this? Using the standard library&#8217;s type functions!</p>
+
+
+
+<p>To determine whether a type value is of a certain base type, use <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/type-is" target="_blank">Type.Is</a>, specifying the base type you&#8217;re checking for.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Type.Is(type { number}, type list) // true
+</pre></div>
+
+
+<p>While the first argument can be any type value, the second argument must be a nullable primitive type (so not a custom type). Interestingly, the function won&#8217;t necessarily error if a non-nullable primitive type value is used—but the results it returns in this case should <strong>not be considered reliable</strong>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Type.Is(type { number}, type { number }) // don't do this
+</pre></div>
+
+
+<p>If all that is important to you is determining whether the type value is of a certain base type, you&#8217;re set!</p>
+
+
+
+<p>What about more complex type details—what if you want to factor these into your comparison? You&#8217;ll need to use the appropriate standard library functions to extract the details of interest and then compare each of them. Unfortunately, the code involved can be a bit complex, in part because there is not always a succinct way to fetch and compare the attributes of interest.</p>
+
+
+
+<p>Here&#8217;s an example of comparing two types to see whether they both describe tables having columns with the same names in the same order (irrespective of column types).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+(typeA as type, typeB as type) as logical =&gt;
+    Type.Is(typeA, type table) 
+    and Type.Is(typeB, type table) 
+    and Type.TableSchema(typeA)&#91;Name] = Type.TableSchema(typeB)&#91;Name]
+</pre></div>
+
+
+<p>As you might imagine, the more details you want included in a comparison between type values, the more complex the comparison code gets (ouch!). Maybe one day, the standard library will be expanded with additional functions that help make comparisons like this easier to write up.</p>
+
+
+
+<h3 class="wp-block-heading">The Self Exception</h3>
+
+
+
+<p>We just learned that it is valid for <em>false</em> to be returned <em>any time </em>type values are compared for equality, with one exception. That exception? </p>
+
+
+
+<p>If you compare a type value to itself, the equality check will evaluate to true:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  TypeValue = type table &#91;ColA = number]
+in
+  TypeValue = TypeValue // true
+</pre></div>
+
+
+<p>Just remember that each time you use the &#8220;type&#8221; keyword, you&#8217;re creating a <em>new</em> type value. Below, <strong>two identically-defined</strong> type values are created. While identical in definition, they are nonetheless different values to Power Query, so the &#8220;if you compare a type value to itself, the equality check will evaluate to true&#8221; exception does not apply.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  TypeValueA = type table &#91;ColA = number],
+  TypeValueB = type table &#91;ColA = number]
+in
+  TypeValueA = TypeValueB // not guaranteed to be true
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="rules-or-the-lack-thereof">But It Seems to Work!</h3>
+
+
+
+<p>&#8220;But wait,&#8221; you might say. &#8220;The equality operator actually <em>does</em> work for comparing different type values. I&#8217;ve used it before!&#8221;</p>
+
+
+
+<p>As of this writing, in the versions of Power Query that ship with Microsoft Power BI Desktop and Excel, the following evaluates to true. This <em>may</em> appear to suggest that <em>maybe</em> type equality comparisons actually work the way you&#8217;d expect (or not—don&#8217;t stop reading).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Value.Type(&quot;abc&quot;) = type text // true
+</pre></div>
+
+
+<p>Surprised?!</p>
+
+
+
+<p>Remember that the M language specification does not define rules for determining whether two type values are equivalent. Instead, it <strong>allows </strong>false to be returned any time type values are compared with the equality operator. However, it does not <strong>mandate </strong>that false is returned. The spec also gives an M implementation the <strong>option</strong> for that implementation to use <strong>its own rules</strong> to perform type equality comparisons.</p>
+
+
+
+<p>That&#8217;s what&#8217;s going on here. In <em>some</em> cases, the Power BI/Excel versions of Power Query will compare type values &#8220;the way you&#8217;d expect.&#8221; The catch is that the rules used aren&#8217;t (fully) documented and may change at any time, so <strong>cannot be relied on</strong>. </p>
+
+
+
+<p>(In fact, I&#8217;m not positive, but something I read suggested that possibly the reason some type values compare to true is a side effect of an internal optimization that this particular mashup engine implementation currently uses. If true, this doubly underscores the frailty of trying to rely on the &#8220;happenstance&#8221; that type equality comparisons sometimes &#8220;work,&#8221; as that optimization could be changed or replaced at any time.)</p>
+
+
+
+<p>If a mashup engine chooses to use its own rules for type equality comparisons, the language specification imposes a single requirement: Repeatedly comparing the same type values must produce the same result. In other words, <code>someTypeValue = anotherTypeValue</code> should be consistent in whether it evaluates to true or to false when the same comparison is performed multiple times (assuming that <code>someTypeValue</code> and <code>someTypeValue</code> stay set to the same values). </p>
+
+
+
+<p>This rule <em>only</em> applies to repeated comparisons of the <em>same</em> two type values. <em>Each time</em> a query is evaluated, <em>new</em> type values are created. In the language specification, there is  no requirement that these new values produce the same equality comparison result you previously saw, even though the new values are defined identically to what was previously compared. (Maybe this time, different optimizations were dynamically applied, so the &#8220;happenstance&#8221; that resulted in the type equality comparison working last time the way you&#8217;d expect no longer applies&#8230;.)</p>
+
+
+
+<p>Since the Power Query language specification does not define authoritative, precise rules for comparing type values, <strong>the equality operator is generally useless, as far as comparing type values goes</strong>.</p>
+
+
+
+<h2 class="wp-block-heading" id="values">Values</h2>
+
+
+
+<p>In this post&#8217;s introduction, we started by encountering what likely seemed strange behavior: When a type is ascribed to a value, the mashup engine ensures that the type&#8217;s base type is the same as the value&#8217;s base type, and for values with structure, that the type&#8217;s structure matches the value&#8217;s—but no checking is done on the type&#8217;s child component types or names!</p>
+
+
+
+<p>Let&#8217;s break this down.</p>
+
+
+
+<p>First, the base type of the type being ascribed must be the same as the value&#8217;s base type. For example, you can ascribe <code>type number</code> or <code>Decimal.Type</code> (both of which are of base type number) onto a numeric value. However, you can&#8217;t ascribe that value with <code>type text</code> because it is of a different base type. Similarly, you can&#8217;t ascribe a list type onto a table value or a record type onto a date, etc. (This is probably intuitively obvious.)</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType(1, type number) // ok
+Value.ReplaceType(1, Decimal.Type) // ok
+Value.ReplaceType(1, type text) // errors
+</pre></div>
+
+
+<p>Then, for types that can have multiple child components (records, tables and functions), the mashup engine preforms an addition check when type ascription is attempted: validating that the structure of the type being ascribed matches the structure of the value it is being ascribed to.</p>
+
+
+
+<p>For records, this means that the type being ascribed has the same number of fields as the value. For tables, the type and value must have the same number of columns. For functions, the two must both have the same number of required arguments and of optional arguments. So, for example, if a record value has three fields, attempting to ascribe it with a two field (or four field) record type will fail, as will ascribing a one-argument function with a ten-argument function type.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType(&#91;A=1, B=2, C=3], type &#91;A = number, B = number, C = number]) // no error
+Value.ReplaceType(&#91;A=1, B=2, C=3], type &#91;A = number, B = number]) // errors
+Value.ReplaceType(&#91;A=1, B=2, C=3], type &#91;A = number, B = number, C = number, D = number]) // errors
+</pre></div>
+
+
+<p>However, ascription does not validate whether the value&#8217;s child values are compatible with the new type&#8217;s child component types.</p>
+
+
+
+<p>You can ascribe <code>type { number }</code> to a list of text values and M won&#8217;t complain. Ascribe a table containing a single numeric column with a table type whose column is <code>type logical</code> and M will accept the ascription. Similarly, the engine has no problem ascribing a record with a type whose field types are incompatible with the field&#8217;s values.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType({ &quot;hi&quot;, &quot;bye&quot; }, type { number })
+Value.ReplaceType(#table({&quot;Col1&quot;}, {{ 1 }}), type table &#91;Col1 = logical])
+Value.ReplaceType(&#91;FieldA = #date(2020, 6, 30)], type &#91;FieldA = duration])
+</pre></div>
+
+
+<p>All of the above are accepted just fine by the mashup engine.</p>
+
+
+
+<p>For functions, not only are the new type&#8217;s argument and return value assertions not checked for compatibility, but they also have no effect on the function&#8217;s behavior. Below, when the function is invoked, its argument will still be required to be compatible with <code>type number</code> even though <code>type text</code> was ascribed onto it. The argument&#8217;s type, as it was originally defined, is all that matters to the engine.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType((input as number) =&gt; ..., type function (input as text) as any)
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="why-not">Why not?</h3>
+
+
+
+<p>Why doesn&#8217;t the mashup engine fully check ascribed types? Why doesn&#8217;t it enforce them? What&#8217;s the point of ascribing them if the child types they specify are not checked or enforced?</p>
+
+
+
+<p>To start sorting this out, let&#8217;s go back to something discussed in <a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i-basics" data-type="post" data-id="4948">Part 16 (<em>Types I &#8211; Basics</em>)</a>:</p>
+
+
+
+<p><em>Power Query is dynamically typed. All checks on whether a value is compatible with a given type are done by looking at the value’s type at runtime. There’s no concept of a variable having a type nor is type casting relevant—the actual value’s type is what matters.</em></p>
+
+
+
+<p>Consider the following example.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Inner = () as any =&gt; ...,
+  Outer = (input as anynonnull) =&gt; ...
+in
+  Outer (Inner())
+</pre></div>
+
+
+<p>In a statically typed language (C#, Java, etc.),<code> Outer(Inner())</code> would be invalid because <var>Inner</var> would return values of type <code>any</code> while <var>Outer</var> expects values of type <code>anynonnull</code>. Since <code>any</code> is incompatible with <code>anynonnull</code>, passing <var>Inner</var>&#8216;s output into <var>Outer</var> would be illegal.</p>
+
+
+
+<p>With PowerQuery, <var>Inner</var>&#8216;s <code>as any</code> does not <em>change</em> the type of what&#8217;s returned to type <code>any</code>. Instead, it simply <em>ensures</em> that the type of whatever value is returned is <em>compatible with</em> <code>any</code>. Similarly, <var>Outer</var>&#8216;s <code>as anynonnull</code> does not limit the inputs that function accepts to only values <em>of </em>type <code>anynonnull</code> but rather to only those values which are <em>compatible with </em>type <code>anynonnull</code>.</p>
+
+
+
+<p>Say, <var>Inner</var> returns a value of type <code>number</code>. This value passes <var>Inner</var>&#8216;s return assertion of <code>as any</code> because type number is compatible with type <code>any</code>. It also passes <var>Outer</var>&#8216;s argument assertion of <code>as anynonnull</code> because type <code>number</code> is compatible with <code>anynonnull</code>. On the other hand, if <var>Inner</var> returned a value of type <code>null</code>, it would pass <var>Inner</var>&#8216;s <code>as any</code> assertion but the attempt to pass it into <var>Outer</var> would fail because type <code>null</code> is not compatible with <code>anynonnull</code>.</p>
+
+
+
+<p>To repeat:</p>
+
+
+
+<p><em>Power Query is dynamically typed. All checks on whether a value is compatible with a given type are done by looking at the value’s type at runtime. There’s no concept of a variable having a type nor is type casting relevant—the actual value’s type is what matters.</em></p>
+
+
+
+<p>With this in mind, let&#8217;s jump back to the question about why M does not validate child types during ascription. Since, in M, type compatibility (conformance) is only checked on a per individual value basis, in order to check for type compatibility, it is necessary to compute the value that needs checking.</p>
+
+
+
+<p>Take a list. Say you ascribe it with an item type of number: <code>type list { number }</code>. If M were to ensure that the type of each item in the list is compatible with item type number, each list item&#8217;s value would need to be computed. Below, this would involve making three function calls: <code>CallServiceA()</code>, <code>CallServiceB()</code> and <code>CallServiceC()</code>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Value = { CallServiceA(), CallServiceB(), CallServiceC() },
+  Ascribed = Value.ReplaceType(Value, list { number }),
+  Result = List.Count(Ascribed) 
+in
+  Result// returns 3
+</pre></div>
+
+
+<p>However, M is lazy. When the above expression is executed, M doesn&#8217;t bother to call the service functions to get values for the list items. It doesn&#8217;t need to. Instead, it skips that unnecessary work because it can determine the count of list items (all it was asked to do) without computing the items&#8217; values.</p>
+
+
+
+<p>Instead, say the ask was to sum values of all items except for the first. M&#8217;s laziness would lead to it skipping over the first item without evaluating its expression. Service A would not be called because the value it would provide isn&#8217;t needed; only services B and C would be queried.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Result = List.Sum(List.Skip(Ascribed, 1)) // value for the first item is not computed because it is not needed
+</pre></div>
+
+
+<p>If M were to validate the item type when ascription occurs, the ascription process would need to compute each list item&#8217;s value then check whether that value is compatible with the specified item type. All values would need to be computed, even those not otherwise needed to produce the requested output. If Power Query switched to this behavior, it couldn&#8217;t be so lazy—which would have performance ramifications.</p>
+
+
+
+<p>How about an expression that only returns some rows from a table:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = GetData(),
+  Ascribed = Value.ReplaceType(Source, type table &#91;Category=text, Code=number, Amount=Currency.Type]),
+  Filtered = Table.SelectRows(Ascribed, each &#91;Category] = &quot;Misc&quot;)
+in
+  Filtered 
+</pre></div>
+
+
+<p>Say that <code>GetData()</code> is a SQL data source. M will probably query fold this entire expression into something like <code>SELECT … FROM SomeTable WHERE Category = 'Misc';</code>.</p>
+
+
+
+<p>If M were to validate the ascribed table column types, it would either need to send an additional query to the database server that somehow asked the server to report whether all values in the table are compatible with the specified types (if the source even supports that kind of a query) or, like the previous example, would have to pull all rows locally and then check their values for type compatibility (in this case, even those rows excluded by the <code>[Category] = "Misc"</code> filter, since the ascription applied to all rows). While technically possible, doing things this way could (potentially significantly!) diminish the benefits offered by M&#8217;s query folding.</p>
+
+
+
+<p>Power Query&#8217;s paradigm doesn&#8217;t align well with validating child type compatibility. M&#8217;s focus is efficient processing of data received from a plethora of potential data sources that may or may not be super strong in how they type their data. One of the tradeoffs with this approach is that it is impractical for the mashup engine to ensure child type compatibility with ascribed child types.</p>
+
+
+
+<p>In some ways, child types are similar to type facets: Neither affect the behavior of the mashup engine. Standard library (and custom) functions can make use of the information they convey and the host application may enforce that whatever data it receives is compatible with them<em>—</em>but mashup engine behavior isn&#8217;t affected by them.</p>
+
+
+
+<h3 class="wp-block-heading" id="type-assertion-and-conformance-checks">Type Assertion and Conformance Checks</h3>
+
+
+
+<p>All of Power Query&#8217;s type assertion and value compatibility (conformance) checking functionality—<code>as</code>, <code>is</code>, <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/value-as" target="_blank">Value.As</a> and <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/value-is" target="_blank">Value.Is</a>, as well as function argument and return type assertions—only work at a nullable primitive type level. If complex type assertions were allowed and enforced, we&#8217;d have similar downsides to those that would be present if child types were validated during ascription. Instead, the language limits its assertion and compatibility checks to nullable primitive types, which it can validate without needing to evaluate list item, record field, table row or table column value expressions.</p>
+
+
+
+<p>If you want to compare a value&#8217;s type&#8217;s facets, structure, child names or child types, or validate child values against those child types, the standard library provides functions you can use to implement a solution that meets the specifics of your requirements, with you balancing the precision desired to resource usage, factoring in the particular characteristics and stability of your data source. M forces you to make conscious choices if comparing or validating these aspects is important to you.</p>
+
+
+
+<h3 class="wp-block-heading" id="recap">Recap&nbsp;</h3>
+
+
+
+<p>To summarize:</p>
+
+
+
+<ul>
+<li><strong>Ascription:</strong> M ensures that the new type&#8217;s base type matches the nullable primitive base type of the value and that the new type&#8217;s and value&#8217;s structures are the same.  However, child component types are not validated. (Also, as discussed in the <a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">last part</a>, child component details from the new type are matched to the existing value&#8217;s child components based on position, not name.)</li>
+
+
+
+<li><strong>Assertion/Conformance:</strong> M only checks whether the value is compatible with the given nullable primitive base type. Structure, child component names and child type(s) are <em>not</em> validated.</li>
+</ul>
+
+
+
+<h3 class="wp-block-heading" id="what-s-the-point">What&#8217;s the point?</h3>
+
+
+
+<p>Why ascribe specific child types? Since Power Query allows you to specify these types, there presumably is a reason for their existence, though as we&#8217;ve learned, that reason is not to ask M to perform validation. What then are the advantages of specifying them?</p>
+
+
+
+<p>For one, how about the host application (Microsoft Power BI, Microsoft Excel, etc.)? M may only be concerned about the types on individual values, but host applications may like to know type information on a per-column basis. A tool like Power BI may decide how to store the values it receives for a particular column based on that column&#8217;s data type (and then reject any values that are incompatible with that type). Child types give you a way to communicate relevant information to the host.</p>
+
+
+
+<p>Also, while the engine itself doesn&#8217;t care about child types, library functions and functions you write can factor them in. For example, below the <var>Total</var> column holding the sum of each group has its column type automatically set to match the type of the column it is summing (<var>Amount</var>). That type is read off the source column (<var>Amount</var>) and ascribed as the return type assertion on the aggregate function (<code>each List.Sum([Amount])</code>). <code><a href="https://docs.microsoft.com/en-us/powerquery-m/table-group" target="_blank" rel="noreferrer noopener">Table.Group</a></code> reads that assertion and uses it to type the column it creates to hold the aggregation&#8217;s results. Try changing <var>Amount</var>&#8216;s type and notice how the aggregate column&#8217;s type automatically follows this change.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = #table(type table &#91;Category=text, Amount=Currency.Type], {{&quot;Misc&quot;, 50}, {&quot;Misc&quot;, 25}, {&quot;Part&quot;, 2.50}}),
+  Group = Table.Group(
+    Source, 
+    &quot;Category&quot;,
+    { &quot;Total&quot;, Value.ReplaceType(each List.Sum(&#91;Amount]), type function (input as any) as Type.TableColumn(Value.Type(Source), &quot;Amount&quot;)) }
+  )
+in
+  Group
+</pre></div>
+
+
+<p>The previous example shows one case of why you might want to ascribe a new type onto a function. Another is documentation: The descriptions and examples displayed for a function in Query Editor come from metadata attached to its type and child types—and attaching metadata (something we&#8217;ll cover in a later post) is done through type ascription.</p>
+
+
+
+<p>There&#8217;s a few reasons, for starts. Keep in mind that you don&#8217;t need to ascribe child types if they&#8217;re not helpful in your context. If ascribing them doesn&#8217;t give you any benefits, then no need to ascribe.</p>
+
+
+
+<h2 class="wp-block-heading" id="conclusion">Conclusion</h2>
+
+
+
+<p>I hope this journey has made M&#8217;s &#8220;strange&#8221; type behaviors less confusing. Whether or not they are the behaviors you&#8217;d like, at least now you know what they are and (hopefully) have an understanding as to some of the reasons why they are what they are.</p>
+
+
+
+<p>A key concept here is that child types are just claims. M hasn&#8217;t validated them and doesn&#8217;t enforce them at the mashup engine level. Even though they are unverified, other code and the host application has the option of choosing to trust them and derive value from them.</p>
+
+
+
+<p>While it may not seem robust, M&#8217;s approach to type enforcement works rather well for Power Query&#8217;s purposes. In fact, increasing its robustness significantly would likely become a hindrance to M&#8217;s efficiently working with data. Mostly, the complexities around custom types stay out of the way unless and until you want to involve them and then they give you options which you must wield responsibly.</p>
+
+
+
+<p>Whew…we&#8217;re done with the type system! Congratulations! Don&#8217;t worry, though, we&#8217;re not done exploring M just yet. More awaits to delve into!</p>
+
+
+
+<p>Next up? Hmm…maybe <a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" data-type="post" data-id="5523">metadata</a>.</p>
+
+
+
+<h2 class="wp-block-heading" id="revision-history"><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color">Revision History</mark></h2>
+
+
+
+<ul>
+<li><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2023-01-31</strong>: Reworked <em>Type Equality</em> to clarify and align with <a href="https://bengribaudo.com/blog/2023/01/02/7197/m-language-specification-in-review-2022">recent M spec revisions</a>. </mark></li>
+
+
+
+<li><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2023-02-21:</strong> Removed mentions that ascription shouldn&#8217;t be used for renaming, as technically that prohibition is incorrect.</mark></li>
+</ul>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" rel="bookmark" title="Power Query M Primer (Part 18): Type System III – Custom Types">Power Query M Primer (Part 18): Type System III – Custom Types</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets" rel="bookmark" title="Power Query M Primer (Part 17): Type System II – Facets">Power Query M Primer (Part 17): Type System II – Facets</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i-basics" rel="bookmark" title="Power Query M Primer (Part 16): Type System I – Basics">Power Query M Primer (Part 16): Type System I – Basics</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary" rel="bookmark" title="Power Query M Primer (Part 9): Types—Logical, Null, Binary">Power Query M Primer (Part 9): Types—Logical, Null, Binary</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			2 thoughts on &ldquo;<span>Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88532">
+		<article id="comment-88532" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Joe Edwards</b> </cite><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors#comment-88532"><time datetime="2020-09-09T14:14:42-05:00">September 9, 2020 at 2:14 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,</p>
+<p>Would the following be the most efficient way of comparing all the types and facets of all columns in two tables in a single operation:</p>
+<p>Value.Equals(Table.Schema(Table1), Table.Schema(Table2))</p>
+<p>Chris Webb highlighted many years ago that you can compare the total data content of two tables using Value.Equals (<a href="https://blog.crossjoin.co.uk/2014/01/11/comparing-tables-in-power-query/" rel="nofollow ugc">https://blog.crossjoin.co.uk/2014/01/11/comparing-tables-in-power-query/</a>), however I am unsure whether this returns a deterministic answer, or whether it would be down to the engine version to interpret how this is evaluated?</p>
+<p>Thanks,</p>
+<p>Joe</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors?replytocom=88532#respond' data-commentid="88532" data-postid="5408" data-belowelement="comment-88532" data-respondelement="respond" data-replyto="Reply to Joe Edwards" aria-label='Reply to Joe Edwards'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88534">
+		<article id="comment-88534" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors#comment-88534"><time datetime="2020-09-09T15:19:09-05:00">September 9, 2020 at 3:19 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Joe,</p>
+<p>Thank you for sharing. Very interesting idea!</p>
+<p>Per the language specification, the <a href="https://docs.microsoft.com/en-us/powerquery-m/m-spec-operators#equality-operators" target="_blank" rel="noopener noreferrer nofollow ugc">equality operator (<code>=</code>)</a> will consider two tables equal if: they contain the same number of columns, the columns have the same names, the tables contain the same number of rows and &#8220;each row has equal values in corresponding cells.&#8221; Based on this, it sounds like Table.Schema(Table1) = Table.Schema(Table2) should work! </p>
+<p>Keep in mind that Table.Schema&#8217;s <var>IsWritable</var> and <var>Description</var> columns are from metadata, not type names or type facets. If desired, these two columns can be excluded from the comparison.</p>
+<p>Ben</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors?replytocom=88534#respond' data-commentid="88534" data-postid="5408" data-belowelement="comment-88534" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='5408' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.098 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 04:52:08 -->
+
+<!-- super cache -->

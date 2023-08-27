@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures Comments Feed" href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/5989" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=5989' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F09%2F01%2F5989%2Fpower-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F09%2F01%2F5989%2Fpower-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-5989 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-5989" class="post-5989 post type-post status-publish format-standard hentry category-power-query-m-primer tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m tag-query-folding tag-variables">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2021-09-01T14:03:19-05:00">September 1, 2021</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a>, <a href="https://bengribaudo.com/blog/tag/query-folding" rel="tag">Query Folding</a>, <a href="https://bengribaudo.com/blog/tag/variables" rel="tag">Variables</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p class="has-drop-cap">As we learned <a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">last time</a>, <em>normally</em>, M code is evaluated in a global identifier resolution scope consisting of all shared members + the standard library. Also, n<em>ormally</em>, we can’t inject additional identifiers into this global environment. <strong>Normally isn&#8217;t always</strong>. Today, we learn about the exception: where both of these normalities do not apply.</p>
+
+
+
+<p>That&#8217;s not all: Did you know that M has a mechanism for remembering how to access variables that later go out of scope? <strong>Closures</strong> open up powerful options, particularly when generating functions&#8230;and even <strong>enable building an object-like programmatic construct that maintains internal private state and is interacted with through a public interface</strong> (kind-of, sort-of somewhat like an object from object-oriented programming!).</p>
+
+
+
+<span id="more-5989"></span>
+
+
+
+<h1 class="wp-block-heading" id="series-index">Series Index</h1>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li>Identifier Scope II – Controlling the Global Environment, Closures (part 22)</li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="a-clean-environment">A Clean Environment</h2>
+
+
+
+<p class="has-drop-cap">Remember the very first example from the <a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">previous part</a> in this series? We imagined the below expression living in a world with no standard library, no other queries (a.k.a. no section members) and devoid of any other kind of global environment (so not even the standard library is present).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+&#91;
+  a = 1,
+  b = 2,
+  c = 3
+]
+</pre></div>
+
+
+<p>Turns out, we don&#8217;t have to imagine this. Thanks to <code><a href="https://docs.microsoft.com/en-us/powerquery-m/expression-evaluate" target="_blank" rel="noreferrer noopener">Expression.Evaluate</a></code>, we can make such a minimalistic environment a reality.</p>
+
+
+
+<p>This standard library function evaluates arbitrary M code, which is provided in textual form as its first argument, returning the result as its output.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(&quot;10 + 20&quot;) // returns 30
+</pre></div>
+
+
+<p>What&#8217;s passed in to <code>Expression.Evaluate</code> <strong>defines <em>the entirety</em> of the environment that the provided expression is evaluated in</strong>.</p>
+
+
+
+<p>The specified expression is evaluated in a section-less world. No sections or section members are present. (This makes sense, as the M code you pass in is an expression, not a section document.) If you&#8217;d like to prove that no sections are present, try <code>Expression.Evaluate("#sections")</code>, and notice that it returns an empty record.</p>
+
+
+
+<p>By default, the global environment used when the expression is evaluated is also empty. No standard library is present. Try <code>Expression.Evaluate("#shared")</code>, which also returns an empty record.</p>
+
+
+
+<h3 class="wp-block-heading" id="populating-the-global-environment">Populating the Global Environment</h3>
+
+
+
+<p class="has-drop-cap">You can choose to add identifiers to this global environment. This is the purpose of <code>Expression.Evaluate</code>&#8216;s optional second argument. If provided, it should be a record where each field&#8217;s name is the name of an identifier to add to the global environment created by <code>Expression.Evaluate</code>, with the corresponding field value being the value to associate with that identifier. To emphasize: This record defines the <em>entirety </em>of the global environment used when evaluating the specified expression.</p>
+
+
+
+<p>Below populates the global environment used inside <code>Expression.Evaluate</code> with <var>a</var> (set to 10) and <var>b</var> (set to 20).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [3]; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(
+  &quot;a + b&quot;, 
+  &#91;a = 10, b = 20] // defines the global environment that's used when evaluating the provided expression
+) // returns 30
+</pre></div>
+
+
+<p>You can see that the record&#8217;s contents are injected into, and define the <em>entirety</em> of, the global environment used by <code>Expression.Evaluate</code> by asking it to evaluate <var>#shared</var>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(&quot;#shared&quot;, &#91;a = 10, b = 20]) // returns &#91;a = 10, b = 20]
+</pre></div>
+
+
+<p>If you want to evaluate an expression that references functions from the standard library, you&#8217;ll need to add the relevant functions to that global environment.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(&quot;Text.Upper(&quot;&quot;hi&quot;&quot;)&quot;) // errors because Text.Upper is not present in the global environment being used
+	
+Expression.Evaluate(&quot;Text.Upper(&quot;&quot;hi&quot;&quot;)&quot;, &#91;Text.Upper = Text.Upper]) // returns &quot;HI&quot;
+</pre></div>
+
+
+<p><code>Expression.Evaluate</code>&#8216;s second argument gives fine-tooth control over the environment used when evaluating the specified expression. <code>Expression.Evaluate</code>&#8216;s purpose is to process arbitrary M code, which in some cases may come from (or be derived from) untrusted sources (say, user input stored in a database). In cases like these, limiting the functions that the expression can use to only those you expect it to (want it to) use is an important security measure to help guard against an injection attack (think of a <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/SQL_injection" target="_blank">SQL injection attack</a>, Power Query style).</p>
+
+
+
+<p>What if fine-tooth control over what the expression can execute isn&#8217;t important in your context? Rather, you want the expression to be evaluated in a &#8220;normal&#8221; global environment—that is, the same global environment you&#8217;d get outside <code>Expression.Evaluate</code>. Is this possible?</p>
+
+
+
+<p>Easy! Set <code>Expression.Evaluate</code>&#8216;s second argument to <var>#shared</var>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(&quot;Text.ToUpper(&quot;&quot;hi&quot;&quot;)&quot;, #shared) // returns &quot;HI&quot;
+</pre></div>
+
+
+<p>(Remember from <a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#shared">the last post</a> that <var>#shared</var> returns a record containing one field per identifier in the global environment? This is the exact format <code>Expression.Evaluate</code> needs to inject these identifiers into the global environment it sets up, so referencing <var>#shared</var> here works perfectly. Just beware of the potential security ramifications.)</p>
+
+
+
+<h2 class="wp-block-heading" id="closures">Closures</h2>
+
+
+
+<p class="has-drop-cap">Now, let&#8217;s try something which, if we did it to someone else, would be a mean practical joke—but as we&#8217;re doing it to ourselves, it&#8217;s okay, and will illustrate an important concept. Let&#8217;s create a global environment where <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/text-lower" target="_blank">Text.Lower</a></code> is actually defined as <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/text-upper" target="_blank">Text.Upper</a></code>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Expression.Evaluate(&quot;Text.Lower(&quot;&quot;Hello&quot;&quot;)&quot;, &#91;Text.Lower = Text.Upper]) // outputs &quot;HELLO&quot;
+</pre></div>
+
+
+<p>Again, don&#8217;t do this to someone else. That would be quite unkind.</p>
+
+
+
+<p>Let&#8217;s keep going with this. In the outer environment, we&#8217;ll define a function of our own that formats text. This function, which we&#8217;ll also pass in to <code>Expression.Evaluate,</code> internally uses <code>Text.Lower</code>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  FormatText = (input as text) as text =&gt; Text.Lower(input),
+  EvaluatedExpression = Expression.Evaluate(
+    &quot;FormatText(&quot;&quot;Hello&quot;&quot;)&quot;, 
+    &#91;
+	   FormatText = FormatText,
+	   Text.Lower = Text.Upper
+	]
+  )
+in
+  EvaluatedExpression // what's returned here?
+</pre></div>
+
+
+<p>So, the inner global environment created by <code>Expression.Evaluate</code> contains exactly two identifiers:</p>
+
+
+
+<ul>
+<li>Our <var>FormatText</var> function, which uses <code>Text.Lower</code>.</li>
+
+
+
+<li><code>Text.Lower</code>, which maps to the standard library&#8217;s <code>Text.Upper</code>.</li>
+</ul>
+
+
+
+<p>If, inside <code>Expression.Evaluate</code>, we invoke <code>FormatText("Hello")</code>—as the above example does—what will be output?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; quick-code: false; notranslate" title="">
+hello
+</pre></div>
+
+
+<p>Wait!!! Shouldn&#8217;t that be &#8220;HELLO&#8221; because inside <code>Expression.Evaluate</code>, <code>Text.Lower</code> actually outputs upper cases text, and <var>FormatText</var> uses <code>Text.Lower</code>?</p>
+
+
+
+<p>Ah! This is the lesson that we&#8217;re driving at here: <var>FormatText</var> is not using the <code>Text.Lower</code> that&#8217;s present inside <code>Expression.Evaluate</code>&#8216;s global environment (which up-cases text); rather, it&#8217;s using the <code>Text.Lower</code><em> </em><strong>that existed in the environment where <var>FormatText</var> was </strong><em>defined</em>.</p>
+
+
+
+<h3 class="wp-block-heading" id="remembering-the-defining-context">Remembering the Defining Context</h3>
+
+
+
+<p class="has-drop-cap">In M, <strong>functions &#8220;remember&#8221; the context in which they were originally defined</strong>, even when they are later invoked from a different context. In the nomenclature of programming language theory, this technique for remembering context is called a <strong>closure</strong>.</p>
+
+
+
+<p>When <var>FormatText</var> is defined, a closure is &#8220;captured&#8221; which enables <var>FormatText</var> to always use the <code>Text.Lower</code> that existed in its global environment when it was defined (the one that lowercases text). This holds true even though later when <var>FormatText</var> is invoked, the <code>Text.Lower</code> that&#8217;s in the global environment at that point in time is the one that uppercases text. This latter <code>Text.Lower</code> is irrelevant to <var>FormatText</var>—it doesn&#8217;t use it or need it to be present; the <code>Text.Lower</code> that <var>FormatText</var> uses is the one referenced by its closure.</p>
+
+
+
+<p>Closures aren&#8217;t limited to just when <code>Expression.Evaluate</code> is used. Below, <var>Generator</var> is a function that takes in an hourly wage rate and returns a function that takes in hours worked, multiplies it by the hourly rate (which was &#8220;captured&#8221; by a closure), then returns the result.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  Generator = (hourlyRate as number) as function =&gt;
+    (hoursWorked as number) as number =&gt; hourlyRate * hoursWorked,
+  FifteenPerHour = Generator(15)
+in
+  FifteenPerHour(40) // returns 600
+</pre></div>
+
+
+<p>The concept is simple yet may feel mind-bending.</p>
+
+
+
+<p>To help grasp what&#8217;s going on, let&#8217;s walk this backward. <var>FifteenPerHour</var> is a variable pointing to a function. We can invoke <var>FifteenPerHour</var>, passing it the number of hours worked, and it will return the amount of wages to be paid.</p>
+
+
+
+<p>Where does the function for <var>FifteenPerHour</var> come from? Instead of it being defined the way we&#8217;re typically used to, like &#8220;<code>FifteenPerHour = (hoursWorked) =&gt; hoursWorked</code> <code>* 15</code>&#8220;, it is defined as the result of a function. Strange as this may feel, this is perfectly valid: a function can return a function, and the function that&#8217;s returned can be stored in a variable.</p>
+
+
+
+<p><var>Generator</var>, the function that&#8217;s invoked to generate <var>FifteenPerHour</var>&#8216;s function, takes an argument that specifies the hourly wage rate to use. When that function generates the function that actually computes total wages (<var>FifteenPerHour</var>), this rate is &#8220;captured&#8221; by a closure, which enables the generated function to reference it throughout the generated function&#8217;s lifetime.</p>
+
+
+
+<p>When <code>FifteenPerHour(40)</code> is later invoked, nowhere is the hourly rate visible; that amount is not in context at the point of invocation. However, <var>FifteenPerHour</var> knows (remembers) that the rate is 15, thanks to its closure.</p>
+
+
+
+<h3 class="wp-block-heading" id="transformer-functions">Transformer Functions</h3>
+
+
+
+<p class="has-drop-cap">Closures can be particularly handy when transforming values. Say you have a list which you want to transform using <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/list-transform" target="_blank">List.Transform</a></code>. That function&#8217;s second argument is the transformer function to use. It will be called once per list item, each time being passed the current item as its single argument, which it should then transform and return.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+List.Transform({ &quot;-abc-&quot;, &quot; def &quot;}, Text.Trim) // outputs { &quot;-abc-&quot;, &quot;def&quot; }
+</pre></div>
+
+
+<p>This is great in many cases (like the above), but what if you want to configure the behavior of the transformer function? For example, in the case of <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/text-trim" target="_blank">Text.Trim</a></code>, you may want to set its optional second argument so that the method trims away a different character.</p>
+
+
+
+<p>One option is to build a single-argument function that returns a function which calls <code>Text.Trim</code> with its second argument hard-coded</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let 
+  TrimHyphens = (textToTrim as text) as text =&gt; Text.Trim(textToTrim , &quot;-&quot;)
+in
+  List.Transform({ &quot;-abc-&quot;, &quot; def &quot;}, TrimHyphens ) // outputs { &quot;abc&quot;, &quot; def &quot; }
+</pre></div>
+
+
+<p>This works great, but your new function is hard-coded to trimming one specific character. What if you wanted to make it configurable? Thanks to closures, this is easy:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+TrimCharacter = (characterToTrim as text) as function =&gt; 
+   (textToTrim as text) as text =&gt; Text.Trim(textToTrim , characterToTrim)
+</pre></div>
+
+
+<p>When <code>TrimCha</code>racter(&#8220;-&#8220;) is invoked, it returns a single-argument function, which, when invoked, trims away the specified character from the text passed to it.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  …,
+  TrimHyphens = TrimCharacter(&quot;-&quot;) // generates a function that trims hyphens
+in
+  TrimHyphens(&quot;-abc-&quot;) // invokes the generated function, returning &quot;abc&quot;
+</pre></div>
+
+
+<p>Or, as a one-liner:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+TrimCharacter(&quot;-&quot;)(&quot;-abc-&quot;) // generates a function that trims hyphens, then invokes it, returning &quot;abc&quot;
+</pre></div>
+
+
+<p>Plugging the new <var>TrimCharacter</var> function into our list transformation scenario, we can use it to generate a single-argument function that trims away whatever character we specify. Below, we use it to trim away hyphens. <code>List.Transform</code> is happy: it&#8217;s being passed a single-argument function that takes the current list item as its input and returns the transformed result. We&#8217;re happy because we&#8217;re using a generic, reusable function to generate the transformer function for <code>List.Transform</code>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let 
+  TrimCharacter = (characterToTrim as text) as function =&gt; 
+    (textToTrim as text) as text =&gt; Text.Trim(textToTrim , characterToTrim)
+in
+  List.Transform(
+    { &quot;-abc-&quot;, &quot; def &quot;}, 
+    TrimCharacter(&quot;-&quot;) // generates a single-argument function that trims hyphens, which is then invoked by List.Transform on each list item
+) // outputs { &quot;abc&quot;, &quot; def &quot; }
+</pre></div>
+
+
+<p>All this, thanks to closures, which enable the generated function to &#8220;remember&#8221; the <var>characterToTrim</var> value that was passed in to the generator function.</p>
+
+
+
+<h2 class="wp-block-heading" id="object-like-behavior">Kinda, Sorta Object-Like Behavior</h2>
+
+
+
+<p class="has-drop-cap">The M language&#8217;s support for closures enables a type of object-oritented-like behavior: the ability to create and interact with programmatic structures <strong>that expose public interfaces and maintain private internal state</strong>.</p>
+
+
+
+<p>Of course, since M&#8217;s values can&#8217;t be modified, each interaction produces a new structure which must be used for the next interaction. (In contrast, an object-oriented language allows the same object instance to be directly manipulated, and manipulated multiple times.)</p>
+
+
+
+<p>Let&#8217;s imagine a more complex scenario around wage computation. We want an object-like &#8220;timecard&#8221; entity that allows us to set/change the hourly rate, record hours worked and fetch the total wage amount.</p>
+
+
+
+<p>Imagine something that we&nbsp; can interact with like this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  …
+  InitialWage = Timecard(10), // create a new time card and sets the initial hourly wage rate 
+  FirstWeek = InitialWage&#91;RecordHoursWorked](40), // records week 1's work
+  PayRaise = FirstWeek&#91;SetRate](25), // raises the wage rate for subsequent work
+  SecondWeek = PayRaise&#91;RecordHoursWorked](40), // records week 2's work
+  ThirdWeek = SecondWeek&#91;RecordHoursWorked](35), // records week 3's work
+  TotalWages = ThirdWeek&#91;TotalWages]() // get total wages earned
+in
+  TotalWages // returns 2275
+</pre></div>
+
+
+<p>The above starts with a timecard being initialized, with the pay rate set to 10. What&#8217;s returned is a record consisting of several fields, each of which contains a function. These functions form the public interface for interacting with the timecard.</p>
+
+
+
+<figure class="wp-block-image size-full is-resized"><img decoding="async" src="https://bengribaudo.com/wp-content/uploads/2021/09/PublicInterfaceRecordScreenShot.png" alt="Screenshot of &quot;public interface&quot; record" class="wp-image-5993" width="251" height="67"/></figure>
+
+
+
+<p>This new timecard, saved as <var>InitialWage</var>, is used for <var>FirstWeek</var>&#8216;s recording of hours worked, which is done by using the timecard&#8217;s <var>RecordHoursWorked</var> function. This method returns a new timecard with the same set of fields as the previous card, just with the card&#8217;s internal state updated to reflect the hours worked.</p>
+
+
+
+<p>Next, there&#8217;s a <var>PayRaise</var>, which is recorded by invoking <var>SetRate</var> from the <var>FirstWeek</var> timecard&#8217;s record. The net effect is another timecard, this one internally updated so that it will record future hours worked at the new pay rate.</p>
+
+
+
+<p>Then <var>SecondWeek</var> and <var>ThirdWeek</var>&#8216;s hours worked are recorded by invoking <var>RecordHoursWorked</var> on the timecard from the preceding (respectively) step.</p>
+
+
+
+<p>Lastly, <var>TotalWages</var> is output by invoking <var>TotalWages</var> on <var>ThirdWeek</var>&#8216;s timecard. Unlike the card&#8217;s other methods, this one doesn&#8217;t return a new timecard; rather, it directly returns the amount of total wages as a numeric value.</p>
+
+
+
+<p>Internally, timecard maintains the necessary internal state to compute total wages. How it does this is hidden to us, the consumer, and so something we can&#8217;t manipulate. Our ability to interact with the timecard is defined by the interface of public methods provided in its record.</p>
+
+
+
+<h3 class="wp-block-heading" id="the-innerworkings">The Innerworkings</h3>
+
+
+
+<p class="has-drop-cap">So how does timecard work?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Timecard = (initialRate as number) =&gt; 
+  let
+    NewTimecard = (state as record) =&gt; 
+      &#91;
+        SetRate = (rate as number) =&gt; 
+          @NewTimecard(state &amp; &#91;Rate = rate]),
+        RecordHoursWorked = (hours as number) =&gt; 
+          @NewTimecard(state &amp; &#91;TotalWages = state&#91;TotalWages] + state&#91;Rate] * hours]),
+        TotalWages = () =&gt; 
+          state&#91;TotalWages]
+      ]
+in
+  NewTimecard(&#91;Rate = initialRate, TotalWages = 0])
+</pre></div>
+
+
+<p>Function <var>Timecard</var> takes an initial wage rate which it stores in a state record. This record&#8217;s fields, invisible to the outside world, are the approximate equivalent of an object&#8217;s private fields.</p>
+
+
+
+<p>The state record is then passed to a function defined inside <var>Timecard</var> named <var>NewTimecard</var>. This function returns a record containing the timecard&#8217;s &#8220;public interface&#8221; of three functions, which defines the entirety of how outside code can interact with the card.</p>
+
+
+
+<p>Two of these functions, <var>SetRate</var> and <var>RecordHoursWorked</var>, when invoked, call same <var>NewTimecard</var> method, passing it a state record that&#8217;s been appropriately updated to reflect the new wage rate or hours worked (respectively). It&#8217;s closures that make this possible: from the outside, when you call <var>SetRate</var> or <var>RecordHoursWorked</var>, you have no knowledge of, or access to, this <var>NewTimecard</var> method or the existing state record—but thankfully those two functions do, thanks to closures.</p>
+
+
+
+<p>While interesting, typically we don&#8217;t write M code this way. We don&#8217;t need to. Usually, our interest is in producing a data set, which is achieved by flowing data through a chain of function calls. In contrast, incrementally &#8220;manipulating&#8221; state by making a series of function calls (as in the last example) is more applicable to when something needs to be programmatically set up for later use.</p>
+
+
+
+<p>Like what? For one, how about query folding? When you implement query folding support, Power Query needs an interface to interactively communicate with your implementation, preparing it to produce data. Also, your implementation probably has internal state which Power Query&#8217;s folding infrastructure shouldn&#8217;t touch or need to know about. This is exactly the kind of situation this style of M coding suits well.</p>
+
+
+
+<h2 class="wp-block-heading" id="next-time">Next Time</h2>
+
+
+
+<p class="has-drop-cap">This style of sort-of, kind-of object-like M code is foundational for implementing query folding…and covering the basic concepts of implementing folding is the topic for <a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">next time</a>.</p>
+
+
+
+<p>You may have no plans to ever implement query folding. That&#8217;s okay. Understanding the basics of how it&#8217;s implemented will help you better understand how it works—and considering the significance query folding holds in the Power Query world, growing your knowledge in this area is a good investment to make.</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" rel="bookmark" title="Power Query M Primer (Part 21): Identifier Scope &#038; Sections">Power Query M Primer (Part 21): Identifier Scope &#038; Sections</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment" rel="bookmark" title="Power Query M Primer (Part 25): Extending the Global Environment">Power Query M Primer (Part 25): Extending the Global Environment</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" rel="bookmark" title="Power Query M Primer (Part 23): Query Folding I">Power Query M Primer (Part 23): Query Folding I</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers" rel="bookmark" title="Power Query M Primer (Part 4): Variables &#038; Identifiers">Power Query M Primer (Part 4): Variables &#038; Identifiers</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='5989' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.627 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 00:42:12 -->
+
+<!-- super cache -->

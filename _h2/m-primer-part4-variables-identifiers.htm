@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 4): Variables &#038; Identifiers | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 4): Variables &#038; Identifiers Comments Feed" href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/4321" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=4321' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2018%2F01%2F19%2F4321%2Fpower-query-m-primer-part4-variables-identifiers" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2018%2F01%2F19%2F4321%2Fpower-query-m-primer-part4-variables-identifiers&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-4321 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-4321" class="post-4321 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m tag-variables">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 4): Variables &#038; Identifiers</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2018-01-19T14:51:42-06:00">January 19, 2018</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a>, <a href="https://bengribaudo.com/blog/tag/variables" rel="tag">Variables</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<p>Up until now, we’ve used variables without talking much about their specifics. Since we’re operating under the assumption that you have at least a little experience with another programming or scripting language, how we’ve used variables has probably made sense.</p>
+<p>However, there might be differences—perhaps even <strong><em>significant</em> differences</strong>—between how variables work in other languages you’ve used with and how they behave in the Power Query M language. Let’s spend some time exploring variables and related concepts to <strong>clear up any lurking confusion</strong> and <strong>position you to take full advantage of what M offers</strong>.</p>
+<p>We’ll start with a brief recap of the main unit where we define variables: the <code>let</code> expression. Then, we’ll talk about how variables (and other things) are identified. Related to identifiers is scope, so we’ll cover that, too. Next time, we’ll expand  our understanding of how variables work by learning about M’s paradigm.<br />
+<span id="more-4321"></span></p>
+<h1>Series Index</h1>
+<ul>
+<li><a href="/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+<li><a href="/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+<li><a href="/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+<li>Variables &amp; Identifiers (part 4) [this post]</li>
+<li><a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+<li><a href="/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+<li><a href="/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+<li><a href="/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+<li><a href="/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+<li><a href="/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+<li><a href="/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+<li><a href="/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii" data-rich-text-format-boundary="true">Tables—Table Think II (part 13)</a></li>
+<li><a href="/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling" data-rich-text-format-boundary="true">Error Handling (part 15)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i" data-rich-text-format-boundary="true">Type System I – Basics (part 16)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" data-rich-text-format-boundary="true">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" data-type="post" data-id="5523" data-rich-text-format-boundary="true">Metadata (part 20)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+<li>More to come!</li>
+</ul>
+<h1>Variables</h1>
+<h2><code>let</code>’s Recap</h2>
+<p>First, a quick refresher: In <a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let#let-expression">part one</a>, we talked about <code>let</code> expressions. A <code>let</code> expression allows a value to be computed using one or more intermediate expressions.</p>
+<p>Instead of writing one big long complex expression, <code>let</code> allows you to break what you’re trying to do into intermediate steps which produce values that you assemble into the value returned by the <code>let</code> expression.</p>
+<p>A variable is used for each intermediate step as well as for <a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">functions you might want to define</a>.</p>
+<div>
+<div id="highlighter_760965" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+<div class="line number6 index5 alt1">6</div>
+<div class="line number7 index6 alt2">7</div>
+<div class="line number8 index7 alt1">8</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">SalesTotal = 100 + 15 + 275 + 25,</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">CommissionRate = 0.2,</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m plain">CalculateCommission = (sales, rate) =&gt; sales * rate,</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">Commission = CalculateCommission(SalesTotal, CommissionRate),</code></div>
+<div class="line number6 index5 alt1"><code class="m spaces">  </code><code class="m plain">Result = Commission</code></div>
+<div class="line number7 index6 alt2"><code class="m keyword">in</code></div>
+<div class="line number8 index7 alt1"><code class="m spaces">  </code><code class="m plain">Result</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Each variable has a name (of course!). Let’s think about those names….</p>
+<h1>Identifiers</h1>
+<h2>Identifier Names</h2>
+<p>If you’ve ever glanced at the M scripts generated by tools like Microsoft Excel or Microsoft Power BI, you’ve probably noticed they name variables using a syntax different from what we’ve been using. For the most part, we written variable names like <var>VariableName</var> while GUI-generated scripts tend to surround them in some extra syntax, like <var>#&#8221;VariableName&#8221;</var>. What’s the difference?</p>
+<p>We’ve been coding up variable names as <em>regular identifiers</em>. The hash-quotes style names used by GUI tools are called <em>quoted identifiers</em>.</p>
+<h2>Identifier Types</h2>
+<h3>Regular Identifiers</h3>
+<p>A <strong>regular identifier</strong> must start with either a letter or an underscore, then can be followed by additional characters. Regular identifiers must not contain spaces, M keywords and certain other special characters.</p>
+<style>article .entry-content table.identifier-examples tr th:first-child {width: 20em;}</style>
+<table class="identifier-examples">
+<thead>
+<tr>
+<th>Identifier</th>
+<th>Valid/Invalid?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>SalesTotal</var></td>
+<td>Valid</td>
+</tr>
+<tr>
+<td><var>_Total</var></td>
+<td>Valid</td>
+</tr>
+<tr>
+<td><var>Sales Total</var></td>
+<td>Invalid (contains a space)</td>
+</tr>
+<tr>
+<td><var>Sales/* all sales */Total</var></td>
+<td>Invalid (comments aren’t allowed in the middle of regular identifiers)</td>
+</tr>
+<tr>
+<td><var>20PercentRate</var></td>
+<td>Invalid (must start with letter or underscore)</td>
+</tr>
+</tbody>
+</table>
+<h3>Quoted Identifiers</h3>
+<p>A <strong>quoted identifier</strong> can start with and contain <em>any</em> characters, including spaces. Inside the quotes surrounding a quoted identifier, syntax that normally has special meaning in M, such as keywords and comments, is interpreted as literal text that becomes a part of the identifier name. Double quotes can even be used inside quoted identifiers—they just have to be escaped by doubling them.</p>
+<table class="identifier-examples">
+<thead>
+<tr>
+<th>Identifier</th>
+<th>Valid/Invalid?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>#&#8221;SalesTotal&#8221;</var></td>
+<td>Valid</td>
+</tr>
+<tr>
+<td><var>#&#8221;Sales Total&#8221;</var></td>
+<td>Valid (space allowed)</td>
+</tr>
+<tr>
+<td><var>#&#8221;Sales/* all sales */Total&#8221;</var></td>
+<td>Valid (important: <var>/* all sales */</var> becomes literal text inside the variable name; it’s not treated as a comment because it is inside a quoted identifier)</td>
+</tr>
+<tr>
+<td><var>#&#8221;20PercentRate&#8221;</var></td>
+<td>Valid</td>
+</tr>
+<tr>
+<td><var>#&#8221;Possible &#8220;&#8221;Pretend&#8221;&#8221; Values&#8221;</var></td>
+<td>Valid (references the variable named <var>Possible &#8220;Pretend&#8221; Values</var>)</td>
+</tr>
+</tbody>
+</table>
+<p>I’ll let you in on a secret, but please don’t try this at home: Using quoted identifiers, it’s even possible <em>to use an empty string as an identifier!</em></p>
+<div>
+<div id="highlighter_144950" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">#</code><code class="m string">""</code> <code class="m plain">= 1</code></div>
+<div class="line number3 index2 alt2"><code class="m keyword">in</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m plain">#</code><code class="m string">""</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In most programming languages (at least, the ones I’ve worked with), spaces are atypical in variable/identifier names. In M, the ability to use them comes in handy. You see, the names in the step list that GUI tools display are the names of the variables from the root let expression. Spaces in those names make the list easier to read.</p>
+<table>
+<thead>
+<tr>
+<th>No Spaces</th>
+<th>With Spaces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img decoding="async" class="alignnone wp-image-4325 size-medium" src="https://bengribaudo.com/wp-content/uploads/2018/01/StepList-NoSpaces-300x217.png" alt="Step List - no spaces between words in step names" width="225" height="163" srcset="https://bengribaudo.com/wp-content/uploads/2018/01/StepList-NoSpaces-300x217.png 300w, https://bengribaudo.com/wp-content/uploads/2018/01/StepList-NoSpaces.png 600w" sizes="(max-width: 225px) 100vw, 225px" /></td>
+<td><img decoding="async" loading="lazy" class="alignnone size-medium wp-image-4326" src="https://bengribaudo.com/wp-content/uploads/2018/01/StepList-WithSpaces-300x217.png" alt="Step List - with spaces between words in step names" width="225" height="163" srcset="https://bengribaudo.com/wp-content/uploads/2018/01/StepList-WithSpaces-300x217.png 300w, https://bengribaudo.com/wp-content/uploads/2018/01/StepList-WithSpaces.png 600w" sizes="(max-width: 225px) 100vw, 225px" /></td>
+</tr>
+</tbody>
+</table>
+<h3>Generalized Identifiers</h3>
+<p>A third identifier type, the <strong>generalized identifier</strong> is a cross between regular and quoted identifiers. This identifier type is only allowed between square brackets, such as when referencing a record field or column name. Since the square braces make it possible to determine where the identifier starts and end, certain characters and keywords that otherwise can only be used in quoted identifiers are allowed. For example, generalized identifiers allow spaces <em>between</em> words (though spaces before the first word or after the last word are ignored).</p>
+<table class="identifier-examples">
+<thead>
+<tr>
+<th>Identifier</th>
+<th>Valid/Invalid?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>[First Name]</var></td>
+<td>Valid (<var>#&#8221;First Name&#8221;</var> not required because of the square brackets)</td>
+</tr>
+<tr>
+<td><var>[First Name ]</var></td>
+<td>Valid (trailing space on field name ignored so refers to same field as the above)</td>
+</tr>
+</tbody>
+</table>
+<h2>Identifying Things, not Just Variables</h2>
+<p>&#8220;Whoa…wait a minute!&#8221; you might be saying. &#8220;We’ve been talking about identifying variables. Record field and column names aren’t variables!&#8221; You are correct! Identifiers identify <em>things</em>—<em>including</em> variables but not <em>just</em> variables. What kind of thing they identify is determined by the context in which they are used. So far, for the most part, we’ve used them to identify variables; however, when used inside the context of square braces, they identify record fields or table columns. (We’ll talk more about records and tables in a later post.)</p>
+<h2>Not the Actual Thing</h2>
+<p>Identifiers <em>identify</em>. They’re not the <em>thing</em> they identify, just a <em>references</em> to it. When the same identifier name is represented using different syntax styles, <strong>all references refer to the same thing</strong>. For example, the regular identifier <var>Weight</var> and the quoted identifier <var>#&#8221;Weight&#8221;</var> contain the same exact name so refer to the exact same variable.</p>
+<div>
+<div id="highlighter_117416" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Weight = 50</code></div>
+<div class="line number3 index2 alt2"><code class="m keyword">in</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m plain">#</code><code class="m string">"Weight"</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2>Scope</h2>
+<p>A sub-expression can access all identifiers defined in the expression containing its definition and in any parents of that expression, with one exception: out of the box, it can’t reference itself.</p>
+<div>
+<div id="highlighter_657546" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+<div class="line number6 index5 alt1">6</div>
+<div class="line number7 index6 alt2">7</div>
+<div class="line number8 index7 alt1">8</div>
+<div class="line number9 index8 alt2">9</div>
+<div class="line number10 index9 alt1">10</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">a = 10, </code><code class="m comments">// this expression can reference b, c</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">b =</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">    </code><code class="m keyword">let</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">      </code><code class="m plain">Result = a + 25 </code><code class="m comments">// can reference a, c</code></div>
+<div class="line number6 index5 alt1"><code class="m spaces">    </code><code class="m keyword">in</code></div>
+<div class="line number7 index6 alt2"><code class="m spaces">      </code><code class="m plain">Result,</code></div>
+<div class="line number8 index7 alt1"><code class="m spaces">  </code><code class="m plain">c = 15 </code><code class="m comments">// can reference a, b</code></div>
+<div class="line number9 index8 alt2"><code class="m keyword">in</code></div>
+<div class="line number10 index9 alt1"><code class="m spaces">  </code><code class="m plain">a + b + c </code><code class="m comments">// can reference a, b, c</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div>
+<div id="highlighter_555982" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">[</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">A = 1, </code><code class="m comments">// can reference B (including B[BB]), C</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">B = [ BB = A ], </code><code class="m comments">// can reference A, C</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m plain">C = 2 </code><code class="m comments">// can reference A, (including B[BB])</code></div>
+<div class="line number5 index4 alt2"><code class="m plain">]</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As we talked about in <a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#recursive-functions">part 3</a>, in order for an expression to reference the identifier it’s assigned to, simply prepend an <code>@</code> in front of the reference. Self-referencing is handy when defining recursive functions.</p>
+<div>
+<div id="highlighter_276743" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">SumConsecutive = (x) =&gt; </code><code class="m keyword">if</code> <code class="m plain">x &lt;= 0 </code><code class="m keyword">then</code> <code class="m plain">0 </code><code class="m keyword">else</code> <code class="m plain">x + @SumConsecutive(x - 1),</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">Result = SumConsecutive(4)</code></div>
+<div class="line number4 index3 alt1"><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">Result</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h1>Next Time</h1>
+<p>Have you noticed how M scripts define variables but never seem to change a variable&#8217;s value after it&#8217;s initially set? We should talk more about this and topics like evaluation order and lazy evaluation soon…like maybe <a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">next time</a>.</p>
+<p>Until then, happy M coding!</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" rel="bookmark" title="Power Query M Primer (Part 21): Identifier Scope &#038; Sections">Power Query M Primer (Part 21): Identifier Scope &#038; Sections</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text" rel="bookmark" title="Power Query M Primer (Part 6): Types—Intro &#038; Text (Strings)">Power Query M Primer (Part 6): Types—Intro &#038; Text (Strings)</a></li>
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion" rel="bookmark" title="Power Query M Primer (part 3):&lt;br /&gt;Functions: Function Values, Passing, Returning, Defining Inline, Recursion">Power Query M Primer (part 3):<br />Functions: Function Values, Passing, Returning, Defining Inline, Recursion</a></li>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let" rel="bookmark" title="Power Query M Primer (part 1): &lt;br /&gt;Introduction, Simple Expressions &#038; &lt;code&gt;let&lt;/code&gt;">Power Query M Primer (part 1): <br />Introduction, Simple Expressions &#038; <code>let</code></a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			15 thoughts on &ldquo;<span>Power Query M Primer (Part 4): Variables &#038; Identifiers</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88308">
+		<article id="comment-88308" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Richard</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88308"><time datetime="2018-04-10T16:34:55-05:00">April 10, 2018 at 4:34 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great post, thank you!</p>
+<p>Can the following be rewritten to specify the table using strTable thus avoiding the need to use TableQuery?</p>
+<pre class="brush:plain">
+let
+strTable = "Root Cause",
+TableQuery = #"Root Cause",
+
+RScript = R.Execute("write.csv(dataset,""C:\\Users\\RichardLove\\Desktop\\" &amp; strTable &amp; ".csv"")",[dataset=TableQuery]),
+out = RScript
+in
+out
+</pre>
+<p>Thanks again,<br />
+Richard</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88308#respond' data-commentid="88308" data-postid="4321" data-belowelement="comment-88308" data-respondelement="respond" data-replyto="Reply to Richard" aria-label='Reply to Richard'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88389">
+		<article id="comment-88389" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jeff Weir</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88389"><time datetime="2019-07-23T22:54:58-05:00">July 23, 2019 at 10:54 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben. Another great intro. Unfortunately I&#8217;m not understanding what you mean by any of the comments in this bit though. Can you restate it another way or further elaborate?</p>
+<p>In your code:</p>
+<pre class="brush:plain">
+let
+  a = 10, // can reference b, c
+  b =
+    let
+      Result = a + 25 // can reference a, c
+    in
+      Result,
+  c = 15 // can reference a, b
+in
+  a + b + c // can reference a, b, c
+</pre>
+<pre class="brush:plain">
+[
+  A = 1, // can reference B (including B[BB]), C
+  B = [ BB = A ], // can reference A, C
+  C = 2 // can reference A, (including B[BB])
+]
+</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88389#respond' data-commentid="88389" data-postid="4321" data-belowelement="comment-88389" data-respondelement="respond" data-replyto="Reply to Jeff Weir" aria-label='Reply to Jeff Weir'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88390">
+		<article id="comment-88390" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jeff Weir</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88390"><time datetime="2019-07-24T03:00:17-05:00">July 24, 2019 at 3:00 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Ahhh&#8230;after referring to the PQ Formula Reference Spec, I see that your comments &#8220;// can reference b, c&#8221; are just referring to the parts of the environment that A can reference, and can be referenced from.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88390#respond' data-commentid="88390" data-postid="4321" data-belowelement="comment-88390" data-respondelement="respond" data-replyto="Reply to Jeff Weir" aria-label='Reply to Jeff Weir'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88391">
+		<article id="comment-88391" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88391"><time datetime="2019-07-24T07:58:31-05:00">July 24, 2019 at 7:58 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Uh oh! I just updated the first code sample to hopefully clarify this. Thanks for the feedback!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88391#respond' data-commentid="88391" data-postid="4321" data-belowelement="comment-88391" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88458">
+		<article id="comment-88458" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="https://solveandexcel.ca" class="url" rel="ugc external nofollow">Alved</a></b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88458"><time datetime="2020-06-12T12:45:55-05:00">June 12, 2020 at 12:45 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Yesterday, I had a situation where a data source table in Excel had a space at the end of a column header.<br />
+When I referred to that column between square brackets without the space at the end, I got an error. Would this be a situation outside of what is explained at:</p>
+<pre class="brush:m">[First Name ]</pre>
+<p>Valid (trailing space on field name ignored so refers to same field as the above)<br />
+Thanks, Ben!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88458#respond' data-commentid="88458" data-postid="4321" data-belowelement="comment-88458" data-respondelement="respond" data-replyto="Reply to Alved" aria-label='Reply to Alved'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88459">
+		<article id="comment-88459" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88459"><time datetime="2020-06-12T16:57:19-05:00">June 12, 2020 at 4:57 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Leading and trailing spaces will be ignored when the text between the square brackets is converted to an identifier, so <code>[First Name ]</code> will be parsed as referring to field &#8220;<var>First Name</var>&#8220;. Since the field you&#8217;re trying to access has a space at the end of its name, this identifier (which doesn&#8217;t have the trailing space) won&#8217;t find it. Instead, you could try something like <code>Source[#"First Name "]</code>.</p>
+<p>Example:</p>
+<pre class="brush:m">
+let
+    Source = #table({"First Name "}, {{"Joe"}})
+in
+    // Source[ First Name ] // Expression.Error: The column 'First Name' of the table wasn't found.
+    Source[#"First Name "] // works
+</pre>
+<p>Does that help?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88459#respond' data-commentid="88459" data-postid="4321" data-belowelement="comment-88459" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88565">
+		<article id="comment-88565" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">JJ</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88565"><time datetime="2020-11-04T03:43:26-06:00">November 4, 2020 at 3:43 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,</p>
+<p>Liked your post so much! so simple to follow along. </p>
+<p>I understand that power query M uses EACH for looping like items in a list. But I am wondering whether power query M can simply do for loop using counter like other coding languages?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88565#respond' data-commentid="88565" data-postid="4321" data-belowelement="comment-88565" data-respondelement="respond" data-replyto="Reply to JJ" aria-label='Reply to JJ'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88584">
+		<article id="comment-88584" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88584"><time datetime="2020-12-04T11:25:14-06:00">December 4, 2020 at 11:25 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi JJ! Thanks for your kind words. No, there is no direct <code>for</code> loop in M. Keep in mind that the code inside a for/foreach loop typically modifies variable(s), which isn&#8217;t something M allows. Even if M supported <code>for</code>, it wouldn&#8217;t be useful for a loop containing a counter because the loop iterations wouldn&#8217;t be able to update the counter variable.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88584#respond' data-commentid="88584" data-postid="4321" data-belowelement="comment-88584" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88750">
+		<article id="comment-88750" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Tuan</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88750"><time datetime="2021-08-27T20:38:27-05:00">August 27, 2021 at 8:38 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thank you so much for sharing. I love you posts.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88750#respond' data-commentid="88750" data-postid="4321" data-belowelement="comment-88750" data-respondelement="respond" data-replyto="Reply to Tuan" aria-label='Reply to Tuan'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88754">
+		<article id="comment-88754" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88754"><time datetime="2021-08-30T11:29:07-05:00">August 30, 2021 at 11:29 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks for your kind words!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88754#respond' data-commentid="88754" data-postid="4321" data-belowelement="comment-88754" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88851">
+		<article id="comment-88851" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">JP</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88851"><time datetime="2021-12-30T09:17:47-06:00">December 30, 2021 at 9:17 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Awesome Ben!<br />
+This is what I am looking for.</p>
+<p>BIG HELP for the newbie just like me.</p>
+<p>Hope you can have YT tutorial series.</p>
+<p>Thank you so much!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88851#respond' data-commentid="88851" data-postid="4321" data-belowelement="comment-88851" data-respondelement="respond" data-replyto="Reply to JP" aria-label='Reply to JP'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88875">
+		<article id="comment-88875" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Manisankar R</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88875"><time datetime="2022-03-11T05:22:25-06:00">March 11, 2022 at 5:22 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>I want to rewrite the variable in the power query. is it possible?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88875#respond' data-commentid="88875" data-postid="4321" data-belowelement="comment-88875" data-respondelement="respond" data-replyto="Reply to Manisankar R" aria-label='Reply to Manisankar R'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88881">
+		<article id="comment-88881" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88881"><time datetime="2022-03-23T08:46:10-05:00">March 23, 2022 at 8:46 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>By &#8220;rewrite&#8221;, do you mean change, as it to modify the value of an existing variable?</p>
+<p>Like this (pseudo-code):</p>
+<pre>declare x = 10
+set x = 20 (changing x so that it is now set to 20)</pre>
+<p>If so, no. In M, variables cannot be modified once set. However, with streamed data types (table, list and binary), the variable does not hold actual row/list item/binary byte data; instead, that data is produced/streamed on demand, so can be different each time the variable is accessed.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88881#respond' data-commentid="88881" data-postid="4321" data-belowelement="comment-88881" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88919">
+		<article id="comment-88919" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jorge</b> </cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88919"><time datetime="2022-06-22T23:54:57-05:00">June 22, 2022 at 11:54 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hello Ben, I am trying to run the following expression in Power Query,</p>
+<p>I have a text parameter called StockSymbol but I cannot make the formula to recognize it each time I change the parameter to another value. If I has a fixed column containing data about a stock [AZN] it works, but when using the parameter it collapses, hope you can give it a look please.</p>
+<p>([AZN] -AddedIndex1{[Index]}[AZN])/[AZN]) // it works</p>
+<p>(StockSymbol -AddedIndex1{[Index]} StockSymbol)/StockSymbol // it does not work</p>
+<p>Thank you!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88919#respond' data-commentid="88919" data-postid="4321" data-belowelement="comment-88919" data-respondelement="respond" data-replyto="Reply to Jorge" aria-label='Reply to Jorge'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88921">
+		<article id="comment-88921" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#comment-88921"><time datetime="2022-06-27T08:08:42-05:00">June 27, 2022 at 8:08 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Jorge,</p>
+<p>When accessing a field&#8217;s value using square brackets, the field&#8217;s name must be hard-coded; a variable reference cannot be used for the field name. So <code>[AZN]</code> works but something like <code>let StockSymbol = "AZN" in [StockSymbol]</code> doesn&#8217;t work as expected.</p>
+<p>If you&#8217;re using a variable to identify the record field of interest, instead of using square brackets, try using <a href="https://docs.microsoft.com/en-us/powerquery-m/record-field" target="_blank" rel="noopener nofollow ugc"><code>Record.Field</code></a> to access the field&#8217;s value. Example: <code>Record.Field(_, StockSymbol)</code></p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers?replytocom=88921#respond' data-commentid="88921" data-postid="4321" data-belowelement="comment-88921" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='4321' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.082 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 01:15:43 -->
+
+<!-- super cache -->

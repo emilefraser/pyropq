@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 25): Extending the Global Environment | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 25): Extending the Global Environment Comments Feed" href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/7130" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=7130' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2022%2F12%2F23%2F7130%2Fpower-query-m-primer-part25-extending-the-global-environment" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2022%2F12%2F23%2F7130%2Fpower-query-m-primer-part25-extending-the-global-environment&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-7130 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-7130" class="post-7130 post type-post status-publish format-standard hentry category-power-query-m-primer tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 25): Extending the Global Environment</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2022-12-23T11:50:59-06:00">December 23, 2022</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p>To the average Power Query user, how the standard library and data connectors end up in the global environment may be irrelevant. What matters is that, however they get there, they&#8217;re there and they work! But in the world of advanced M development, how identifiers come to be injected directly into the global environment becomes interesting. Of particular pertinence is the extension/module system that plays a pivotal role in part of this process.</p>
+
+
+
+<p>Welcome to a new world: extending the global environment, here we come!</p>
+
+
+
+<span id="more-7130"></span>
+
+
+
+<h1 class="wp-block-heading" id="series-index">Series Index</h1>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-ii" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li>Extending the Global Environment [this post]</li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">The Global Environment</h2>
+
+
+
+<p>First, on the global environment…a recap of some salient facts:</p>
+
+
+<div class="wp-block-image">
+<figure class="alignright size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List.png"><img decoding="async" src="https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List-1024x764.png" alt="Screenshot showing &quot;queries&quot; list in Query Editor" class="wp-image-7131" width="256" height="191" srcset="https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List-1024x764.png 1024w, https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List-300x224.png 300w, https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List-768x573.png 768w, https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List-624x466.png 624w, https://bengribaudo.com/wp-content/uploads/2022/12/Queris-List.png 1337w" sizes="(max-width: 256px) 100vw, 256px" /></a></figure></div>
+
+
+<p>In Query Editor, the top-level expressions that are defined in the pane to the left are called &#8220;queries&#8221;—at least, that&#8217;s what the UI calls them. Behind the scenes, in the technical realm, each of these &#8220;queries&#8221; is actually a <strong>section member</strong>. All of these section members are contained in a <strong>section document</strong> that Microsoft arbitrarily names &#8220;Section1&#8221; (for more on sections, see <a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#sections">part 21</a> from this series).</p>
+
+
+
+<p>Section members can be marked as &#8220;shared&#8221;. Each <strong><em>shared</em> section member</strong> is added to M&#8217;s <strong>global environment</strong>, so appears in <code>#shared</code>. (In Query Editor, the option to share is not exposed but instead sharing is managed automatically, so whether or not a section member is shared is generally transparent to the average M code author.)</p>
+
+
+
+<p>In addition to shared section members, the global environment also can contain identifiers that are<strong> directly injected into it</strong> (so not <em>shared </em>into the global environment from section documents, but rather <em>directly placed</em> in it by the mashup engine). A principal example is the Power Query standard library, which Microsoft directly adds into M&#8217;s global environment.</p>
+
+
+
+<p>While the M language specification allows the mashup engine to add identifiers directly into the global environment, it does not lay out the specifics on how these identifiers are to be defined and registered in order for that to happen. Instead, these details are left to the creativity of the mashup engine author.</p>
+
+
+
+<h2 class="wp-block-heading">Your Very Own Mashup Engine</h2>
+
+
+
+<p>To help us understand how extensions work (and some of the whys behind the hows), let&#8217;s pretend that you are building your own mashup engine <em>from scratch</em>. That is, using the M language specification as your guide, you are writing code in another programming language (say, C#—but ultimately, the choice is up to you) that will parse and process M code.</p>
+
+
+
+<p>As part of your implementation, you&#8217;ll need to decide how you will get identifiers directly into the global environment—because the language spec. leaves this &#8220;how&#8221; up to you to determine.</p>
+
+
+
+<p>Hmm…how will you make this happen?</p>
+
+
+
+<h2 class="wp-block-heading">Methods from Another Language?!</h2>
+
+
+
+<p>For starts, you might create a mechanism enabling methods written in your mashup engine&#8217;s implementation language to be registered so that they are available as functions in M&#8217;s global environment.</p>
+
+
+
+<p>In the global environment (for example, in <code>#shared</code>), these methods will appear indistinguishable from the other methods in that environment. Users can invoke these functions from the M expressions they write without being conscious that they are written in another language. When invoked, these methods will run in-process with the mashup engine (and so avoid the significant performance cost involved with &#8220;jumping&#8221; to an external language environment—which occurs when Power Query&#8217;s Python and R integrations are used).</p>
+
+
+
+<p>But why…why might you want to author M-invokable global methods using a language other than M?</p>
+
+
+
+<p>For one, the M language does not directly include a mechanism to communicate with things external to the mashup engine. Using only what the language specification defines, you can&#8217;t write code that reads from disk or makes network calls because M doesn&#8217;t provide any built-in way to perform these activities. (Imagine how limited Power Query&#8217;s usefulness would be if it couldn&#8217;t call to external sources!) Instead, the ability to communicate with the outside world must come from functionality that is <em>made available</em> to the M world <em>by code written outside of M</em>.</p>
+
+
+
+<p>You also might want to use the implementation&#8217;s programming language to leverage existing libraries that are available for it. For example, say you want to enable users of your M world to connect to Microsoft SQL Server. It would vastly simplify your work if your SQL data connector could be built on top of the existing .Net <a rel="noreferrer noopener" href="https://www.nuget.org/packages/Microsoft.Data.SqlClient" target="_blank">Microsoft.Data.SqlClient</a> NuGet package instead of you needing to recreate that library&#8217;s functionality in M code.</p>
+
+
+
+<p>There&#8217;s also performance: The compilers, interpreters and libraries in the ecosystem of a language like C# have years of effort vested in making them fast. By writing performance-critical parts of your core standard library in such a language, you can leverage these optimization advantages without paying the cost of implementing these tunings internally in your mashup engine. (While building them into your engine might be nice, it may be impractical, at least at first, to do so. Imagine how large of a mashup engine development team you&#8217;d need—and how many years would be required—to reimplement what C# or a similar ecosystem offers you out of the box.)</p>
+
+
+
+<p><strong>Now, to the real world:</strong> Microsoft has written part of their Power Query standard library in C#, for reasons such as the above. To you and me, looking in from the outside, the C#-powered methods in the global environment are indistinguishable from those written natively in M.</p>
+
+
+
+<p>Exactly how Microsoft&#8217;s implementation interfaces between M&#8217;s world and C# is an internal detail. Microsoft might register a list of C# methods directly with the mashup engine (like we imagined above). Alternately, they could achieve a similar net effect using different means, such as by adding an internal-only M language feature which allows M code to call out and invoke methods in C# libraries (imagine M code like <code>#invokeexernal("SqlClient.Dll", SqlCommand.Construct, args)</code>). With this, Microsoft could then define all their standard library methods using M, but with some of those M methods simply being lightweight &#8220;shims&#8221; that use this &#8220;invoke external&#8221; feature to run functionality contained in external, implementation-language libraries.</p>
+
+
+
+<p>While the behind-the-scenes details may be interesting, knowing their specifics doesn&#8217;t have much practical value to those of us on the outside, as we aren&#8217;t allowed to use C# functions directly from M.</p>
+
+
+
+<p>Nevertheless, if you were building your own mashup engine implementation, you&#8217;d need to provision some way for M expressions to invoke logic written in another language (either your implementation language or another language that can run in-process with your mashup engine).</p>
+
+
+
+<h2 class="wp-block-heading">Sharing M Methods</h2>
+
+
+
+<p><strong>Back to your hypothetical mashup engine</strong>…back to imagining how your global environment wire-up would work….</p>
+
+
+
+<p>While a means to bring methods written in another language into the global environment is needful and import, you almost certainly will want to define other global functions using M expressions. How might you make this possible?</p>
+
+
+
+<p>In short, you&#8217;d be looking to define a set of names (i.e. global identifier names) paired with M expressions. Name + expression pairs…hum…that sounds like the essence of what constitutes a section document. Why not use a section document as the mechanism for defining your global M expressions?! (After all, your mashup engine already needs to know how to process section documents, so reusing that concept here, for the global environment, would save you implementation work.)</p>
+
+
+
+<p>As you define the M code portion of your standard library, you might want to group related definitions together into separate files for organizational purposes. Instead of having everything in one massively long file, putting text manipulation functions in one file, number-related functions in another, and so forth, would help keep things neat and tidy. This would make it easier to version control code, make it easier for diverse teams to independently work on different portions of the library, etc., etc.</p>
+
+
+
+<p>To this end, you decide to allow the M portion of your global environment to be defined using <em>a collection files, each containing a section document.</em></p>
+
+
+
+<p><strong>The real world:</strong> To external audiences, Microsoft provides a single mechanism for adding identifiers directly into the global environment: Power Query modules, which contain M code that <em>extends</em> the global environment. These extensions are defined using section documents.</p>
+
+
+
+<p>Simply create a section document containing the logic you want included in your extension, with the section members that should be added to the global environment marked as shared. Place this section document in the correct location (optionally, after packaging it into a special container file). If necessary, configure the host application appropriately. Voilà! You have an extension that is recognized by Power Query!</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// NeatStuff.pq
+section NeatStuff;
+
+shared NeatStuff.SayHi = (firstName as text) as text =&gt; 
+  &quot;Hi &quot; &amp; firstName;
+</pre></div>
+
+<div class="wp-block-image">
+<figure class="alignright size-medium is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options-300x88.png" alt="Screenshot showing data extension security options" class="wp-image-7132" width="300" height="88" srcset="https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options-300x88.png 300w, https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options-1024x301.png 1024w, https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options-768x226.png 768w, https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options-624x183.png 624w, https://bengribaudo.com/wp-content/uploads/2022/12/Data-Extension-Settings-Options.png 1055w" sizes="(max-width: 300px) 100vw, 300px" /></a></figure></div>
+
+
+<p>(The specifics of <a href="https://bengribaudo.com/blog/2022/02/18/6544/custom-connectors-components-packaging-formats">extension packaging</a> and installation options is beyond the scope of this<em> Primer</em>. For a simple way to follow the examples given here using Microsoft Power BI Desktop: Save your extension&#8217;s section document in a file whose name ends with <code>.pq</code> [like <code>NeatStuff.pq</code>], then place this file in <code>%userprofile%\Documents\Power BI Desktop\Custom Connectors</code>. Next, in Power BI&#8217;s options, under <em>Security</em> > <em>Data Extension</em> enable, at least temporarily, the option: &#8220;(Not Recommended) Allow any extension to load without validation or warning.&#8221;)</p>
+
+
+
+<p>With the extension in place, all <strong><em>shared</em> section members defined in it are automatically added to the M global environment</strong> (the module you just defined <em>extended</em> the global environment!). You can reference these by name from M code you write in Query Editor—just like you would reference the functions that Microsoft ships with their standard library.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [4]; title: ; quick-code: false; notranslate" title="">
+// In a &quot;blank query&quot; in Query Editor
+let
+  Name = &quot;Joe&quot;,
+  Result = NeatStuff.SayHi(Name)
+in
+  Result // returns &quot;Hi Joe&quot;
+</pre></div>
+
+
+<p>You may have noticed that the extension you created a moment ago prefixed its method&#8217;s name with the section document&#8217;s name followed by a period: the section was named <code>NeatStuff</code>; the method was named <code>NeatStuff.SayHi</code>, not simply <code>SayHi</code>.</p>
+
+
+
+<p>There is no technical mandate requiring this prefixing, but it is a common extension convention. Judicious adherence to this practice vastly reduces the chances of a name conflict occurring between shared section members from different extensions.</p>
+
+
+
+<h2 class="wp-block-heading">Isolated Evaluation</h2>
+
+
+
+<p><strong>Back to designing your imaginary mashup engine:</strong> You&#8217;re using section documents for the M-coded contributions to your global environment. Following Microsoft&#8217;s example, only shared section members from extension section documents go into the global environment. This means that non-shared section members in an extension&#8217;s section document are kind of like private methods.</p>
+
+
+
+<p>Great! Extension authors can use non-shared section members to allow different pieces of an extension to share &#8220;internal only&#8221; logic without exposing these helper bits to consumer code (i.e. code written by end users in Query Editor).</p>
+
+
+
+<p>At least, that sounds like a good theory. True, based on what we&#8217;ve designed so far, only shared section members end up in the global environment—but remember that, in M, non-shared section members can still be accessed using <code>#sections</code> and via <code>SectionName!MemberName</code>-style references. So, simply <em>not</em> sharing a section member doesn&#8217;t make it truly private.</p>
+
+
+
+<p>To achieve true privacy, why not have your mashup engine hide the sections that define extensions from consumer M code? The shared section members from extensions should be added to the global environment, but that&#8217;s it—the section documents they come from shouldn&#8217;t show up in <code>#sections</code> nor should those sections be referenceable by name from consumer M code (so no <code>ExtensionSectionName!MemberName</code>-style references allowed!).</p>
+
+
+
+<p>In fact, taking it a step further, why not altogether isolate each extension? After all, extensions shouldn&#8217;t have the right to intrude on the private affairs of other extensions (so shouldn&#8217;t be able to see other extensions&#8217; sections) and probably shouldn&#8217;t be allowed to take dependencies on consumer code (so shouldn&#8217;t see the consumer <var>Section1</var>).</p>
+
+
+
+<p><strong>Real world:</strong> This is exactly how Power Query works.</p>
+
+
+
+<p>Shared section members from extensions are added into the consumer global environment, but the section documents defining those extensions are not made visible to that environment.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// NeatStuff.pq
+section NeatStuff;
+
+shared NeatStuff.SayHi = (firstName as text) as text =&gt; 
+  &quot;Hi &quot; &amp; FormatName(firstName);
+
+FormatName = (name as text) as text =&gt;
+  Text.Proper(name);
+</pre></div>
+
+
+<p>When the above extension is in place, code written in Query Editor can see <code>NeatStuff.SayHi</code> (for example, code end users write can call this method; it also appears in <code>#shared</code>). However, <code>FormatName</code> is invisible to the consumer global environment, as is the section itself (so <code>NeatStuff</code> does not show up in <code>#sections</code>, and <code>NeatStuff!Something</code>-style references won&#8217;t work).</p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2022/12/Failed-Attempt-to-Access-Extension-Section-Member.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2022/12/Failed-Attempt-to-Access-Extension-Section-Member-1024x161.png" alt="Query Editor screenshot showing error raised in response to attempting 'NeatStuff!FormatName(&quot;Joe&quot;)'" class="wp-image-7148" width="512" height="81"/></a></figure></div>
+
+
+<p>From inside the extension, the extension&#8217;s own section document is visible (e.g. if code inside the extension evaluates <code>#shared</code>, it will see its own section listed), as well as any special sections the mashup engine decided to make visible to extensions (like maybe a special <var>Extensibility</var> section that isn&#8217;t available to consumer code). However, the extension cannot see the consumer code <var>Section1</var> or the sections of other extensions.</p>
+
+
+
+<p>Does this &#8220;hide the sections&#8221; rule deviate from the M language specification? Not at all. The specification allows the mashup environment to directly inject identifiers into the global environment. How the mashup engine comes up with those identifiers is its business. To do so, if it evaluates some section documents somewhere in isolation, that&#8217;s the mashup engine&#8217;s internal business. These separate extension section documents are <strong>not</strong> a part of the section document set the end user is asking the mashup engine to evaluate, so there is <strong>no need</strong> for the extension sections to be exposed to the consumer environment. Where the global environment&#8217;s contents come from is irrelevant to the consumer.</p>
+
+
+
+<h2 class="wp-block-heading">Extension Only Global Methods</h2>
+
+
+
+<p><strong>Continuing your imaginary design:</strong> In it, you are now at the point where you have the ability to define extensions (i.e. modules) written in M using section documents, which are evaluated in isolation, with only their shared members, well, <code>#shared</code> to the consumer M global environment.</p>
+
+
+
+<p>What you have could be considered a complete solution…but it might be useful to give extensions access to extra functionality beyond what the regular consumer standard library provides.</p>
+
+
+
+<p>For example, an extension defining a custom data connector might need a way to fetch the raw password that the user configured for it. You wouldn&#8217;t want normal consumer M code to be able to read out raw passwords (imagine the security risk!), so there&#8217;s no need for consumer M code to even know that a method for doing this exists. However, having an <code>Extension.CurrentCredential()</code> function available <em>inside</em> extensions could be quite handy.</p>
+
+
+
+<p>How could you pull this off? Why not have the mashup engine add a set of extension-specific functions (and, possibly, other identifiers) to the global environment that extensions see—but that aren&#8217;t present in the global environment for consumer M code?</p>
+
+
+
+<p><strong>Real world:</strong> You&#8217;ve probably already guessed that Microsoft does what was just described.</p>
+
+
+
+<p>You can see the extra identifiers (mostly methods) that Microsoft exposes to extensions by defining an extension with a method that returns the <code>#shared</code> it sees from its perspective:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// ExtensionEnvironmentViewer.pq
+section ExtensionEnvironmentViewer;
+
+shared ExtensionEnvironmentViewer.Shared = () =&gt; 
+  #shared;
+</pre></div>
+
+
+<p>Next, from consumer Power Query (i.e. from Query Editor), run <code>#shared</code> in that context, then compare its output to the <code>#shared</code> that the extension sees.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// In a &quot;blank query&quot; in Query Editor
+let
+  PublicShared = #shared,
+  ExtensionShared = ExtensionEnvironmentViewer.Shared(),
+  IdentifiersJustInExtensionShared = List.RemoveItems(
+      Record.FieldNames(ExtensionShared), Record.FieldNames(PublicShared)
+    ),
+  Sorted = List.Sort(IdentifiersJustInExtensionShared)
+in
+  Sorted
+</pre></div>
+
+<div class="wp-block-image">
+<figure class="alignright size-full is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires.png" alt="First part of extension-context-only identifiers list" class="wp-image-7153" width="217" height="162" srcset="https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires.png 867w, https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires-300x225.png 300w, https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires-768x575.png 768w, https://bengribaudo.com/wp-content/uploads/2022/12/Extension-Context-Only-Identifires-624x467.png 624w" sizes="(max-width: 217px) 100vw, 217px" /></a></figure></div>
+
+
+<p>The output may vary based on the version of Power Query in play, but will consist of the list of global identifiers that are only available for use from extensions.</p>
+
+
+
+<p>Thanks to this extension-specific &#8220;perspective&#8221; on the global environment, Microsoft can give extensions access to functionality that it wouldn&#8217;t make sense for consumer code to touch.</p>
+
+
+
+<h2 class="wp-block-heading">Multi-Persona</h2>
+
+
+
+<p><strong>Back to the drawing board for your hypothetical mashup engine: </strong>The design you have come up with is <em>almost</em> a complete solution—but there is an additional nuance to consider factoring in….</p>
+
+
+
+<p>You might want code in an extension to behave <em>differently</em> depending on the fine details of its context.</p>
+
+
+
+<p>Imagine that you frequently find yourself calling a certain web API. This involves building an appropriate query string, making the API call, then converting the response from JSON into a table. You&#8217;ve build a helper function to handle these steps.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// In a &quot;blank query&quot; in Query Editor
+(entityName as text) as table =&gt;
+let
+  BaseUrl = &quot;https://api.example/v1/&quot;,
+  Response = Web.Contents(BaseUrl, &#91;Query = &#91;entity = entityName]]),
+  AsJson = Json.Document(Response)
+in
+  Table.FromRecords(AsJson)
+</pre></div>
+
+
+<p>While you can copy-and-paste this function into the various Power BI projects where it is needed, this duplicates code. To avoid this repetition, you decide instead to package your <code>GetData</code> function into an extension. This way, your helper function&#8217;s definition lives in one place, where it can be referenced from your various Power Query projects.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// MyApi.pq
+section MyApi;
+
+shared MyApi.GetData = (entityName as text) as table =&gt;
+  let
+    BaseUrl = &quot;https://api.example/v1/&quot;,
+    Response = Web.Contents(BaseUrl, &#91;Query = &#91;entity = entityName]]),
+    AsJson = Json.Document(Response)
+  in
+    Table.FromRecords(AsJson);
+</pre></div>
+
+
+<p>While this &#8220;get data&#8221; function lives in, shall we call it, <strong>extension context</strong> (literally, in the context of an extension), it behaves exactly the same as it would if you instead had defined it directly in the consumer context of Query Editor.</p>
+
+
+
+<p>&#8220;Behaves exactly the same&#8221; holds true not just for <em>this</em> example function, but (to my knowledge) in general for all code that is simply put into an extension. True, each extension is evaluated in isolation and the standard library visible in its context may not contain exactly the same identifiers as the consumer context (remember those extension-only global methods?). However, to my knowledge, the functions in the standard library that are visible in both consumer context and in <em>plain</em> extension context behave the same, regardless of which context they are used from.</p>
+
+
+
+<p>But is this &#8220;works exactly the same&#8221; behavior always want you want? Perhaps <em>some</em> code in extensions should run differently or have special privileges. Maybe you don&#8217;t want <code>MyApi.GetData</code> to behave the same as it did when it lived in consumer context. Instead, maybe you want it to take on special powers!</p>
+
+
+
+<p>Take the workhouse <code><a rel="noreferrer noopener" href="https://learn.microsoft.com/en-us/powerquery-m/web-contents" target="_blank">Web.Contents</a></code> function: In real life Power Query, code running in consumer context cannot override <code>Web.Contents</code>&#8216; default behavior of raising an error when an HTTP 401 (Unauthorized) or 403 (Forbidden) response is encountered. In contrast, when invoked by a data connector function in an extension, <code>Web.Contents</code>&#8216; behavior changes to <a rel="noreferrer noopener" href="https://learn.microsoft.com/en-us/power-query/handling-status-codes#authentication-exceptions" target="_blank">allow this error raising to be suppressed</a> by setting its <var>ManulStatusHandling</var> option.</p>
+
+
+
+<p>In your hypothetical design, to mimic this sort of behavior, you&#8217;d need code in extension context to work normally by default—but you&#8217;d also need a way to signal that <em>certain</em> extension code should run with elevated privileges. You might even have different sets of special privileges available for different situations.</p>
+
+
+
+<p>To be clear, simply putting code in an extension shouldn&#8217;t cause its behaviors to change. In the case of <code>MyApi.GetData</code>, if your motivation for placing it in an extension is simply distribution convenience, then you (almost certainly) want it to continue to behave exactly as it did when its definition lived in the consumer context of Query Editor.</p>
+
+
+
+<p>On the other hand, if you want it to take on the &#8220;super powers&#8221; of a data connector, how would you signal the mashup engine to elevate the method into that enhanced context, and how would other methods figure out when &#8220;super powers&#8221; apply so they can adapt their behaviors accordingly?</p>
+
+
+
+<p>Let&#8217;s see if we can glean insight into this by examining what Microsoft does….</p>
+
+
+
+<p><strong>Real World:</strong> To those of us on the outside, Microsoft exposes a single entry point to the world of enhanced extension contexts: Methods inside an extension may be registered as being part of a &#8220;data connector kind&#8221;. This grants them the associated special privileges of being data source methods.</p>
+
+
+
+<p>To so register an extension method, tag it with the literal attribute <var>DataSource.Kind</var>. Set this attribute&#8217;s value to the name of a section member containing a record that describes the data source kind.</p>
+
+
+
+<p>With the highlighted changes below, <code>MyApi.GetData</code> operates with the super powers of a data connector method!</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [4,13]; title: ; quick-code: false; notranslate" title="">
+// MyApi.pq
+section MyApi;
+
+&#91;DataSource.Kind=&quot;MyApi&quot;]
+shared MyApi.GetData = (entityName as text) as table =&gt;
+  let
+    BaseUrl = &quot;https://api.example/v1/&quot;,
+    Response = Web.Contents(BaseUrl, &#91;Query = &#91;entity = entityName]]),
+    AsJson = Json.Document(Response)
+  in
+    Table.FromRecords(AsJson);
+	
+MyApi = &#91;Authentication = &#91;Implicit = &#91;]]];
+</pre></div>
+
+
+<p>(Above, the data source kind is defined simply as using anonymous authentication. As you might guess, more data source definition options are available. However, exploring theses is beyond the scope of this <em>Primer</em>. For more on data source kinds and custom connectors in general, see Microsoft&#8217;s <a rel="noreferrer noopener" href="https://learn.microsoft.com/en-us/power-query/creating-first-connector" target="_blank">custom connector documentation</a>.)</p>
+
+
+
+<p>How does Microsoft implement these &#8220;super powers&#8221; behind the scenes? I don&#8217;t know. To my knowledge, they haven&#8217;t publicly shared these details. I do have a guess based on some hints gleaned from how extensions work; how far or close this is to the truth remains to be seen.</p>
+
+
+
+<p>I imagine that perhaps the mashup engine internally holds a list of currently applicable permissions. When evaluation starts for a &#8220;should have special permissions&#8221; method (like the data source method <code>MyApi.GetData</code>), the special permissions that are relevant to it are added to this internal list and remain there until the method returns.</p>
+
+
+
+<p>As <code>MyApi.GetData</code>&#8216;s evaluation continues, if and when code that should vary its behavior based on effective permissions is run, that code checks whether or not the permission of interest is currently applied and then adapts its behavior accordingly.</p>
+
+
+
+<p>If this hypothesis is true, then when evaluation of <code>MyApi.GetData</code> begins, the &#8220;data connector&#8221; permission is added to the currently in effect permissions list. When the method invokes <code>Web.Contents</code>, internally <code>Web.Contents</code> checks (if relevant) the current permissions to determine whether or not manual handling of HTTP statuses 401 and 403 should be allowed—something like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+if HasPermssion(Permissions.DataConnector)
+then /* allow manual status handling of 401 &amp; 403 */ 
+else /* do not allow 401 &amp; 403 to be manually status handled */
+</pre></div>
+
+
+<p>I also suspect that multiple permissions can be simultaneously applicable. For example, a special data connector function might be given data connector <em>as well as </em>native query privileges or maybe <a href="https://bengribaudo.com/blog/2021/08/19/5971/m-mysteries-the-mysterious-type-action" data-type="post" data-id="5971"><code>type action</code></a> privileges.</p>
+
+
+
+<p>Again, the above is just an slightly educated guess. The details of how super powers are implemented is internal to Microsoft.</p>
+
+
+
+<p>To emphasize the fact that special privileges stay in effect until the privilege-attributed method returns, and so apply not just to that specific method, but also to the methods that it invokes, consider this variation of the above extension:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [6]; title: ; quick-code: false; notranslate" title="">
+// MyApi.pq
+section MyApi;
+
+&#91;DataSource.Kind=&quot;MyApi&quot;]
+shared MyApi.GetData = (entityName as text) as table =&gt;
+  MyApi.NotADataSourceMethod(entityName);
+	
+shared MyApi.NotADataSourceMethod = (entityName as text) as table =&gt;
+  let
+    BaseUrl = &quot;https://api.example/v1/&quot;,
+    Response = Web.Contents(BaseUrl, &#91;Query = &#91;entity = entityName]]),
+    AsJson = Json.Document(Response)
+  in
+    Table.FromValue(AsJson);
+	
+MyApi = &#91;Authentication = &#91;Implicit = &#91;]]];
+</pre></div>
+
+
+<p><code>MyApi.NotADataSourceMethod</code> is not a data connector function, so if consumer code invokes it directly, its <code>Web.Contents</code> call will not be run with data connector powers.</p>
+
+
+
+<p>However, if instead consumer code invokes <code>MyApi.GetData</code>, data connector privileges will be applied. When that method invokes <code>MyApi.NotADataSourceMethod</code>, those special privileges will still be in effect, and so will apply to that method&#8217;s invocation of <code>Web.Contents</code>.</p>
+
+
+
+<p>To my knowledge, there aren&#8217;t very many methods that change behavior based on current permissions. <code>Web.Contents</code> is the main example from the standard library. Also, a number of the special &#8220;only available in extension context&#8221; methods (like <code>Extension.CurrentCredential()</code>) adapt their behavior based on permissions: typically, these methods will raise an error if invoked from plain extension context, only producing useful output if an appropriate permissions-enhanced context is in play.</p>
+
+
+
+<h2 class="wp-block-heading">Conclusion</h2>
+
+
+
+<p>We&#8217;ve encountered extensions/modules, played with permissions and gained a bit of knowledge about how global identifiers end up in the consumer global environment.</p>
+
+
+
+<p>Much of what we&#8217;ve explored is undocumented. As such, this <em>Primer</em> part&#8217;s contents were primarily derived from research, so should be taken with the disclaimer that there could be things I missed or misinterpreted. Also, I can&#8217;t say whether the terminology I used aligns with how Microsoft internally refers to the equivalent concepts (for example, officially is it &#8220;enhanced extension context,&#8221; &#8220;augmented extension context,&#8221; or something else?). If someone from Microsoft would like to offer insight or clarifications in any of these areas, I&#8217;d be most grateful.</p>
+
+
+
+<p>At any rate, hopefully now you have a much better understanding of how the global environment is put together, and learned a bit about extensions, as well.</p>
+
+
+
+<p>Next time, it is probably time to wrap this series up. Maybe we should do an in-depth walk through of what happens when you ask Power Query to evaluate an expression? We&#8217;ll see. Until then, happy M coding!</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" rel="bookmark" title="Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures">Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" rel="bookmark" title="Power Query M Primer (Part 21): Identifier Scope &#038; Sections">Power Query M Primer (Part 21): Identifier Scope &#038; Sections</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary" rel="bookmark" title="Power Query M Primer (Part 9): Types—Logical, Null, Binary">Power Query M Primer (Part 9): Types—Logical, Null, Binary</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" rel="bookmark" title="Power Query M Primer (Part 23): Query Folding I">Power Query M Primer (Part 23): Query Folding I</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='7130' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.614 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 01:55:15 -->
+
+<!-- super cache -->

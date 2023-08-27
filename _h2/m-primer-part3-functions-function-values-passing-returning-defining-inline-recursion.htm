@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (part 3):Functions: Function Values, Passing, Returning, Defining Inline, Recursion | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (part 3):Functions: Function Values, Passing, Returning, Defining Inline, Recursion Comments Feed" href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/4270" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=4270' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2017%2F12%2F08%2F4270%2Fpower-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2017%2F12%2F08%2F4270%2Fpower-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-4270 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-4270" class="post-4270 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-functions tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (part 3):<br />Functions: Function Values, Passing, Returning, Defining Inline, Recursion</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2017-12-08T11:15:39-06:00">December 8, 2017</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/functions" rel="tag">functions</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<p>Not only can you define and invoke functions (as we covered in <a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">part 2</a>), you can also <strong>pass them around</strong>. The ability to pass a function around without invoking it gives lots of flexibility.</p>
+<p>Sounds complex? Yes, in words, but not necessarily in practice. If you’ve touched the Power Query M language, you’ve probably already passed functions around—just perhaps without realizing about it.</p>
+<p>Then there’s the mysterious <code>each</code>. It shows up a lot in code generated by the query editor. What does it actually mean or do? Turns out, it’s <strong>a handy shortcut</strong> that can simplify code you write.</p>
+<p>We have ground to cover. Let’s get going!<br />
+<span id="more-4270"></span></p>
+<h1>Series Index</h1>
+<ul>
+<li><a href="/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+<li><a href="/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+<li>Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3) [this post]</li>
+<li><a href="/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+<li><a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+<li><a href="/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+<li><a href="/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+<li><a href="/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+<li><a href="/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+<li><a href="/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+<li><a href="/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+<li><a href="/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii" data-rich-text-format-boundary="true">Tables—Table Think II (part 13)</a></li>
+<li><a href="/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling" data-rich-text-format-boundary="true">Error Handling (part 15)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" data-rich-text-format-boundary="true">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" data-type="post" data-id="5523" data-rich-text-format-boundary="true">Metadata (part 20)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+<li>More to come!</li>
+</ul>
+<h1 id="function-values">Function Values</h1>
+<p>In <a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">part 2</a>, we described a function as “an expression that ultimately produces a value.” This is accurate, <strong>but there’s more to the story</strong>: there’s an intermediate step in the process. Technically, a <em>function expression </em>is evaluated to something called a <em>function value</em>, which can be stored in variables and passed into and returned from other functions. Invoking the <em>function value</em> executes the function’s body which produces the ultimate <em>function return value</em>.</p>
+<p>You could think of it this way: The function <em>expression</em> is code you write. The function <em>value</em> is the technical manifestation of the function <em>expression</em> you wrote. The function <em>return value</em> is the output of executing the function you wrote.</p>
+<div>
+<div id="highlighter_617488" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Multiply = (x, y) =&gt; x * y,</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">Result = Multiply(10, 20)</code></div>
+<div class="line number4 index3 alt1"><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">Result</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Above, the function expression <code>(x, y) =&gt; x * y</code> is evaluated to a function value which is assigned to variable <var>Multiply</var>. When this function value is invoked on the next line (<code>Multiply(10, 20)</code>), the function’s body is executed and the value it produces is returned. This value is then assigned to <var>Result</var>.</p>
+<p>Whew! That sounds complex. The example is a lot simpler than the words it took to describe it!</p>
+<p>Speaking of simplicity: To keep things simple, we usually omit the word “value” when talking about “function values.” When a function expects a function value as one of its parameters, we’ll usually just say that that parameter is “supposed to be a function” instead of saying “supposed to be a function value” even though the latter is really what is expected. The same goes when we talk about “passing functions around.” We’re technically “passing function values around,” but we usually take the shortcut of leaving the word “values” off.</p>
+<h1>Passing Functions</h1>
+<p>The ability to pass a function into another function is powerful. The other function can implement a generic algorithm that’s widely applicable <strong>then use the function passed into it to custom its behavior</strong> so that it’s relevant to our particular situation.</p>
+<p>Take, for example, the idea of adding a new column to a table. <a href="https://msdn.microsoft.com/en-us/library/mt260727.aspx" target="_blank" rel="noopener noreferrer"><code>Table.AddColumn</code></a> implements the generic formula which makes this possible. However, we want to customize <code>Table.AddColumn</code>’s behavior so that we can control the values used for the new column. To enable us to do this, <code>Table.AddColumn</code> allows us to pass it a function as a parameter. It then invokes this function once per table row, passing the passed-in function the current row as its argument and then using the value it returns as the value for the new column for the current row.</p>
+<div>
+<div id="highlighter_382277" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+<div class="line number6 index5 alt1">6</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Source = #table( {</code><code class="m string">"Col1"</code><code class="m plain">, </code><code class="m string">"Col2"</code><code class="m plain">}, { {1, 2}, {3, 4} } ),</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">ColumnCreator = (row) =&gt; row[Col1] + row[Col2],</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m plain">AddColumn = Table.AddColumn(Source, </code><code class="m string">"RowTotal"</code><code class="m plain">, ColumnCreator)</code></div>
+<div class="line number5 index4 alt2"><code class="m keyword">in</code></div>
+<div class="line number6 index5 alt1"><code class="m spaces">  </code><code class="m plain">AddColumn</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><code>Table.AddColumn</code> handles the heavy lifting of adding a new column (the generic algorithm). We customize its behavior through the function we provide which is invoked on an as-needed basis (in this case, once per row). We don’t have to write a function that handles all the responsibilities associated with adding a new column, just a simple function that takes a single row and produces a single value. Powerful, eh? Makes our lives much easier.</p>
+<p>In some other languages, a similar effect can be achieved using delegates or function pointers.</p>
+<h2>Inline Definition</h2>
+<p>Since a function is an expression and expressions are allowed in parameter lists, <strong>we can define functions inline, directly in a parameter list</strong>.</p>
+<p>Below, the new column function is defined in the argument list instead of first being assigned to a variable. As far as <code>Table.AddColumn</code> is concerned, the effect is the same as the previous example.</p>
+<div>
+<div id="highlighter_868930" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Source = #table( {</code><code class="m string">"Col1"</code><code class="m plain">, </code><code class="m string">"Col2"</code><code class="m plain">}, { {1, 2}, {3, 4} } ),</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">AddColumn = Table.AddColumn(Source, </code><code class="m string">"RowTotal"</code><code class="m plain">, (row) =&gt; row[Col1] + row[Col2])</code></div>
+<div class="line number4 index3 alt1"><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">AddColumn</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h2>Shortcuts: <code>each</code> &amp; <code>_</code></h2>
+<p>In life, each person is special. In Power Query M, <code>each</code> is also special—because it simplifies a common M code pattern.</p>
+<p>Defining a function that accepts a single argument is such a common need in Power Query M that the language defines a shortcut to simplify it: Keyword <code>each</code> is shorthand for <code>(_) =&gt;</code>.</p>
+<p>Since we haven’t talked about records yet, we’re jumping ahead of ourselves—but I’ll go ahead and let you in on another shortcut: <code>[FieldName]</code> without a name directly before it is shorthand for <code>_[FieldName]</code>.</p>
+<p>Each of the below statements is equivalent. Each successive statement uses more concise syntax which makes it easier to read.</p>
+<div>
+<div id="highlighter_657170" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">(_) =&gt; _[Col1] + _[Col2]</code></div>
+<div class="line number2 index1 alt1"><code class="m keyword">each</code> <code class="m plain">_[Col1] + _[Col2]</code></div>
+<div class="line number3 index2 alt2"><code class="m keyword">each</code> <code class="m plain">[Col1] + [Col2]</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We can simplify our previous inline definition example using these shortcuts. How’s this for succinctness?</p>
+<div>
+<div id="highlighter_328184" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Source = #table( {</code><code class="m string">"Col1"</code><code class="m plain">, </code><code class="m string">"Col2"</code><code class="m plain">}, { {1, 2}, {3, 4} } ),</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">AddColumn = Table.AddColumn(Source, </code><code class="m string">"RowTotal"</code><code class="m plain">, </code><code class="m keyword">each</code> <code class="m plain">[Col1] + [Col2])</code></div>
+<div class="line number4 index3 alt1"><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">AddColumn</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Why the name <code>each</code>? My guess is the name comes from the fact that <code>each</code> is often used to simplify function definition where the function will be invoked once per item in the input data set (for example, <code>Table.AddColumn</code> invokes a single-argument function once for each table row). Regardless of its etymology, <code>each</code> can be used any time you want to define a single argument function, whether or not it will be called once per item.</p>
+<h1>Returning Functions</h1>
+<p>Functions can also return functions.</p>
+<div>
+<div id="highlighter_207910" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">() =&gt; (x, y) =&gt; x * y</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Does the above look pointless to you?! Returning functions becomes much more advantageous when we take advantage of something called <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)" target="_blank" rel="noopener noreferrer">closure</a>. A closure allows a function to <strong>remember the values of variables that were in scope when it was defined.</strong></p>
+<p>Below, when we invoke the outer function and pass it a value for <var>x</var>, the inner function that’s returned remembers the value of <var>x</var>. When we invoke the inner function, we only need to pass it a value for <var>y</var>. It will then multiply the remembered <var>x</var> value by <var>y</var>.</p>
+<div>
+<div id="highlighter_965210" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">(x) =&gt; (y) =&gt; (x * y)</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Invoking the above, passing <code>5</code> as the value for <var>x</var> returns a function that behaves as though it were defined like this (notice how the function remembers the value of <var>x</var> that used when it was generated):</p>
+<div>
+<div id="highlighter_672737" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">(y) =&gt;</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m keyword">let</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">    </code><code class="m plain">x = 5</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">  </code><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">   </code><code class="m plain">(x * y)</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Library function <a href="https://msdn.microsoft.com/en-us/library/mt253641.aspx" target="_blank" rel="noopener noreferrer"><code>List.Transform</code></a> expects two arguments. First, the source list; then a function that will be invoked once per list item to transform that item to its new value. This function will be passed the value of the current list item as its argument.</p>
+<p>We want to transform a list of numeric values, reducing them by a certain percentage. One way to do this is to define a function that accepts the discount percentage and returns a function that accepts a value and reduces it by the remembered discount percentage. This returned function will be passed in to <code>List.Transform</code>.</p>
+<div>
+<div id="highlighter_299873" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+<div class="line number6 index5 alt1">6</div>
+<div class="line number7 index6 alt2">7</div>
+<div class="line number8 index7 alt1">8</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">Source = { 1, 2, 3, 4, 5 },</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">CalculatorGenerator = (discountPercentage) =&gt;</code></div>
+<div class="line number4 index3 alt1"><code class="m spaces">    </code><code class="m plain">(value) =&gt; (1 - discountPercentage) * value,</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">HalfOff = CalculatorGenerator(0.5),</code></div>
+<div class="line number6 index5 alt1"><code class="m spaces">  </code><code class="m plain">Result = List.Transform(Source, HalfOff)</code></div>
+<div class="line number7 index6 alt2"><code class="m keyword">in</code></div>
+<div class="line number8 index7 alt1"><code class="m spaces">  </code><code class="m plain">Result</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Above, <code>HalfOff</code> is a function that accepts a single argument and reduces it by 50%. <code>HalfOff</code> remembers the <var>discountPercentage</var> value that was provided to <code>CalculatorGenerator</code> when <code>HalfOff</code> was generated.</p>
+<p>Technically, it’s possible for a function <strong>to return a function which is immediately invoked instead of first being assigned to a variable</strong>. Say, we want to use our discount calculator logic to compute a 75% discount on a single value and we don’t have a need to use that same discount function anywhere else. We can skip assigning the discount function to a variable before invoking it. Instead, we can invoke it <em>immediately</em> after we generate it:</p>
+<div>
+<div id="highlighter_11633" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m plain">CalculatorGenerator(0.75)(10)</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h1 id="recursive-functions">Recursive Functions</h1>
+<p>On occasion, you might want a function to call itself. In order for a function to reference its own name from inside itself, simply prefix the reference with “@”:</p>
+<div>
+<div id="highlighter_31226" class="syntaxhighlighter  m">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="m keyword">let</code></div>
+<div class="line number2 index1 alt1"><code class="m spaces">  </code><code class="m plain">SumConsecutive = (x) =&gt; </code><code class="m keyword">if</code> <code class="m plain">x &lt;= 0 </code><code class="m keyword">then</code> <code class="m plain">0 </code><code class="m keyword">else</code> <code class="m plain">x + @SumConsecutive(x - 1),</code></div>
+<div class="line number3 index2 alt2"><code class="m spaces">  </code><code class="m plain">Result = SumConsecutive(4)</code></div>
+<div class="line number4 index3 alt1"><code class="m keyword">in</code></div>
+<div class="line number5 index4 alt2"><code class="m spaces">  </code><code class="m plain">Result</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<h1>Next Time</h1>
+<p>There’s so much more to cover! Next time, we’ll <a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">learn more about identifiers (think: variable names)</a>.</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining" rel="bookmark" title="Power Query M Primer (part 2):&lt;br /&gt;Functions: Defining">Power Query M Primer (part 2):<br />Functions: Defining</a></li>
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax" rel="bookmark" title="Power Query M Primer (Part 11): Tables—Syntax">Power Query M Primer (Part 11): Tables—Syntax</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" rel="bookmark" title="Power Query M Primer (Part 18): Type System III – Custom Types">Power Query M Primer (Part 18): Type System III – Custom Types</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure" rel="bookmark" title="Power Query M Primer (Part 14): Control Structure">Power Query M Primer (Part 14): Control Structure</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			18 thoughts on &ldquo;<span>Power Query M Primer (part 3):<br />Functions: Function Values, Passing, Returning, Defining Inline, Recursion</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88359">
+		<article id="comment-88359" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Siraj</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88359"><time datetime="2019-02-19T02:41:29-06:00">February 19, 2019 at 2:41 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Ben, this was a bit too dense. May be, you could have taken some real-life examples and walked them through rather than going through theoretical examples. But anyway, as I gain more familiarity, your explanations would sound simpler to me, I guess. Thanks for your efforts.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88359#respond' data-commentid="88359" data-postid="4270" data-belowelement="comment-88359" data-respondelement="respond" data-replyto="Reply to Siraj" aria-label='Reply to Siraj'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88362">
+		<article id="comment-88362" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.asteria.net.au" class="url" rel="ugc external nofollow">Peter McLean</a></b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88362"><time datetime="2019-03-02T16:22:44-06:00">March 2, 2019 at 4:22 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben. Thank you for doing a great job at simplifying a new language that to me on first impressions seems to have found inspiration from a mash up of programming language principles, i.e. from set based to object oriented to functional. I am now learning and putting into practice your teachings in Power Query M Primer Part 1and 2, and I am much looking to learning from the rest of your series. Please keep the great series going as it fills the void in lack of good content on the M Language. Also you will have me as a very enthusiastic 40 years ICT experienced  65 year old student and strong supporter. Thanks from Aussie mate.  :-).</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88362#respond' data-commentid="88362" data-postid="4270" data-belowelement="comment-88362" data-respondelement="respond" data-replyto="Reply to Peter McLean" aria-label='Reply to Peter McLean'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88388">
+		<article id="comment-88388" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jeff Weir</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88388"><time datetime="2019-07-23T20:15:23-05:00">July 23, 2019 at 8:15 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben. I&#8217;m struggling to understand the &#8220;<code> (discoutPercentage) =&gt; (value) =&gt; </code>&#8221; bit in your example below. </p>
+<pre class="brush:plain">
+let
+  Source = { 1, 2, 3, 4, 5 },
+  CalculatorGenerator = (discountPercentage) =&gt;
+    (value) =&gt; (1 - discountPercentage) * value,
+  HalfOff = CalculatorGenerator(0.5),
+  Result = List.Transform(Source, HalfOff)
+in
+  Result</pre>
+<p>So a function argument can itself reqiure a function argument? Can you walk though the execution of this?<br />
+For instance, working backwards from the Result step,  the List.Transform function says “Go get the items from Source, and put them through the HalfOff function&#8221;.<br />
+And the HalfOff function says “pass these values to the CalculaterGenerator function, and tell it to use the setting of 0.5”<br />
+And the CaclucatorGenerator function says “Hey, I need a parameter. 0.5, you say?&#8221; And the *parameter itself* says &#8220;I need a parameter&#8221;. </p>
+<p>How does that work? How does (value) know to use the items in source?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88388#respond' data-commentid="88388" data-postid="4270" data-belowelement="comment-88388" data-respondelement="respond" data-replyto="Reply to Jeff Weir" aria-label='Reply to Jeff Weir'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88392">
+		<article id="comment-88392" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88392"><time datetime="2019-07-26T15:11:08-05:00">July 26, 2019 at 3:11 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>It might help to think of what&#8217;s going on it two steps:</p>
+<ol>
+<li>Determining the value of <var>HalfOff</var>.</li>
+<li>Invoking that value once per <var>Source</var> list element.</li>
+</ol>
+<p>Let’s start with a simpler scenario:</p>
+<pre class="brush:plain">
+HalfOff = (value) => (1 - 0.5) * value,
+Result = List.Transform(Source, HalfOff)
+</pre>
+<p>To produce the value passed in as <code>List.Transform</code>’s second argument, M’s interpreter evaluates the function expression defining <var>HalfOff</var>. This evaluation, which occurs <strong>once</strong>, produces a function value which is then passed in to <code>List.Transform</code>. <code>List.Transform</code>, in turn, invokes this function value once per <var>Source</var> list element. So, <em>evaluating</em> the function expression to function value takes place exactly once but <em>invoking</em> that value can occur multiple times.</p>
+<p>With:</p>
+<pre class="brush:plain">
+CalculatorGenerator = (discountPercentage) =>
+    (value) => (1 - discountPercentage) * value,
+HalfOff = CalculatorGenerator(0.5),
+Result = List.Transform(Source, HalfOff)
+</pre>
+<p>In essence, <var>CalculatorGenerator</var> is being asked to generate the value for <var>HalfOff</var>. Just like our simpler scenario, this evaluation occurs only once. When <code>CalculatorGenerator(0.5)</code> is called, it returns a function with the value of <var>discountPercentage</var> “memorized” (the related technical term is closure). In a sense, you could think of <code>CalculatorGenerator(0.5)</code> as returning <code>(value) => (1 - 0.5) * value</code> (where the value of <var>discountPercentage</var> has been “hard-coded” in, as though <var>discountPercentage</var> was a template placeholder that was replaced with the specified value when <code>CalculatorGenerator(0.5)</code> was asked to provide the function).</p>
+<p>As far as <code>List.Transform</code> is concerned, in both scenarios, the second argument passed to it is simply a function (technically, a function value) that accepts a single argument (the list item to transform).</p>
+<p>Does this help?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88392#respond' data-commentid="88392" data-postid="4270" data-belowelement="comment-88392" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment even depth-3" id="li-comment-88394">
+		<article id="comment-88394" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jeff Weir</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88394"><time datetime="2019-07-29T03:31:03-05:00">July 29, 2019 at 3:31 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Actually I think what helped most was a very close rereading of the post. I just hadn&#8217;t understood fully about passing &#8220;function values&#8221; around. (Would &#8216;Function Step&#8217;  or &#8216;Function Transform&#8217; be a better name?) </p>
+<p>I come from the world of self-taught VBA in Excel, and so hadn&#8217;t heard of Closures or even First Class Functions. So I watched a quite good video at <a href="https://youtu.be/kr0mpwqttM0" rel="nofollow ugc">https://youtu.be/kr0mpwqttM0</a> that explained this concept using Python and JavaScript (neither of which I have any experience in),  and it kinda sunk in when he assigned a function to a variable, and made the point that he wasn&#8217;t assigning the *result* of a function to a variable. And then after that, he could treat that variable as if it were a function, meaning he could pass some argument into it just by going <code>VariableName(SomeValue)</code>. And only at that point was anything being executed. </p>
+<p>I also think the syntax sugar in the <code>List.Transform</code> was confusing me.</p>
+<p>This fully fleshed out example of your previous snippet seems to help it sink in for me:</p>
+<pre class="brush:plain">
+let
+    Source = { 1, 2, 3, 4, 5 },
+    MyFunction = (x) =&gt; (y) =&gt; (x * y),
+    MyX = MyFunction(5),
+    Output = List.Transform(Source, (_) =&gt;  MyX(_))
+in
+   Output
+</pre>
+<p>&#8230;especially when I step through the Applied Steps pain on the right hand side, and see that the <var>MyFunction</var> step wants an <var>X</var>, but the <var>MyX</var> step only wants a <var>Y</var> (meaning it already has it&#8217;s <var>X</var> value)</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88394#respond' data-commentid="88394" data-postid="4270" data-belowelement="comment-88394" data-respondelement="respond" data-replyto="Reply to Jeff Weir" aria-label='Reply to Jeff Weir'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88457">
+		<article id="comment-88457" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Celia</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88457"><time datetime="2020-06-12T12:18:53-05:00">June 12, 2020 at 12:18 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hello, Ben and all! I Just want to say that I am enjoying everything on this page and series, from the post content to the readers&#8217; comments.<br />
+Ben, I appreciate your effort of explaining everything in detail and with simple examples, as much as possible. Like Jeff, I also come from the world of self-taught VBA. Sometimes I have to read several times until I am confident that I understood fully.<br />
+Ben, if you ever want to go back to enhance the content of these posts, it would be helpful to have the actual result values of applying a script to a specific value, list, column or table.<br />
+I am extremely grateful for the content that you already posted. Thanks a lot for that!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88457#respond' data-commentid="88457" data-postid="4270" data-belowelement="comment-88457" data-respondelement="respond" data-replyto="Reply to Celia" aria-label='Reply to Celia'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88460">
+		<article id="comment-88460" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88460"><time datetime="2020-06-12T17:02:11-05:00">June 12, 2020 at 5:02 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thank you for your kind words and the feedback, Celia! Showing more example results is a great idea. I will keep it in mind for a future revision.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88460#respond' data-commentid="88460" data-postid="4270" data-belowelement="comment-88460" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88590">
+		<article id="comment-88590" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Scott Walker</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88590"><time datetime="2020-12-19T12:54:59-06:00">December 19, 2020 at 12:54 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>I have a question regarding the recursive function example:</p>
+<pre class="brush:m">let
+  SumConsecutive = (x) =&gt; if x &lt;= 0 then 0 else x + @SumConsecutive(x - 1),
+  Result = SumConsecutive(4)
+in
+  Result</pre>
+<p>I would have guessed that no matter what number you input for x when invoking SumConsecutive, it would always yield the return value 0. My reasoning is that, as the function iterates and x decreases, eventually x will be 0. Then, when it runs the the logic if x &lt;= 0, it will return 0 given the THEN statement. However, clearly the function retains the iterative sum. I&#039;m not quite sure how it does so, and how it knows to return that sum instead of 0 when the THEN statement instructs it to return 0.</p>
+<p>I hope that&#039;s clear. Thank you for this primer series. It is fantastic. I&#039;m a self-learner using Power Query and DAX in a standard office setting to up my department&#039;s analytics game. This is a great fundamentals review.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88590#respond' data-commentid="88590" data-postid="4270" data-belowelement="comment-88590" data-respondelement="respond" data-replyto="Reply to Scott Walker" aria-label='Reply to Scott Walker'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88596">
+		<article id="comment-88596" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88596"><time datetime="2020-12-31T15:52:52-06:00">December 31, 2020 at 3:52 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thank you for your kind words, Scott!</p>
+<p>Don&#8217;t be discouraged! Recursing functions can be stretching to reason about. 🙂 </p>
+<p>Does this help?</p>
+<ul>
+<li>When <code>SumConsecutive(4)</code> is invoked, its <var>x</var> will equal <strong>4</strong> and the value it returns (which will be saved into <var>Result</var>) will be x [i.e. 4] <em>plus</em> the value returned by calling <code>SumConsecutive(x [i.e. 4] - 1)</code>.</li>
+<li>When <code>SumConsecutive(3)</code> is invoked, its <var>x</var> will equal <strong>3</strong> so the value it returns will be 3 <em>plus</em> the value returned by calling <code>SumConsecutive(x [i.e. 3] - 1 )</code>. </li>
+<li>When <code>SumConsecutive(2)</code> is invoked, its <var>x</var> will equal <strong>2</strong> so the value it returns will be 2 <em>plus</em> the value returned by calling <code>SumConsecutive(x [i.e. 2] - 1 )</code>. </li>
+<li>When <code>SumConsecutive(1)</code> is invoked, its <var>x</var> will equal <strong>1</strong> so the value it returns will be 1 <em>plus</em> the value returned by calling <code>SumConsecutive(x [i.e. 1] - 1 )</code>. </li>
+<li>When <code>SumConsecutive(0)</code> is invoked, its <code>if</code> statement will result in <strong>0</strong> being returned.</li>
+</ul>
+<p>4 + 3 + 2 + 1 + 0 = 10</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88596#respond' data-commentid="88596" data-postid="4270" data-belowelement="comment-88596" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment odd alt depth-3" id="li-comment-88599">
+		<article id="comment-88599" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Scott Walker</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88599"><time datetime="2021-01-10T10:33:48-06:00">January 10, 2021 at 10:33 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Ah that is clear. The variable <code>Result</code> to which we assigned the call <code>SumConsecutive(4)</code> retains the value of each iterative call. Great, thank you very much!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88599#respond' data-commentid="88599" data-postid="4270" data-belowelement="comment-88599" data-respondelement="respond" data-replyto="Reply to Scott Walker" aria-label='Reply to Scott Walker'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88633">
+		<article id="comment-88633" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Alejandro</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88633"><time datetime="2021-02-14T00:26:46-06:00">February 14, 2021 at 12:26 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Dear Sir,<br />
+In first example, how come we didn’t pass the table name through to defined &#8220;row&#8221; variable. I assume we need to clarify the <code>TableName[Col1] + TableName[Col2]</code> so &#8220;row &#8220;is the variable that is standing in for table?<br />
+Example:  <code>AddColumn = Table.AddColumn(Source, "RowTotal", ColumnCreator(Source))</code></p>
+<p>Or I guess what is &#8220;row&#8221; variable really doing in this case? Does the <code>AddColumn</code> ignore it and replace it with each?</p>
+<p>This maybe because its not not a table but a record or list which you alluded earlier on that we will find out more in the future. I understand the &#8220;each&#8221; refence example that you put below, but just trying to understand what purpose defining &#8220;row&#8221; has when we don&#8217;t explicitly  pass an argument using &#8220;row&#8221;</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88633#respond' data-commentid="88633" data-postid="4270" data-belowelement="comment-88633" data-respondelement="respond" data-replyto="Reply to Alejandro" aria-label='Reply to Alejandro'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88643">
+		<article id="comment-88643" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88643"><time datetime="2021-02-19T07:11:29-06:00">February 19, 2021 at 7:11 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Alejandro,</p>
+<p><code>Table.AddColumn</code> expects the value that&#8217;s passed as its second argument to be a function that, when invoked, takes one argument. <code>AddColumn</code> will then invoke this function one time for each row in the table. Each time it invokes the function, it will pass the contents of the current row, stored in a record, to the function. </p>
+<p>Imagine <code>Table.AddColumn(Source, "RowTotal", ColumnCreator)</code> is run on a three row table. Behind the senses, something like the following will take place:</p>
+<p><code>AddColumn</code> calls <code>ColumnCreator</code> for the first row, passing in the first row&#8217;s values as a record&#8211;like: <code>ColumnCreate(firstRow)</code>. It does the same for the second row&#8211;like <code>ColumnCreate(secondRow)</code>, and similarly for the third. Each time, the result returned from the <code>ColumnCreate</code> invocation is used to set the new column&#8217;s value for the given row.</p>
+<p>The table name doesn&#8217;t need to be passed to <code>ColumnCreate</code> because that function will be automatically be passed each row&#8217;s contents at the appropriate time.</p>
+<p>Does this help?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88643#respond' data-commentid="88643" data-postid="4270" data-belowelement="comment-88643" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88641">
+		<article id="comment-88641" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Kanstantsin Chernik</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88641"><time datetime="2021-02-18T20:43:19-06:00">February 18, 2021 at 8:43 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,</p>
+<p>Thank you for the great blog!. I believe I learned here more than on MS site.<br />
+I am trying to implement a mock function which can simulate multiple http responses.<br />
+The problem I struggle with is that all variables are immutable there is no place I can store the state in a function.<br />
+This is just a basic idea. Of course, this code doesn&#8217;t work:</p>
+<pre class="brush:m">
+ MockContentsGetter = (content as list) =&gt; 
+        let
+            i = 0,
+            fn = (query as text) =&gt; 
+                let
+                    res = content{i},
+                    i = i + 1 // here is the problem. It is executed before the previous line and immutable
+                in
+                    res
+        in 
+            fn
+</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88641#respond' data-commentid="88641" data-postid="4270" data-belowelement="comment-88641" data-respondelement="respond" data-replyto="Reply to Kanstantsin Chernik" aria-label='Reply to Kanstantsin Chernik'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88686">
+		<article id="comment-88686" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Cody B. Buehler</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88686"><time datetime="2021-04-06T15:35:12-05:00">April 6, 2021 at 3:35 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,</p>
+<p>I&#8217;m having trouble actually seeing how <var>_</var> works. I understand how the <code>each</code> syntax works but can&#8217;t find anything to break down what is actually happening when <var>_</var> is invoked. Could you provide any additional information?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88686#respond' data-commentid="88686" data-postid="4270" data-belowelement="comment-88686" data-respondelement="respond" data-replyto="Reply to Cody B. Buehler" aria-label='Reply to Cody B. Buehler'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88689">
+		<article id="comment-88689" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88689"><time datetime="2021-04-09T13:24:05-05:00">April 9, 2021 at 1:24 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Cody, </p>
+<p><var>_</var> is <em>just</em> a variable holding the function argument passed to <code>each</code>. Instead of naming the argument something like <var>input</var>, the designers of M called it <var>_</var>. </p>
+<p>Example: The function <code>each _ * 10</code> takes its input argument (<var>_</var>) and multiplies it by 10. If you wanted to define an equivalent function without using <code>each</code>, you could write: <code>(_) => _ * 10</code>. If you preferred using <var>input</var> as the argument name (instead of <var>_</var>), you could instead do: <code>(input) => input * 10</code></p>
+<p>Does that help?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88689#respond' data-commentid="88689" data-postid="4270" data-belowelement="comment-88689" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88709">
+		<article id="comment-88709" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://Www.altentertraining.com" class="url" rel="ugc external nofollow">Jessica Jolly</a></b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88709"><time datetime="2021-05-27T05:32:35-05:00">May 27, 2021 at 5:32 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thank you for this blog series! I am wrestling to learn functions and you have given me some examples starting from the most basic scenario.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88709#respond' data-commentid="88709" data-postid="4270" data-belowelement="comment-88709" data-respondelement="respond" data-replyto="Reply to Jessica Jolly" aria-label='Reply to Jessica Jolly'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88853">
+		<article id="comment-88853" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Sting Guo</b> </cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88853"><time datetime="2021-12-31T22:11:22-06:00">December 31, 2021 at 10:11 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hello Ben,</p>
+<p>Why i could not find any related topics of books about Powerquery? Do you have any recommended source of learning the above mentioned topics?  </p>
+<p>BR</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88853#respond' data-commentid="88853" data-postid="4270" data-belowelement="comment-88853" data-respondelement="respond" data-replyto="Reply to Sting Guo" aria-label='Reply to Sting Guo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88854">
+		<article id="comment-88854" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#comment-88854"><time datetime="2022-01-07T08:19:35-06:00">January 7, 2022 at 8:19 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Sting,</p>
+<p>Have you seen the resource list at <a href="https://powerquery.microsoft.com/en-us/resources/" target="_blank" rel="noopener nofollow ugc">https://powerquery.microsoft.com/en-us/resources/</a>? Also, if you&#8217;re interested, I teach a course called <a href="https://bengribaudo.com/courses/meet-m"><em>Meet M: The Language That Powers Power Query</em></a>. It would be neat if you could join us for the February presentation of that class!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion?replytocom=88854#respond' data-commentid="88854" data-postid="4270" data-belowelement="comment-88854" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='4270' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.092 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-26 23:03:48 -->
+
+<!-- super cache -->

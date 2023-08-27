@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 20): Metadata | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 20): Metadata Comments Feed" href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/5523" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=5523' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F03%2F17%2F5523%2Fpower-query-m-primer-part20-metadata" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F03%2F17%2F5523%2Fpower-query-m-primer-part20-metadata&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-5523 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-5523" class="post-5523 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-metadata tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 20): Metadata</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2021-03-17T10:09:32-05:00">March 17, 2021</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/metadata" rel="tag">Metadata</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p>Power Query allows information <em>about</em> a value to be attached <em>to </em>a value. </p>
+
+
+
+<p>Ordinarily, these descriptive tidbits are invisible. Their presence does not change the mashup engine&#8217;s behavior. However, code (yours or others&#8217;, such as code in the standard library or in the host application) can intentionally choose to read and set these annotations, known as metadata, using them as a way to communicate extra information relevant to a particular value. These details can simply be for informational or diagnostic purposes; they can also be factored in by expressions as they determine how to behave.</p>
+
+
+
+<p>Take parameters as an example. Parameters get special treatment in Microsoft Power BI&#8217;s user interface, yet in Power Query itself, they are stored as ordinary values.</p>
+
+
+<div class="wp-block-image">
+<figure class="aligncenter size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/03/image-5.png"><img decoding="async" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-5-945x1024.png" alt="" class="wp-image-5539" width="236" height="256" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-5-945x1024.png 945w, https://bengribaudo.com/wp-content/uploads/2021/03/image-5-277x300.png 277w, https://bengribaudo.com/wp-content/uploads/2021/03/image-5-768x832.png 768w, https://bengribaudo.com/wp-content/uploads/2021/03/image-5-1418x1536.png 1418w, https://bengribaudo.com/wp-content/uploads/2021/03/image-5-624x676.png 624w, https://bengribaudo.com/wp-content/uploads/2021/03/image-5.png 1500w" sizes="(max-width: 236px) 100vw, 236px" /></a></figure></div>
+
+
+<p>This is good. You shouldn&#8217;t need to do anything special to consume a parameter; it should just be a value to your code. Yet parameters <em>are</em> special, but where is that &#8220;specialness&#8221; (like their configuration settings) hiding? From Power Query&#8217;s perspective, the answer is—yes, you guessed it—in metadata.</p>
+
+
+
+<span id="more-5523"></span>
+
+
+
+<h2 class="wp-block-heading" id="series-index">Series Index</h2>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" data-type="post" data-id="5408">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li>Metadata (part 20) [this post]</li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="metadata">Metadata</h2>
+
+
+
+<p>Let&#8217;s start with the basics….</p>
+
+
+
+<p><em>All</em> values have metadata. A value&#8217;s metadata is stored in a record—nothing fancy, just an ordinary record. By default, a value&#8217;s metadata record is empty.</p>
+
+
+
+<h3 class="wp-block-heading" id="view">View</h3>
+
+
+
+<p>To<strong> view</strong> a value&#8217;s metadata, use <a href="https://docs.microsoft.com/en-us/powerquery-m/value-metadata" target="_blank" rel="noreferrer noopener"><code>Value.Metadata</code></a>. Below outputs the metadata associated with the value stored in variable <var>SomeValue</var>. In this case, it&#8217;s the default metadata value: an empty record.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  SomeValue = 1
+in
+  Value.Metadata(SomeValue) // returns an empty record: &#91;]
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="replace-set">Replace (Set)</h3>
+
+
+
+<p>This unexciting empty record can be <strong>replaced</strong> with a more interesting record using <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/value-replacemetadata" target="_blank"><code>Value.ReplaceMetadata</code></a>:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  SomeValue = 1,
+  MetadataReplaced = Value.ReplaceMetadata(SomeValue, &#91;Exciting = true])
+in
+  Value.Metadata(MetadataReplaced) // &#91;Exciting = true]
+</pre></div>
+
+
+<p>(Technically, as we know, values in M are <a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm#immutable">immutable</a>, so <code>Value.ReplaceMetadata</code> really doesn&#8217;t modify the current value to update its metadata. Instead, it returns a new value that is the same value as before, just with the previous metadata removed and the specified record set as the value&#8217;s metadata.)</p>
+
+
+
+<p>Important: Metadata is attached to a <em>value</em>, not a <em>variable</em>. Below, <var>MetadataReplaced</var> (from above) is assigned to <var>YetAnotherVariable</var>. <code>Value.Metadata(YetAnotherVariable)</code> returns the exact same metadata as <code>Value.Metadata(MetadataReplaced)</code> because both variables reference the same value, and metadata is on the value, not the variable.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  SomeValue = 1,
+  MetadataReplaced = Value.ReplaceMetadata(SomeValue, &#91;Exciting = true]),
+  YetAnotherVariable = MetadataReplaced
+in
+  Value.Metadata(YetAnotherVariable) // &#91;Exciting = true]
+  //Value.Metadata(MetadataReplaced) // also returns &#91;Exciting = true]
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="merge">Merge</h3>
+
+
+
+<p>Instead of replacing a value&#8217;s metadata with an entirely different record, you might want to <strong>merge</strong> a new value (or values) in with the existing metadata.</p>
+
+
+
+<p>You could pull this off by getting the value&#8217;s current metadata record, applying a merge between that record and the metadata you want to merge in, then passing the merge&#8217;s output to <code>Value.ReplaceMetadata</code>:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [3]; title: ; notranslate" title="">
+let
+  Initial = Value.ReplaceMetadata(1, &#91;Exciting = true]),
+  Final = Value.ReplaceMetadata(Initial, Value.Metadata(Initial) &amp; &#91;Important = true])
+in
+  Value.Metadata(Final) // &#91;Exciting = true, Important = true]
+</pre></div>
+
+
+<p>A lot is packed into line 3 above: reading metadata, merging a record and setting metadata. The same effect can be achieved with much simpler syntax, thanks to Power Query&#8217;s <code>meta</code> operator:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [3]; title: ; notranslate" title="">
+let
+  Initial = Value.ReplaceMetadata(1, &#91;Exciting = true]),
+  Final = Initial meta &#91;Important = true]
+in
+  Value.Metadata(Final) // &#91;Exciting = true, Important = true]
+</pre></div>
+
+
+<p>Remember: When two records are merged, if the same field name is present in both records, the value for that field from the record that is being merged in overrides the value from the original record. Merging <code>[A = 1]</code> and <code>[A = 11]</code> outputs <code>[A = 11]</code> because the value for <var>A</var> from the merged in record overrides the <var>A</var> value from the original.</p>
+
+
+
+<p>Operator <code>meta</code> is effectively doing a record merge, so the same behavior holds true with it. Below, <var>Important</var> is present in both <var>Initial</var>&#8216;s metadata and in the new record provided to <var>Final</var>&#8216;s <code>meta</code> operator. The value for that field in the latter record overrides the value specified in <var>Initial</var>. So, the merge switches <var>Important</var> from true to false.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Initial = Value.ReplaceMetadata(1, &#91;Exciting = true, Important = true]),
+  Final = Initial meta &#91;Important = false]
+in
+  Value.Metadata(Final) // &#91;Exciting = true, Important = false]
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="remove">Remove</h3>
+
+
+
+<p>We&#8217;ve viewed metadata, set (replaced) metadata and merged metadata. What if you want to <strong>remove metadata</strong>? Well, since all records have metadata, you technically can&#8217;t get rid of it altogether; instead, in the Power Query world, removing metadata equates to replacing it with an empty record. You could do this manually, using <code>Value.ReplaceMetadata(SomeValue, [])</code>—or, better yet, you could use <a href="https://docs.microsoft.com/en-us/powerquery-m/value-removemetadata" data-type="URL" data-id="https://docs.microsoft.com/en-us/powerquery-m/value-removemetadata" target="_blank" rel="noreferrer noopener"><code>Value.RemoveMetadata</code></a>, which achieves the same effect using a method made just for that purpose:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Initial = Value.ReplaceMetadata(1, &#91;Exciting = true]),
+  Final = Value.RemoveMetadata(Initial)
+in
+  Value.Metadata(Final ) // returns an empty record: &#91;]
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="metadata-s-lifespan">Metadata&#8217;s Lifespan</h2>
+
+
+
+<p>If a value with metadata is passed as an argument to an operator, does the output of the operation have the original value&#8217;s metadata associated with it? Say you add two values that each have metadata, or a value with metadata and one that doesn&#8217;t. Does the resulting sum have any of that metadata associated with it?</p>
+
+
+
+<p>No. The operator&#8217;s output is a different value: it may be <em>derived</em> from its inputs, but it is <em>not</em> any of those original values. Even if the output happens to be the same as one of the input&#8217;s values, conceptually it still represents something different—a new value that is the addition operator&#8217;s output. Since it&#8217;s a new value, it starts off with a clean metadata slate.</p>
+
+
+
+<p>M&#8217;s operators, excepting operator <code>meta</code> (of course!), do not carry metadata from their inputs to their outputs. The values they output will always have their metadata set to the default of a blank record.</p>
+
+
+
+<p>Below, <var>Result</var> won&#8217;t have <var>Original</var>&#8216;s <code>Important = true</code> metadata because it is a new value.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Original = 1 meta &#91;Important = true],
+  Result = Original * .5
+in
+  Value.Metadata(Result) // returns an empty record: &#91;]
+</pre></div>
+
+
+<p>If you want input metadata added to the output from an operator, you&#8217;ll need to write logic to make this happen. This makes sense. Take an example like the above—how is the mashup engine supposed to know whether an input being <var>Important</var> makes the multiplication operator&#8217;s output <var>Important</var>? It doesn&#8217;t. It&#8217;s up to you to set metadata on the output, based on your rules, when its presence is appropriate.</p>
+
+
+
+<p>There you have it: the technical details of metadata, at the language level. A simple concept.</p>
+
+
+
+<h2 class="wp-block-heading" id="built-in-special-metadata">Built-In Special Metadata?</h2>
+
+
+
+<p>You may be waiting for a list of special metadata field names that are built into the language that make special things happen—like if you set a value&#8217;s metadata to <code>SecretCode = 123</code> then evaluate the expression, the mashup engine makes tea for you, or mows your lawn—or at least executes twice as fast or something like that. There aren&#8217;t any at the language level. The language simply provides support for metadata but gives no special meaning to it.</p>
+
+
+
+<p>This means that Power Query itself does<strong> not</strong> change behavior based on the presence or absence of certain metadata. Any special metadata behaviors come from logic leveraging the metadata capabilities offered by the language, not from the language itself. This includes logic in the host environment (Microsoft Power BI, Microsoft Excel, etc.) and in the standard library, as well as in mashup expressions you write.</p>
+
+
+
+<h2 class="wp-block-heading" id="power-bi-parameters">Power BI Parameters</h2>
+
+
+
+<p>For an example, take this article&#8217;s introductory example: Power BI (a host application) uses metadata to configure parameters. To Power Query (the language, including the mashup engine), these metadata elements are just arbitrary metadata. Their special meaning comes only because the host application gives them that meaning.</p>
+
+
+
+<p>In Power BI Desktop, create a parameter named <var>SomeParam</var> and set to a scalar value, say, 10. Now, view the metadata on it.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.Metadata(SomeParam) 
+// returns:
+// &#91;
+//    IsParameterQuery=true, 
+//    Type=&quot;Number&quot;, 
+//    IsParameterQueryRequired=true
+// ]
+</pre></div>
+
+
+<p>Wow! Notice how Power BI saved metadata on the value that describe its parameter settings. To the mashup engine, this metadata is opaque: fields and values with no intrinsic meaning that it has been asked to hold. To Power BI, these details tell it that this value is a parameter and tell it how that parameter is configured.</p>
+
+
+
+<p>Let&#8217;s explore parameter metadata a bit more.</p>
+
+
+
+<p>In Query Editor, select <var>SomeParam</var> then open Advanced Editor. You can now see where the parameter&#8217;s metadata is defined. (You can even manually edit it, if desired.)</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+10 meta &#91;IsParameterQuery=true, Type=&quot;Number&quot;, IsParameterQueryRequired=true]
+</pre></div>
+
+
+<p>Now try this: After copying the <code>meta [...]</code> bit to the clipboard, remove it from the expression then close Advanced Editor. Notice how <var>SomeParam</var> no longer behaves or looks like a parameter in the UI (for example, the parameter icon is no longer displayed next to its name). It <em>isn&#8217;t</em> a parameter anymore because the metadata that instructed Power BI to treat it as one is gone. It&#8217;s still a value, just not a value that&#8217;s treated as a parameter by the host application.</p>
+
+
+
+<p>Now, create a new expression named <var>SomeValue</var>, and set it to a scalar value, say 10. Open Advanced Editor and paste in the <code>meta [...]</code> bit you copied just a moment ago. Close the dialog and notice how Query Editor&#8217;s UI now treats <var>SomeValue</var> as a parameter! Keep in mind that parameters are strictly a host application concept—to Power Query, <var>SomeValue</var> is still an ordinary value, just with some opaque metadata.</p>
+
+
+
+<p>Playing with parameter metadata may be a fun diversion. While interesting, it&#8217;s likely not particularly useful. Most folks are going to keep using the UI to create parameters (instead of hand-crafting them in code) and there probably are few practical uses you&#8217;ll find for programmatically reading parameter metadata. In fact, even if you found one, you&#8217;d need to be careful about relying on it, as parameter metadata is an internal implementation detail of Power BI, so its structure could change in the future without notice. But now, at least, you&#8217;ve seen a real-world example of where and how metadata is used.</p>
+
+
+
+<h2 class="wp-block-heading" id="function-documentation">Function Documentation</h2>
+
+
+
+<p>How about a practical use for metadata? Ever notice the difference in the documentation Query Editor displays between your functions and standard library functions?</p>
+
+
+
+<p>Let&#8217;s take a look. Define a function, then reference the function&#8217;s name (don&#8217;t invoke the new function, just reference it—i.e. leave off the parenthesis part).</p>
+
+
+
+<p>You might define your function (named, say, <var>SomeFunction</var>) something like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  DoSomething = (input as number) as number =&gt; input * 10
+in
+  DoSomething
+</pre></div>
+
+
+<p>Then, in a new query, reference it without invoking it (notice that no &#8220;invoke function&#8221; parenthesis are present):</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+SomeFunction
+</pre></div>
+
+
+<p>Query Editor displays the function&#8217;s signature and a simple UI allowing you to specify a parameter value and invoke the function. All in all, short and simple.</p>
+
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/03/image.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-1024x482.png" alt="Query Editor's auto-generated documentation for a single argument function" class="wp-image-5527" width="295" height="140" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-1024x482.png 1024w, https://bengribaudo.com/wp-content/uploads/2021/03/image-300x141.png 300w, https://bengribaudo.com/wp-content/uploads/2021/03/image-768x361.png 768w, https://bengribaudo.com/wp-content/uploads/2021/03/image-624x293.png 624w, https://bengribaudo.com/wp-content/uploads/2021/03/image.png 1180w" sizes="(max-width: 295px) 100vw, 295px" /></a></figure>
+
+
+
+<p>To contrast, reference a function from the standard library, say <a href="https://docs.microsoft.com/en-us/powerquery-m/number-sqrt" data-type="URL" data-id="https://docs.microsoft.com/en-us/powerquery-m/number-sqrt" target="_blank" rel="noreferrer noopener"><code>Number.Sqrt</code></a>:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Number.Sqrt
+</pre></div>
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/03/image-1.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-1-871x1024.png" alt="Query Editor's documentation for Number.Sqrt" class="wp-image-5528" width="295" height="347" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-1-871x1024.png 871w, https://bengribaudo.com/wp-content/uploads/2021/03/image-1-255x300.png 255w, https://bengribaudo.com/wp-content/uploads/2021/03/image-1-768x903.png 768w, https://bengribaudo.com/wp-content/uploads/2021/03/image-1-624x734.png 624w, https://bengribaudo.com/wp-content/uploads/2021/03/image-1.png 1179w" sizes="(max-width: 295px) 100vw, 295px" /></a></figure>
+
+
+
+<p>Whoa! What a difference! A description of the function is displayed. Also, several usage examples are given.</p>
+
+
+
+<p>How did Microsoft pull that off? Metadata—function documentation is defined using metadata, which means you can use it to document your functions, too!</p>
+
+
+
+<p>&#8220;Wait!&#8221; you say, &#8220;you told me before that metadata has no special meaning to Power Query. Now you&#8217;re saying that it does—that it&#8217;s the Power Query way to document functions.&#8221;</p>
+
+
+
+<p>No, what was said before still holds true. At the language level—to the mashup engine&#8211;the documentation metadata items we&#8217;re about to cover are just opaque metadata values with no intrinsic meaning. It&#8217;s <em>Query Editor</em> (a host application) that gives them their meaning. There&#8217;s a set of <a href="https://docs.microsoft.com/en-us/power-query/handlingdocumentation" target="_blank" rel="noreferrer noopener">documented metadata field names</a> which, if present on a function&#8217;s type, will be used <em>by Query Editor</em> to influence what its UI displays.</p>
+
+
+
+<p>What we&#8217;re about to explore is also one of the main motivations for manually defining and ascribing custom types (parts <a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" data-type="post" data-id="5259">18</a> and <a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" data-type="post" data-id="5408">19</a> of this series)!</p>
+
+
+
+<p>Let&#8217;s define and ascribe a type to the function we created a few moments ago. This type should match the function&#8217;s type (have the same function signature). While we&#8217;re at it, we&#8217;ll associate a few metadata fields with the new type.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+let
+  DoSomething = (input as number) as number =&gt; input * 10,
+  Type = type function (input as number) as number 
+    meta &#91;
+      Documentation.Name = &quot;SomeFunction&quot;, 
+      Documentation.LongDescription = &quot;Some very long and elegant description.&quot;,
+      Documentation.Examples = {
+        &#91;Description = &quot;Positive number as input&quot;, Code = &quot;SomeFuction(1)&quot;, Result = &quot;10&quot;],
+        &#91;Description = &quot;Negative number as input&quot;, Code = &quot;SomeFuction(-2)&quot;, Result = &quot;-20&quot;]
+        }
+      ],
+  RetypedFunction = Value.ReplaceType(DoSomething, Type)
+in
+  RetypedFunction
+</pre></div>
+
+
+<p>Now take a look at how Query Editor displays our function in its UI. Much nicer!</p>
+
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/03/image-2.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-2-862x1024.png" alt="Query Editor's function documentation display generated from metadata" class="wp-image-5529" width="295" height="350" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-2-862x1024.png 862w, https://bengribaudo.com/wp-content/uploads/2021/03/image-2-253x300.png 253w, https://bengribaudo.com/wp-content/uploads/2021/03/image-2-768x912.png 768w, https://bengribaudo.com/wp-content/uploads/2021/03/image-2-624x741.png 624w, https://bengribaudo.com/wp-content/uploads/2021/03/image-2.png 1174w" sizes="(max-width: 295px) 100vw, 295px" /></a></figure>
+
+
+
+<p>A note about <var>Documentation.Name</var>: This value should probably match the name of the identifier you assign your function <em>when you define it</em>. For example, if you call your function <var>SomeFunction</var>, then when you set <var>Documentation.Name</var>, you should probably set its value to &#8220;SomeFunction&#8221;, as well.</p>
+
+
+
+<p>Why? Consumers of your function may later assign it to other identifiers (like <code>ReallyCoolFunction = SomeFunction</code>). Having <var>Documentation.Name</var> match the name you initially gave it will help them figure out which function they&#8217;re really working with. For example, when someone looks at the documentation for <var>ReallyCoolFunction</var>, they&#8217;ll be able to see that they&#8217;re really working with <var>SomeFunction</var>.</p>
+
+
+
+<p>Oh, before we leave <var>Documentation.Name</var>: If you omit it, Query Editor&#8217;s UI will ignore the other function-level documentation metadata items (at least, that&#8217;s the behavior as of the time of this writing). If, for example, you set just <var>Documentation.LongDescription</var>, Query Editor&#8217;s documentation output won&#8217;t display it because no <var>Documentation.Name</var> is present.</p>
+
+
+
+<p>You might be wondering why we didn&#8217;t just add the metadata to the function when we defined it originally. Instead, we first defined the function<em>, </em>then defined a custom type for the function, then ascribed that type to the function. Why not just apply the metadata to the function and skip the extra work?</p>
+
+
+
+<p>Why didn&#8217;t we do something like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+((input as number) as number =&gt; input * 10) meta &#91; … documentation goes here …]
+</pre></div>
+
+
+<p>Well, it wouldn&#8217;t have done us any good. Documentation metadata needs to be attached to the function&#8217;s <em>type</em>, not the function <em>itself</em>. When we define the function, we can attach metadata to it (as the above example shows), but the language doesn&#8217;t provide a way for us to attach metadata to the type generated for the function at the time the function is defined—so, for better or worse, it take a multistep process to attach it.</p>
+
+
+
+<h3 class="wp-block-heading" id="function-parameter-documentation">Parameter Documentation</h3>
+
+
+
+<p>The above documentation metadata applies at the function level. Query Editor also supports documentation metadata for individual parameters. Below shows a couple of these.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+let
+  DoSomething = (input as number) as number =&gt; input * 10,
+  Type = 
+    type function (
+      input as (type number meta 
+        &#91;
+          Documentation.FieldCaption = &quot;Number to multiply&quot;,
+          Documentation.FieldDescription = &quot;Will be multiplied by 10&quot;,
+          Documentation.SampleValues = { 1, 0, -10 }
+        ]
+      )
+    ) as number,
+  RetypedFunction = Value.ReplaceType(DoSomething, Type)
+in
+  RetypedFunction
+</pre></div>
+
+
+<p>Interestingly, in Query Editor, while the field&#8217;s caption is displayed, its description is not, and only the first of its sample values appears.</p>
+
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/03/image-3.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-3.png" alt="Parameter input prompt in Query Editor reflecting documentation metadata" class="wp-image-5530" width="155" height="49" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-3.png 620w, https://bengribaudo.com/wp-content/uploads/2021/03/image-3-300x95.png 300w" sizes="(max-width: 155px) 100vw, 155px" /></a></figure>
+
+
+
+<p>There are several other parameter-level documentation metadata opportunities:</p>
+
+
+
+<ul>
+<li><var>Documentation.AllowedValues</var>—Does <strong>not </strong>any way change the values the function accepts; instead, causes the function invocation UI to constrain the input <em>it</em> accepts to a dropdown that&#8217;s populated with the <var>AllowedValues</var>.<br><img decoding="async" loading="lazy" width="594" height="260" class="wp-image-5531" style="width: 150px;" src="https://bengribaudo.com/wp-content/uploads/2021/03/image-4.png" alt="Parameter input constrained to dropdown of allowed values" srcset="https://bengribaudo.com/wp-content/uploads/2021/03/image-4.png 594w, https://bengribaudo.com/wp-content/uploads/2021/03/image-4-300x131.png 300w" sizes="(max-width: 594px) 100vw, 594px" /></li>
+
+
+
+<li><var>Documentation.FieldDescription</var>—Interestingly, this field&#8217;s value doesn&#8217;t seem to show up in Query Editor&#8217;s UI.</li>
+
+
+
+<li><var>Formatting.IsMultiLine</var>—Switches the parameter&#8217;s input control to a multi-line textbox.</li>
+
+
+
+<li><var>Formatting.IsCode</var>—Supposed to cause the parameter&#8217;s input control to be formatted like code, but as of this writing, doesn&#8217;t seem to affect anything in Query Editor, either.</li>
+</ul>
+
+
+
+<h3 class="wp-block-heading" id="record-parameters">Record Parameters</h3>
+
+
+
+<p>For record parameters, the expected &#8220;shape&#8221; (that is, the required and allowed fields) can be described by giving the parameter an appropriate custom record type in the type that&#8217;s ascribed to the function. The metadata elements <code>Documentation.FieldCaption</code>, <code>Documentation.AllowedValues</code> and <code>Documentation.SampleValues</code> can optionally be applied to the record type&#8217;s fields to influence how Query Editor displays them in the function invocation UI.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]; title: ; quick-code: false; notranslate" title="">
+let
+  Func = (input as record) =&gt; ...,
+  NewType = type function (
+    input as
+      &#91;
+        Server = (
+          type text meta
+          &#91;
+             Documentation.SampleValues = { &quot;localhost&quot;}
+          ]
+        ), 
+        optional Timeout = (
+          type number meta
+          &#91;
+            Documentation.FieldCaption = &quot;Time Out &#91;in seconds]&quot;,
+            Documentation.AllowedValues = { 10, 60, 360 }
+          ]
+        ),
+        optional CutOff = date
+      ]
+    ) as any,
+  Ascribed = Value.ReplaceType(Func, NewType)
+in
+  Ascribed
+</pre></div>
+
+<div class="wp-block-image">
+<figure class="alignleft size-medium is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/09/EnhancingTheDisplayFunctionInvocationForm.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/09/EnhancingTheDisplayFunctionInvocationForm-300x286.png" alt="Function invocation dialog showing a record parameter with field details augmented by metadata" class="wp-image-6196" width="295" height="281" srcset="https://bengribaudo.com/wp-content/uploads/2021/09/EnhancingTheDisplayFunctionInvocationForm-300x286.png 300w, https://bengribaudo.com/wp-content/uploads/2021/09/EnhancingTheDisplayFunctionInvocationForm-624x595.png 624w, https://bengribaudo.com/wp-content/uploads/2021/09/EnhancingTheDisplayFunctionInvocationForm.png 760w" sizes="(max-width: 295px) 100vw, 295px" /></a></figure></div>
+
+
+<div style="clear:both;"></div>
+
+
+
+<p>(Reference: <a href="https://bengribaudo.com/blog/2021/09/21/6179/describing-function-record-parameters" data-type="post" data-id="6179">Describing a Function’s Record Parameters</a>)</p>
+
+
+
+<h2 class="wp-block-heading" id="your-logic">Your Logic</h2>
+
+
+
+<p>What about using metadata from your code? We&#8217;ve looked at how Power BI uses it for parameters (interesting, but not so practically useful) and how you can use it to add documentation (setting metadata fields, which Query Editor&#8217;s UI looks for). However, both of these rely on the host application to make the special behaviors happen. Are there practical uses for defining and handling &#8220;custom&#8221; metadata all on your own?</p>
+
+
+
+<p>While the sky is the limit, admittedly, custom uses for metadata are likely not every day occurrences. Usually, the values we work with are sufficient by themselves; they don&#8217;t need to be accompanied by data about them (that is, metadata). So when might you write custom logic that processes metadata?</p>
+
+
+
+<p>Here&#8217;s one possibility:</p>
+
+
+
+<p>Let&#8217;s say you want to pull data from a web API. This particular API endpoint returns at most 100 records per invocation. If the requested data set is larger than 100 items, results are paged, with each page (except the last) accompanied by a link that can be used to get the next page of data:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: jscript; title: ; notranslate" title="">
+// JSON response to first request -- returns first 100 rows
+{
+  &quot;Data&quot;: &#91; …rows 1-100…],
+  &quot;Next&quot;: &quot;https://somewhere/someApi?nextPageToken=1905617808&quot;
+}
+	
+// JSON response to second request -- returns second 100 rows
+{
+  &quot;Data&quot;: &#91; …rows 101-200…],
+  &quot;Next&quot;: &quot;https://somewhere/someApi?nextPageToken=899780178&quot;
+}
+	
+// JSON response to third request -- returns final 19 rows
+{
+  &quot;Data&quot;: &#91; …rows 201-220…],
+  &quot;Next&quot;: null
+}
+</pre></div>
+
+
+<p>You&#8217;re thinking to start by writing a function that is passed a URL and uses it to fetch a page of data. Other logic you&#8217;ll write will call this function as many times as needed to get all the pages, then stitch them together into a single table.</p>
+
+
+
+<p>Your &#8220;get page&#8221; function needs to return two things: a table of the page&#8217;s rows and the next link&#8217;s value. Returning a table is simple enough, but how can you accompany it with the next link? Metadata is a great way to do this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+GetPage = (url as text) as table =&gt;
+  let 
+     Response = Json.Document(Web.Contents(url)),
+     Table = Table.FromRecords(Response&#91;Data])
+  in
+    Table meta &#91;NextLink = Response&#91;Next]]
+</pre></div>
+
+
+<p>Nice! Notice how the next link is there for those who need it, but someone who doesn&#8217;t care about it doesn&#8217;t need to know it exists—they can just treat the function&#8217;s output as an ordinary table.</p>
+
+
+
+<p>There&#8217;s other ways this could have been pulled off, like having the function return a record with a field for the table and one for the next link. Here&#8217;s a test: If you&#8217;re creating a new data structure (like a record) simply to accompany a value of interest (in this case, a table) with extra information (such as a next link), prefer metadata—it&#8217;s the built-in way for communicating data about a value along with the value.</p>
+
+
+
+<h2 class="wp-block-heading" id="conclusion">Conclusion</h2>
+
+
+
+<p>There you have it! Metadata: information about a value that is attached to the value. Now you know what it is and how it works so you can leverage it in those scenarios where it is helpful!</p>
+
+
+
+<p>Next time? Let&#8217;s talk about <a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">identifier resolution and sections</a>.</p>
+
+
+
+<p>Until then, happy data crunching!</p>
+
+
+
+<h2 class="wp-block-heading" id="revision-history"><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color">Revision History</mark></h2>
+
+
+
+<p><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2021-10-11</strong>: Added details about defining the expected shape of <a href="#record-parameters">record parameters</a>.</mark></p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining" rel="bookmark" title="Power Query M Primer (part 2):&lt;br /&gt;Functions: Defining">Power Query M Primer (part 2):<br />Functions: Defining</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary" rel="bookmark" title="Power Query M Primer (Part 9): Types—Logical, Null, Binary">Power Query M Primer (Part 9): Types—Logical, Null, Binary</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i-basics" rel="bookmark" title="Power Query M Primer (Part 16): Type System I – Basics">Power Query M Primer (Part 16): Type System I – Basics</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" rel="bookmark" title="Power Query M Primer (Part 18): Type System III – Custom Types">Power Query M Primer (Part 18): Type System III – Custom Types</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			20 thoughts on &ldquo;<span>Power Query M Primer (Part 20): Metadata</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88666">
+		<article id="comment-88666" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">hank</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88666"><time datetime="2021-03-22T03:55:50-05:00">March 22, 2021 at 3:55 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,<br />
+Thank you so much, it is such a pleasure to dig into M with your insights.<br />
+I wonder if you could please elaborate how you are using your GetPage function and its metadata to build the full table</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88666#respond' data-commentid="88666" data-postid="5523" data-belowelement="comment-88666" data-respondelement="respond" data-replyto="Reply to hank" aria-label='Reply to hank'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88684">
+		<article id="comment-88684" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88684"><time datetime="2021-04-02T09:28:26-05:00">April 2, 2021 at 9:28 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great question! <a href="https://docs.microsoft.com/en-us/power-query/handlingpaging" target="_blank" rel="noreferrer noopener nofollow ugc">https://docs.microsoft.com/en-us/power-query/handlingpaging</a> has links that talk about how to use this approach. Hope that helps!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88684#respond' data-commentid="88684" data-postid="5523" data-belowelement="comment-88684" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88679">
+		<article id="comment-88679" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Lutz Bendlin</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88679"><time datetime="2021-03-31T09:17:59-05:00">March 31, 2021 at 9:17 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Fantastic insights.  (runs off to test this out).  Many thanks!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88679#respond' data-commentid="88679" data-postid="5523" data-belowelement="comment-88679" data-respondelement="respond" data-replyto="Reply to Lutz Bendlin" aria-label='Reply to Lutz Bendlin'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88687">
+		<article id="comment-88687" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Joe Kang</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88687"><time datetime="2021-04-07T23:25:50-05:00">April 7, 2021 at 11:25 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Very helpful insights as always!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88687#respond' data-commentid="88687" data-postid="5523" data-belowelement="comment-88687" data-respondelement="respond" data-replyto="Reply to Joe Kang" aria-label='Reply to Joe Kang'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88698">
+		<article id="comment-88698" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Dwaine Wright</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88698"><time datetime="2021-04-20T18:32:51-05:00">April 20, 2021 at 6:32 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Ben,</p>
+<p>I haven&#8217;t finished all 20 post yet, but this series is by far the best written, inciteful, and masterfully crafted blog entries I have discovered on this not-so-straight-forward subject.  Cheers to you!</p>
+<p>Dwaine</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88698#respond' data-commentid="88698" data-postid="5523" data-belowelement="comment-88698" data-respondelement="respond" data-replyto="Reply to Dwaine Wright" aria-label='Reply to Dwaine Wright'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88716">
+		<article id="comment-88716" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Nicolas</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88716"><time datetime="2021-06-23T03:11:02-05:00">June 23, 2021 at 3:11 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Ben,</p>
+<p>thanks for this series, it has been very insightful and very helpful for me trying to understand &#8220;how Power Query thinks&#8221; 🙂</p>
+<p>Currently, I&#8217;m trying to &#8220;hack&#8221; the partially lazy way of PQ.<br />
+Can you tell how metadata is evaluated ? Is it lazy or eager ?</p>
+<p>If a metadata of a variable is never used, is it still being evaluated ?</p>
+<p>Thanks for your help.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88716#respond' data-commentid="88716" data-postid="5523" data-belowelement="comment-88716" data-respondelement="respond" data-replyto="Reply to Nicolas" aria-label='Reply to Nicolas'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88725">
+		<article id="comment-88725" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88725"><time datetime="2021-07-08T13:46:59-05:00">July 8, 2021 at 1:46 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks for your kind words!</p>
+<p>Can you share an example showing a piece of metadata that you&#8217;re wondering about?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88725#respond' data-commentid="88725" data-postid="5523" data-belowelement="comment-88725" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment odd alt depth-3" id="li-comment-88727">
+		<article id="comment-88727" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Nicolas</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88727"><time datetime="2021-07-13T03:41:10-05:00">July 13, 2021 at 3:41 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>For example in this code, does the <code>CallFunction()</code> get called, even if the metadata [ts] of <var>A</var> is never accessed ?</p>
+<pre class="brush: m">let
+    CallFunction = (x) =&gt; x + 3,
+    A = "somevalue" meta [ ts = CallFunction(5) ]
+in
+    A</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88727#respond' data-commentid="88727" data-postid="5523" data-belowelement="comment-88727" data-respondelement="respond" data-replyto="Reply to Nicolas" aria-label='Reply to Nicolas'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-4" id="li-comment-88728">
+		<article id="comment-88728" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88728"><time datetime="2021-07-13T07:47:28-05:00">July 13, 2021 at 7:47 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks for the example. I don&#8217;t believe so. Record field expressions are evaluated lazily, so <var>ts</var>&#8216;s value shouldn&#8217;t be computed unless something needs that value.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88728#respond' data-commentid="88728" data-postid="5523" data-belowelement="comment-88728" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88760">
+		<article id="comment-88760" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jon</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88760"><time datetime="2021-09-02T15:39:03-05:00">September 2, 2021 at 3:39 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great Explanation about using metadata within powerquery</p>
+<p>A quick question. Do you know to access the metadata records of a function (either the built-ins or custom ones)?<br />
+I am not sure how the syntax needs to be within the parenthesis of the <code>Value.Metadata()</code> so the it recognizes the input as a function</p>
+<p>Thanks</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88760#respond' data-commentid="88760" data-postid="5523" data-belowelement="comment-88760" data-respondelement="respond" data-replyto="Reply to Jon" aria-label='Reply to Jon'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88761">
+		<article id="comment-88761" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88761"><time datetime="2021-09-03T08:55:15-05:00">September 3, 2021 at 8:55 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Jon,</p>
+<p>I&#8217;m guessing you&#8217;re trying to get a function&#8217;s documentation metadata, which is stored as metadata on the function&#8217;s <em>type</em>, not directly as metadata on the function value itself.</p>
+<p>Does the below help?</p>
+<pre class="brush:m">
+Value.Metadata(Value.Type(Table.SelectColumns)) // replace "Table.SelectColumns" with whichever function is of interest
+</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88761#respond' data-commentid="88761" data-postid="5523" data-belowelement="comment-88761" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment odd alt depth-3" id="li-comment-88764">
+		<article id="comment-88764" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Jon</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88764"><time datetime="2021-09-05T13:44:44-05:00">September 5, 2021 at 1:44 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks Ben for your reply.</p>
+<p>Correct by metadata records I refer to the metadata that contains all the function&#8217;s documentation available like the records [Documentation.Name] [Documentation.Description] etc.</p>
+<p>Yes your solution works like a charm. Thanks for the help</p>
+<p>Cheers</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88764#respond' data-commentid="88764" data-postid="5523" data-belowelement="comment-88764" data-respondelement="respond" data-replyto="Reply to Jon" aria-label='Reply to Jon'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88827">
+		<article id="comment-88827" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Lutz</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88827"><time datetime="2021-12-23T21:52:46-06:00">December 23, 2021 at 9:52 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>I actually recently came across a use case for parameter meta data.  Someone wanted to use &#8220;multiple parameters with the same name&#8221; for a filter. Turns out they were using the &#8220;Suggested values&#8221; list option of the parameter, and wanted to use that list for filtering.</p>
+<p>A quick look revealed the meta data of the parameter &#8220;Country&#8221;:</p>
+<pre class="brush:m">null meta [IsParameterQuery=true, List={"Germany", "Poland", "Belgium", "Hungary", "Italy"}, DefaultValue=..., Type="Text", IsParameterQueryRequired=false]</pre>
+<p>and from there it was easy* to use </p>
+<pre class="brush:m">List.Contains(Value.Metadata(Country)[List],SearchTerm)</pre>
+<p>to get to the desired result. </p>
+<p>* as in &#8220;easy after reading this primer part&#8221;.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88827#respond' data-commentid="88827" data-postid="5523" data-belowelement="comment-88827" data-respondelement="respond" data-replyto="Reply to Lutz" aria-label='Reply to Lutz'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88920">
+		<article id="comment-88920" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Ed Hoeffner</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88920"><time datetime="2022-06-24T19:46:23-05:00">June 24, 2022 at 7:46 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Here&#8217;s a use for the meta &#8220;command&#8221;:</p>
+<p>&#8220;Opt 1&#8221; meta [IsParameterQuery=true, List={&#8220;Opt 1&#8221;, &#8220;Opt 2&#8221;, &#8220;Opt 3&#8243;}, DefaultValue=&#8221;Opt 1&#8243;, Type=&#8221;Text&#8221;, IsParameterQueryRequired=true]</p>
+<p>Not really sure how this works, but the format supplies a dropdown functionality. Personally, so far I only use it to switch in and out of test mode:</p>
+<p>false meta [IsParameterQuery=true, List={false, true}, DefaultValue=false, Type=&#8221;Logical&#8221;, IsParameterQueryRequired=true]</p>
+<p>It would be nice to really understand what&#8217;s going on here&#8230;</p>
+<p>Thanks for a very helpful blog!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88920#respond' data-commentid="88920" data-postid="5523" data-belowelement="comment-88920" data-respondelement="respond" data-replyto="Reply to Ed Hoeffner" aria-label='Reply to Ed Hoeffner'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88922">
+		<article id="comment-88922" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88922"><time datetime="2022-06-27T08:16:39-05:00">June 27, 2022 at 8:16 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>From the mashup engine&#8217;s perspective, the above code samples simply merge metadata into the metadata of the specified value (e.g. &#8220;Opt 1&#8221;, false). These metadata fields have <strong>no</strong> special meaning <strong>to the mashup engine</strong>.</p>
+<p>Instead, the special behaviors you observe come from the fact that user interface components are programmed to display special things when those metadata items are set. </p>
+<p>Try this: In Query Edtior&#8217;s UI, create a parameter. Then, select the parameter in the <em>Queries</em> list and choose <em>Advanced Editor</em>. You&#8217;ll be able to see that the code the UI generated for the parameter is very similar to what you show above. </p>
+<p>You could play with the various options in the UI&#8217;s &#8220;create parameter&#8221; dialog then look at the code that&#8217;s generated to get a better feel for how various metadata fields affect/control how the UI behaves.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88922#respond' data-commentid="88922" data-postid="5523" data-belowelement="comment-88922" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment odd alt depth-3" id="li-comment-88926">
+		<article id="comment-88926" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Ed Hoeffner</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88926"><time datetime="2022-06-27T21:43:45-05:00">June 27, 2022 at 9:43 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Since the created record can take any fieldnames, these must be the special ones you&#8217;re referring to. Thanks!!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88926#respond' data-commentid="88926" data-postid="5523" data-belowelement="comment-88926" data-respondelement="respond" data-replyto="Reply to Ed Hoeffner" aria-label='Reply to Ed Hoeffner'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88974">
+		<article id="comment-88974" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Filippo Bottega</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88974"><time datetime="2022-12-15T04:46:17-06:00">December 15, 2022 at 4:46 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hello and thank you for your useful post!<br />
+  my question is: is there a way to get the metadata (Description for example) of queries (members of section1) ? It seams that only standard functions could be checked for metadata.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88974#respond' data-commentid="88974" data-postid="5523" data-belowelement="comment-88974" data-respondelement="respond" data-replyto="Reply to Filippo Bottega" aria-label='Reply to Filippo Bottega'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88976">
+		<article id="comment-88976" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-88976"><time datetime="2022-12-30T10:26:32-06:00">December 30, 2022 at 10:26 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>If you&#8217;re referring to the description that Query Editor allows you to set by right-clicking on a query (section member) name and choosing <em>Properties</em>, then I don&#8217;t believe so. These descriptions are stored as literal attributes on section members in the section document. I&#8217;m not aware of a standard library function that allows them to be read out.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=88976#respond' data-commentid="88976" data-postid="5523" data-belowelement="comment-88976" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-89028">
+		<article id="comment-89028" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Rick</b> </cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-89028"><time datetime="2023-05-29T04:54:01-05:00">May 29, 2023 at 4:54 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hey Ben. Great stuff. </p>
+<p>So one can look at metadata from a function name like this:<br />
+<code>Value.Metadata( Value.Type( [ColumnWithFunction ) )</code> </p>
+<p>For example when using <code>#shared</code> to inspect data. What I haven&#8217;t been able to pinpoint, is how to return function syntax as a text value. I know it&#8217;s in there, since I can preview the [Function] value in the &#8220;Value&#8221; column. </p>
+<p>Do you know a way to return the syntax of a function as a text value?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=89028#respond' data-commentid="89028" data-postid="5523" data-belowelement="comment-89028" data-respondelement="respond" data-replyto="Reply to Rick" aria-label='Reply to Rick'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-89035">
+		<article id="comment-89035" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#comment-89035"><time datetime="2023-06-02T08:30:06-05:00">June 2, 2023 at 8:30 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>By &#8220;syntax of a function,&#8221; do you mean the function&#8217;s signature? If so, I&#8217;m not aware of a <em>single</em> method that mimics what Query Editor&#8217;s UI renders to screen; however, you can put together that information using the three <code>Type.Function*</code> methods.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata?replytocom=89035#respond' data-commentid="89035" data-postid="5523" data-belowelement="comment-89035" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2021/03/17/5523/power-query-m-primer-part20-metadata#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='5523' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.635 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 04:20:26 -->
+
+<!-- super cache -->

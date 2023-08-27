@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 17): Type System II – Facets | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 17): Type System II – Facets Comments Feed" href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/5009" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=5009' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F02%2F28%2F5009%2Fpower-query-m-primer-part17-type-system-ii-facets" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F02%2F28%2F5009%2Fpower-query-m-primer-part17-type-system-ii-facets&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-5009 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-5009" class="post-5009 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m tag-types">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 17): Type System II – Facets</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2020-02-28T13:20:37-06:00">February 28, 2020</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a>, <a href="https://bengribaudo.com/blog/tag/types" rel="tag">Types</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			<div class="wp-block-image">
+<figure class="alignright size-large is-resized"><img decoding="async" src="https://bengribaudo.com/wp-content/uploads/2020/02/ColumnTypeMenuSnip.png" alt="Snip of 'Column Type' menu showing 'Decimal Number', 'Currency', 'Whole Number' and 'Percentage'" class="wp-image-5013" width="152" height="90" srcset="https://bengribaudo.com/wp-content/uploads/2020/02/ColumnTypeMenuSnip.png 405w, https://bengribaudo.com/wp-content/uploads/2020/02/ColumnTypeMenuSnip-300x178.png 300w" sizes="(max-width: 152px) 100vw, 152px" /></figure></div>
+
+
+<p>In query editor, ever notice that the column data type menu includes four options for numbers: <em>Decimal Number</em>, <em>Currency</em>, <em>Whole Number</em> and <em>Percentage</em>? In this series, we&#8217;ve only talked about one numeric type: <code>type number</code>. Are there types we&#8217;ve missed?</p>
+
+
+
+<p>Behind the scenes, menu item <em>Decimal Number</em> maps to <code>type number</code>, <em>Currency</em> to <code>Currency.Type</code>, <em>Whole Number</em> to <code>Int64.Type</code> and <em>Percentage</em> to <code>Percentage.Type</code>. If you look at the names defined in your Power Query environment, you&#8217;ll likely see a host of other &#8220;Type&#8221; names, including <code>Int8.Type</code>, <code>Int16.Type</code>, <code>Int32.Type</code>, <code>Single.Type</code> and <code>Double.Type</code>. What are all these &#8220;Type&#8221; names—even more types we have yet to cover?!</p>
+
+
+
+<p>Nope! Introducing type facets.</p>
+
+
+
+<span id="more-5009"></span>
+
+
+
+<h2 class="wp-block-heading" id="series-index">Series Index</h2>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li>Type System II – Facets (part 17) [this post]</li>
+
+
+
+<li><a href="/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope, Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="type-facets">Type Facets</h2>
+
+
+
+<p>Power Query allows a type to be decorated with <strong>informational-only annotations</strong>, commonly known as facets.</p>
+
+
+
+<p>Facets have <strong>no intrinsic effect on the behavior</strong> of types or on the values associated with them <em>at either the language or mashup engine levels</em>.&nbsp;Technically, logic you and others write (including the standard library) can read and react to facets, though this is done rarely (if ever). Instead, facets are used almost exclusively in the context of interacting with the external (data sources, tools, the host environment). External systems often have more complex type systems than Power Query. Facets provide a way to communicate extra type-related details to and from the outside world.</p>
+
+
+
+<p>Imagine you&#8217;re working with a web service that returns a table containing a text column and a number column. M is satisfied knowing that the values in these columns are of <code>type text</code> and of <code>type number</code>, respectively. However, it might help <em>you</em> as you build your mashup to know that the text column can contain values of variable length, up to 25 characters long, and that the number column contains integers, not decimal values. These extra details, provided by the data connector using facets, make no difference in how the mashup engine processes the data—but they could be helpful to you, as the developer.</p>
+
+
+
+<p>Going the other direction, when your mashup outputs data to the host environment (Microsoft Power BI, Microsoft Excel, etc.), providing enhanced type information about the values being produced could influence how the external environment handles what it receives. Take a mashup that outputs a table containing a numeric column to Microsoft Power BI. As far as the Power Query language goes, all numbers are of <code>type number</code>. However, Power BI supports several number types. If Power BI is informed via a facet that the values in the column are all integer numbers, it can set the column&#8217;s Power BI storage type to whole number, saving you the work of doing this manually.</p>
+
+
+
+<p>Tools can also use facet information. Jumping back to our starting scenario: Query Editor (a tool) features four so-called number types in its menus and icons. Ultimately, all of these are type number, differentiated by facets.</p>
+
+
+
+<p>As was already mentioned, <strong>facets are primarily used in interactions with the external</strong>. Since tables are the main form of input and output exchanged with outside world, <strong>facets are primarily of interest when working with tables</strong>. However, no technical limitations stop facets from being used with other types.</p>
+
+
+
+<p>There are two sets of facets: the simple ones to work with and the other one. How&#8217;s that for refined technical speak?! (The language specification doesn&#8217;t give these groupings names. In fact, the specification doesn&#8217;t mention facets at all, even though they are a part of the information contained in type values.)&nbsp;</p>
+
+
+
+<h2 class="wp-block-heading" id="simple-facets">Simple Facets</h2>
+
+
+
+<p>The <em>simple facets</em> are almost exclusively used by data connectors to provide extra information about the values they produce. While technically these facets can be programmatically read and processed, they are <strong>primarily targeted for human (developer) consumption</strong>—giving you a peak into how the remote system thinks about the data it&#8217;s handing your mashup.</p>
+
+
+
+<p>Unless you build data connectors, you may never find yourself with a production need to set these facets; however, learning how to set them should help with understanding them, so let&#8217;s give it a whirl.</p>
+
+
+
+<p>To define values for the simple facets, use <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/type-replacefacets" target="_blank">Type.ReplaceFacets</a></code>, passing it a type value and a record with the facets you want to set on that value. The record should be in the following format, with any facets not of interest set to null or left out of the record:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+&#91;
+  NumericPrecisionBase = ..., // number
+  NumericPrecision = ..., // number
+  NumericSale = ..., // number
+  DateTimePrecision = ..., // number
+  MaxLength = ..., // number
+  IsVariableLength = ..., // logical
+  NativeTypeName = ..., // text
+  NativeDefaultExpression = ..., // text
+  NativeExpression = ... // text
+]
+</pre></div>
+
+
+<p>The below sets facets <var>MaxLength</var>, <var>IsVariableLength</var> and <var>NativeTypeName</var> on a <code>type text</code> type value.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  SomeType = type text,
+  Facets = 
+    &#91; 
+      MaxLength = 25,
+      IsVariableLength = true, 
+      NativeTypeName = &quot;NVARCHAR&quot;
+    ],
+   TypeWithFacets = Type.ReplaceFacets(SomeType, Facets)
+in
+  TypeWithFacets 
+</pre></div>
+
+
+<p>Important: <var>TypeWithFacets</var> is still a type value holding type text.<strong> Setting facets on it did<em> not </em>create a new type.</strong> Attaching those facets simply produced a new <em>type value</em> representing <em>the existing type</em> decorated with several informational-only annotations. As far as the mashup engine&#8217;s processing goes, the type in this new type value is <em>still</em> <code>type text</code>.</p>
+
+
+
+<p>While occasions to use <code>Type.ReplaceFacets</code> may be extremely few and far between, you may find yourself reading facets slightly more often. <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/type-facets" target="_blank">Type.Facets</a></code> is one way to do this. This method returns a record describing the simple facets that decorate the specified type value.</p>
+
+
+
+<p>Using <code>Type.Facets</code> with <var>TypeWithFacets</var> (from the above example), we can see the simple facets that were just set:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Type.Facets(TypeWithFacets) 
+/* outputs:
+&#91;
+  NumericPrecisionBase = null,
+  NumericPrecision = null,
+  NumericScale = null,
+  DateTimePrecision = null,
+  MaxLength = 25,
+  IsVariableLength = true,
+  NativeTypeName = &quot;NVARCHAR&quot;,
+  NativeDefaultExpression = null,
+  NativeExpression = null
+]
+*/
+</pre></div>
+
+
+<p>Pretend that we didn&#8217;t create <var>TypeWithFacets</var>. Instead, pretend it came from a value that was handed to us by a data connector. Using the information in these facets, we can conclude that it probably represents data from a <code>NVARCHAR(25)</code> database column. This information might help in our development, cluing us that we may receive characters spanning the full Unicode range but the strings they make up won&#8217;t be super long (at most, 25 characters). Even though we may have no direct access to the remote system, the information in these facets gives us a glimpse into how that system thinks about the data it sends our way, which may help clear up unknowns for us.</p>
+
+
+
+<p><code>Type.Facets</code> lets us view the simple facets associated with a type, one type at a time. To see the facets associated with each column in a table, we could pass each column’s type to <code>Type.Facets</code>—or we could try <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/table-schema" target="_blank">Table.Schema</a></code>. This function lets us see all facets (the simple ones and the other one ) for each column, along with several other descriptive pieces of information, all at once.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Table.Schema(SomeTable)
+</pre></div>
+
+
+<figure class="wp-block-image size-large"><a href="https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1.png"><img decoding="async" loading="lazy" width="1024" height="110" src="https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-1024x110.png" alt="Screenshot of Table.Schema output for a two-column table" class="wp-image-5022" srcset="https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-1024x110.png 1024w, https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-300x32.png 300w, https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-768x82.png 768w, https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-1536x165.png 1536w, https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-2048x219.png 2048w, https://bengribaudo.com/wp-content/uploads/2020/02/TableSchema-1-624x67.png 624w" sizes="(max-width: 1024px) 100vw, 1024px" /></a></figure>
+
+
+
+<p>Above, the simple facets are spread across several columns (circled in blue). The other facet—the one we haven&#8217;t described about yet—appears in this table, under the confusing name of <var>TypeName</var> (circled in red). Actually, M&#8217;s base type for the column is shown in column <var>Kind</var> (circled in green), not <var>TypeName</var>. <var>TypeName</var> here does not identify an M type but rather a <strong>type claim facet</strong>.</p>
+
+
+
+<h2 class="wp-block-heading" id="type-claims-the-other-facet">&nbsp;Type Claims (The Other Facet)</h2>
+
+
+
+<p>Power Query uses a very general set of types for simple values: all numbers are of <code>type number</code>, all strings are of <code>type text</code>, etc. External systems may have types which divide values into more specific classifications. For example, instead of a one-size-fits-all numeric type, an external system might have integer, float and decimal types. It might even subdivide these further, say splitting integers between 8-, 16-, 32- and 64-bit variants.</p>
+
+
+
+<p>While such nuanced divisions are irrelevant as far as executing mashups go—all Power Query cares about are its types—usually, what&#8217;s output ends up being handed to an external system. A way to provide that system with enhanced type guidance could help it optimally handle and store the values it receives.</p>
+
+
+
+<p>Data outputted by mashups often originates <em>from</em> external systems. Ideally, the mechanism used for enhanced type guidance would be something that data sources could also participate in, so that they can annotate data they provide with extra type details that will stay with that data as it flows through Power Query and out to the ultimate external destination.</p>
+
+
+
+<p>Simple facet <var>NativeTypeName</var> may come to mind. However, it&#8217;s not helpful here because its values are external system specific and so are not interchangeable between different external systems. Instead, what&#8217;s needed is an external system agnostic way to communicate relevant type details.</p>
+
+
+
+<p><strong>Type claim facets</strong> provide a standardized way to identify common external type groupings using a system-agnostic nomenclature.</p>
+
+
+
+<p>Data connectors that provide type claims map between their external system&#8217;s types and the appropriate type claim names. Data destinations (e.g. the host environment) map these claims to their type systems and other settings, as appropriate. Tooling can also read these claims and react accordingly, such as how Query Editor may change a table column&#8217;s icon based on the column type&#8217;s type claim.</p>
+
+
+
+<p>Unlike the simple facets, which default to null if not set, <strong>every type has a type claim</strong>. By default, this claim corresponds with the type&#8217;s base name. For example, type text&#8217;s default claim is &#8220;Text.Type&#8221; and type date&#8217;s is &#8220;Date.Type&#8221;. These defaults, by themselves, aren&#8217;t super useful; it&#8217;s the fact that other type claims can be announced that makes this facet interesting and helpful.</p>
+
+
+
+<p><strong>Type claim names are predefined.</strong> You can&#8217;t set this facet by specifying an arbitrary value, like you can with the simple facets. Instead, the standard library provides predefined type values annotated with the various applicable type claim facets. To use a type decorated with one of these claims, simply fetch the predefined type value that&#8217;s already associated with the type claim facet of interest.&nbsp;</p>
+
+
+
+<h3 class="wp-block-heading" id="type-names"><em>Type</em> Names</h3>
+
+
+
+<p>Now we&#8217;re ready to unravel the mystery of the &#8220;Type&#8221; names provided by the standard library (<code>Int8.Type</code>, <code>Currency.Type</code>, <code>Single.Type</code>, etc.).</p>
+
+
+
+<p>Don&#8217;t let &#8220;Type&#8221; in the names confuse you. When you create something in query editor, you define an expression that returns a value—and you give that expression a name. Your choosing a name that ends in &#8220;Type&#8221; doesn&#8217;t create a new language-level type, neither does the fact that the standard library gives things names that end with &#8220;Type&#8221; cause new types to exist.</p>
+
+
+
+<p>Instead, these &#8220;Type&#8221; names are simply names associated with expressions that return the appropriate type to use for whatever the name describes, decorated with the applicable type claim facet. For example, <code>Int8.Type</code> is a name associated with an expression that returns a type value of the correct type to use for 8-bit integers (<code>type number</code>) decorated with a type claim facet of &#8220;Int8.Type&#8221;; <code>Int.16.Type</code> returns a type value holding <code>type number</code> decorated with an &#8220;Int16.Type&#8221; type claim, and so on for <code>Int32.Type</code>, <code>Int64.Type</code>, <code>Currency.Type</code>, <code>Percentage.Type</code>, etc.</p>
+
+
+
+<h3 class="wp-block-heading" id="viewing">&nbsp;Viewing</h3>
+
+
+
+<p>Type claims are used so little outside of tables that the only built-in way to view this facet is via the standard library&#8217;s table functionality. However, since we&#8217;re learning about type claims in general vs. table types in particular, it would be nice to have an easy way to view the type claim facet associated with any type, including non-table types.</p>
+
+
+
+<p>Try the following helper function, which encapsulates the (slight) complexity of using table functionality to extract the type claim off any type value. (Note: This function uses some syntax that we haven&#8217;t covered yet. Details coming soon, in the next post!)</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+TypeClaimFacet = (input as type) as text =&gt; Table.SingleRow(Table.Schema(#table(type table &#91;Col1 = input], {})))&#91;TypeName]
+</pre></div>
+
+
+<p>Applying this helper to some type values lets us see the associated type claim facet values:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  TypeClaimFacet = (input as type) as text =&gt; Table.SingleRow(Table.Schema(#table(type table &#91;Col1 = input], {})))&#91;TypeName]
+in
+  TypeClaimFacet(type number) // &quot;Number.Type&quot; -- the default type claim for type number
+//  TypeClaimFacet(Int8.Type) // &quot;Int8.Type&quot;
+//  TypeClaimFacet(Int16.Type) // &quot;Int16.Type&quot;
+//  TypeClaimFacet(Currency.Type) // &quot;Currency.Type&quot;
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="ascribing-types">Ascribing Types</h2>
+
+
+
+<p>In Power Query, every value has an <strong>ascribed type</strong>, which is <strong>simply the type to which the value is declared to conform</strong>. When a value is created, Power Query automatically ascribes it with an intrinsic type: a numeric value is ascribed with <code>type number</code> when it&#8217;s created, a string value is ascribed with <code>type text</code>, and so forth—nothing surprising here.</p>
+
+
+
+<p>M&#8217;s immutability means you cannot modify the type ascribed to a value. If this is where things stopped, type facets would be pointless because you couldn&#8217;t associate a non-default facet with a value.</p>
+
+
+
+<p>Instead of modifying the type associated with a value (which isn’t allowed), what you can do is replace it using <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/value-replacetype" target="_blank">Value.ReplaceType</a></code>. This method outputs a new value that&#8217;s the same value as before except it&#8217;s now associated with—it&#8217;s been ascribed with—the new type.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+// ascribing a type having a non-default type claim facet
+let
+  StartingValue = 1, // we know this is of type number
+  Result = Value.ReplaceType(StartingValue, Int64.Type)
+in
+  Result // the value 1, of type number, decorated with an &quot;Int64.Type&quot; type claim facet
+
+// ascribing a type having a simple facet
+let
+  StartingValue = 1, // we know this is of type number
+  OriginalType = Value.Type(StartingValue),
+  Faceted = Type.ReplaceFacets(OriginalType, &#91;NativeTypeName = &quot;INT&quot;]),
+  Result = Value.ReplaceType(StartingValue, Faceted)
+in
+  Result // the value 1, of type number, decorated with a NativeTypeName = &quot;INT&quot; facet
+
+// ascribing a type having both a type claim and a simple facet
+let
+  StartingValue = 1, // we know this is of type number
+  Faceted = Type.ReplaceFacets(Int64.Type, &#91;NativeTypeName = &quot;INT&quot;]),
+  Result = Value.ReplaceType(StartingValue, Faceted)
+in
+  Result // the value 1, of type number, decorated with a type claim facet of Int64.Type and a NativeTypeName = &quot;INT&quot; facet
+</pre></div>
+
+
+<p>Above, when we described ascribing types (a.k.a. replacing types), we used the word &#8220;type&#8221; in an overloaded sense, referring to <em>everything</em> that can be contained in a type value. The previous examples <strong>did not change the value’s <em>base type</em> from number to some other base type</strong>, but rather replaced the value&#8217;s plain-vanilla <code>type number</code> with a <code>type number</code> value decorated with a different facet (or facets).</p>
+
+
+
+<p>The type being ascribed must always be structurally compatible with the value it&#8217;s being ascribed to. So, number values can only be ascribed number type values, text values can only be associated with text type values, etc. You can&#8217;t use <code>Value.ReplaceType</code> to coerce a number value to be of <code>type text</code> or vice versa.</p>
+
+
+
+<p>How type ascription works when custom types are involved is complex and perhaps counterintuitive—but still complies with the rule that the ascribed type must be structurally compatible with the value. More on this next time.&nbsp;</p>
+
+
+
+<h2 class="wp-block-heading" id="claiming-vs-converting">Claiming vs. Converting</h2>
+
+
+
+<p>To repeat a key point: Type facets have no mashup engine or language-level effects on behavior. In particular, facets do not define or create new types or sub-types—nothing like that. They&#8217;re just informational-only annotations.</p>
+
+
+
+<p>A value of type number is a number and will behave like any other number, regardless of whether the value&#8217;s type is faceted with a claim that it is Int16.Type or Percentage.Type or any other claim. <code>1 + 2</code> will always equal <code>3</code>, regardless of what facets may be associated with each of those values.</p>
+
+
+
+<p>The below value is not a 64-bit integer, as it is both outside the range of signed whole number values that can be represented in 4-bytes and contains a decimal component. However, no complaints are raised if it is ascribed with a type claim facet of Int64.Type—because facets are <em>strictly</em> informational declarations, not validated facts.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Value.ReplaceType(9223372036854775808.01, Int64.Type)
+</pre></div>
+
+
+<p>On the other hand, in query editor, if you use a table column&#8217;s &#8220;change type&#8221; menu to set a column to whole number (which maps to <code>Int64.Type</code>), the presence of 9223372036854775808.01 in that column will cause an error complaining about the value being &#8220;out of range of a 64 bit integer value.&#8221; This seems to contradict the &#8220;no effects on behavior&#8221; statement. What&#8217;s going on?</p>
+
+
+
+<p>Here&#8217;s a mashup showing the Query Editor-generated change type operation:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+    Data = #table({&quot;Col1&quot;}, {{9223372036854775808.01}}),
+    #&quot;Changed Type&quot; = Table.TransformColumnTypes(Data,{{&quot;Col1&quot;, Int64.Type}})
+in
+    #&quot;Changed Type&quot;
+</pre></div>
+
+
+<p><var>Change Type</var>&#8216;s <code><a href="https://docs.microsoft.com/en-us/powerquery-m/table-transformcolumntypes" target="_blank" rel="noreferrer noopener" aria-label=" (opens in a new tab)">Table.TransformColumnTypes</a></code> does two things: sets the <em>column type</em> to the appropriate M type, decorated with the appropriate type claim, <em>and</em> attempts to transform each value in the column by converting it to the appropriate type then validating that it complies with the specified <em>type claim</em>.</p>
+
+
+
+<p>Power Query uses a set of functions whose names end in &#8220;.From&#8221; to perform these value transformations. You can directly play with these functions to see how the conversion process works. </p>
+
+
+
+<p>For example, in the case of <code><a href="https://docs.microsoft.com/en-us/powerquery-m/int64-from" target="_blank" rel="noreferrer noopener">Int64.From</a></code>, first the input value is converted to type number (if it isn&#8217;t already a number) and any decimal component is rounded. Then, the resulting whole number is checked to see whether it is within the range of valid values for a 64-bit integer. If it is, the number is returned. If not, an error is raised.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+Int64.From(9223372036854775808.01) // raises 'Expression.Error: The number is out of range of a 64 bit integer value.'
+Int64.From(9223372036854775807.01) // returns 9223372036854775807 -- notice how the fractional component was rounded
+</pre></div>
+
+
+<p><strong>The conversion process is what raises errors about values being outside the expected range</strong>, not type ascription. (In fact, from what I’ve seen, the various &#8220;.From&#8221; methods don&#8217;t perform any special type ascription. For example, the result returned by <code>Int64.From</code> is <em>not</em> associated with an &#8220;Int64.Type&#8221; type claim facet.)</p>
+
+
+
+<p>In addition to converting values, <code>Table.TransformColumnTypes</code> sets columns type appropriately, as already mentioned. We can observe this by turning to our friend, <code>Table.Schema</code>. Below, notice how <var>Col1</var> now has a type claim of &#8220;Int64.Type&#8221; (as reflected in the confusingly named <var>TypeName</var> but-really-is-type-claim column).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+    Data = #table({&quot;Col1&quot;}, {{9223372036854775808.01}}),
+    #&quot;Changed Type&quot; = Table.TransformColumnTypes(Data,{{&quot;Col1&quot;, Int64.Type}})
+in
+    Table.Schema(#&quot;Changed Type&quot;)&#91;&#91;Name], &#91;TypeName]]
+// returns a table with a single row equal to &#91;Name = &quot;Col1&quot;, TypeName = &quot;Int64.Type&quot; ]
+</pre></div>
+
+
+<p>[Reference: <code>Table.TransformColumnTypes</code> use of &#8220;.From&#8221; functions is confirmed in a <a rel="noreferrer noopener" aria-label="TechNet forum thread (opens in a new tab)" href="https://social.technet.microsoft.com/Forums/en-US/25a78a53-6f54-4086-b6eb-e06819586dfd/tabletransformcolumntype-conversion-logic?forum=powerquery" target="_blank">TechNet forum thread</a> by a Power Query team member.]</p>
+
+
+
+<h3 class="wp-block-heading" id="transform-or-just-ascribe">Transform or Just Ascribe?</h3>
+
+
+
+<p>When you only think (or hope) that column values will comply with a type claim, <code>Table.TransformColumTypes</code> is the recommended approach for setting this facet. <code>Table.TransformColumTypes</code> may be able to fix non-compliant values when it tries to convert them (such as how fractional components are rounded off decimal numbers when they are converted to integers). When it can&#8217;t, the errors raised hopefully will alert you to the problem and possibly can be handled by other code you write (e.g. a later use of <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/table-replaceerrorvalues" target="_blank">Table.ReplaceErrorValues</a></code>). &nbsp;</p>
+
+
+
+<p>On the other hand, if you’re guaranteed that values will comply with the claim (such as when authoring a data connector that can determine this using the external system’s metadata), by all means, ascribe the appropriate type facets to the table’s columns without conversion. There’s no need to pay the processing cost for an unnecessary execution of <code>Table.TransformColumnTypes</code>. (How to ascribe facets to column types involves custom types, which we&#8217;ll cover next time.)</p>
+
+
+
+<h3 class="wp-block-heading" id="external-systems-type-claim-facets">External Systems &amp; Type Claim Facets</h3>
+
+
+
+<p>Why does type claim facet compliance matter, if facets have no behavioral effects, as far as the language and mashup engine are concerned?</p>
+
+
+
+<p><strong>M itself does not validate compliance but others might.</strong> Most commonly, this occurs when data is handed to external systems. In Power BI&#8217;s query editor, suppose you create a table column containing numbers and ascribe the column a type facet claiming Int64.Type. Power Query doesn&#8217;t care whether the column&#8217;s values actually comply with this claim. However, when the table is handed to the host environment, this claim will guide Power BI to set the storage type it uses for the column to whole number. Then, because of the storage type being used, import of rows where the column contains a non-whole number (based on Power BI&#8217;s definition of that term) will error.</p>
+
+
+
+<p><em>Always tell the truth, even if no one will ever find out</em> is a good maxim to apply here. Always do your best to ensure that any type claim facets your mashups output are true. If you&#8217;re not sure, better to leave off the claim, even if the external tool you&#8217;re using doesn&#8217;t seem to care at the moment.</p>
+
+
+
+<h2 class="wp-block-heading" id="lifespan">Lifespan</h2>
+
+
+
+<p>If you have a value whose type is faceted, do those facets survive across operations and function calls?</p>
+
+
+
+<p>Say you apply an operator between a values which are associated with a non-default type claim facet. Will that facet carry over to the operator&#8217;s output?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  ValueA = Value.ReplaceType(1, Int64.Type),
+  ValueB = Value.ReplaceType(2, Int64.Type),
+  Result = ValueA + ValueB
+In
+  Result // 3 -- but is this number's type associated with an Int64.Type type claim facet?
+</pre></div>
+
+
+<p>No, and it shouldn&#8217;t. Facets have no effect on language and mashup engine behavior. Adding two number values produces a <em>new</em> number value which will have the default type assigned to all numeric values (<code>type number</code>) without any facets carried over. You might be adding two numbers that comply with their Int64.Type type claims. However, this doesn&#8217;t mean that their sum is guaranteed to comply with that claim, so it shouldn&#8217;t automatically be associated with it.</p>
+
+
+
+<p>On the other hand, facets <em>may</em> be &#8220;carried across&#8221; function calls. Typically, you’ll see this with table functions. Some list functions do it, as well. What happens is that the function reuses the column types (table functions) or list item type (list functions) associated with its input for its output. Since those types are preserved, any associated facets stay with them. For example, if you apply <code><a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/table-sort" target="_blank">Table.Sort</a></code> to a table, column types are preserved across the sort, so any facets associated with those column types are preserved.&nbsp;&nbsp;</p>
+
+
+
+<h2 class="wp-block-heading" id="conclusion">Conclusion</h2>
+
+
+
+<p>Hopefully, it’s been at least somewhat fascinating to study facets (sorry—poor attempt at a pun!).</p>
+
+
+
+<p>In this article, we worked a bit with facets decorating types for simple values (e.g. numbers). This allowed us to explore facets without the complexity of table types. However, remember that type facets are primarily relevant when interacting with the external (data sources, host environment and tools). Since tables are the main means of data exchange with the outside world, <strong>facets are almost exclusively used with tables</strong>.</p>
+
+
+
+<p>To re-emphasize two key points: Facets have <strong>no effect on behavior at either the language or mashup engine layers</strong>. Applying facets and defining names that end with “Type” <strong>do not create new types or sub-types</strong>.</p>
+
+
+
+<h2 class="wp-block-heading" id="next-time">Next Time</h2>
+
+
+
+<p>Tables, functions, records and lists—all of these use, or can use, custom types to describe their specifics. Next time, we&#8217;ll learn <a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" data-type="5259">how to define and work with custom types</a>. Get ready for a surprise: type ascription and compatibility checking might not work the way you&#8217;d expect for custom types.</p>
+
+
+
+<p>Until then, keep on having fun with Power Query!</p>
+
+
+
+<h2 class="wp-block-heading has-medium-gray-color has-text-color" id="revision-history">Revision History</h2>
+
+
+
+<p class="has-medium-gray-color has-text-color"><strong>2020-03-06</strong>: Updated section <em>Claiming vs. Converting</em>, removing the statement that I was unable to officially say that <code>Table.TransformColumnTypes</code> use &#8220;.From&#8221; functions, as their use has been <a href="https://social.technet.microsoft.com/Forums/en-US/25a78a53-6f54-4086-b6eb-e06819586dfd/tabletransformcolumntype-conversion-logic?forum=powerquery" target="_blank" rel="noreferrer noopener" aria-label="officially confirmed (opens in a new tab)">officially confirmed</a>.</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" rel="bookmark" title="Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors">Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i-basics" rel="bookmark" title="Power Query M Primer (Part 16): Type System I – Basics">Power Query M Primer (Part 16): Type System I – Basics</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types" rel="bookmark" title="Power Query M Primer (Part 18): Type System III – Custom Types">Power Query M Primer (Part 18): Type System III – Custom Types</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers" rel="bookmark" title="Power Query M Primer (Part 7): Types—Numbers">Power Query M Primer (Part 7): Types—Numbers</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			4 thoughts on &ldquo;<span>Power Query M Primer (Part 17): Type System II – Facets</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88431">
+		<article id="comment-88431" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Frank Tonsen</b> </cite><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets#comment-88431"><time datetime="2020-03-02T08:59:31-06:00">March 2, 2020 at 8:59 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great article!</p>
+<p>One remaining doubt:<br />
+&#8220;In fact, from what I’ve seen, the various “.From” methods don’t perform any special type ascription. For example, the result returned by Int64.From is not associated with an “Int64.Type” type claim facet.&#8221;</p>
+<pre class="brush:m">let
+    Source = Table.FromRecords({[Name = "John", Age = 34.5],[Name = "Peter", Age = 51.5]}),
+    DeclareTableType = type table[Name = text, Age = nullable Number.Type],
+    AscribeType = Value.ReplaceType(Source, DeclareTableType),
+    Transformed = Table.TransformColumns(AscribeType,{{"Age", Int64.From}}),
+    Schema = Table.Schema(Transformed)
+in
+    Schema</pre>
+<p>At least in this example Int64.From does ascribe Int64.Type.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets?replytocom=88431#respond' data-commentid="88431" data-postid="5009" data-belowelement="comment-88431" data-respondelement="respond" data-replyto="Reply to Frank Tonsen" aria-label='Reply to Frank Tonsen'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88432">
+		<article id="comment-88432" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets#comment-88432"><time datetime="2020-03-02T12:13:26-06:00">March 2, 2020 at 12:13 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Frank,</p>
+<p>Thanks for your kind words!</p>
+<p>The example you provided checks whether an Int64.Type type claim facet is associated with the <em>table type</em> (which it is&#8211;something done by <code>Table.TransformColumnTypes</code>).</p>
+<p>However, if we modify the example a little, we can see that the transformation does not associate the Int64.Type type claim facet with the <em>values</em> that were output by the transformation process (i.e. no special ascription was performed on those values by the transformation).</p>
+<pre class="brush:m">
+let
+    Source = Table.FromRecords({[Name = "John", Age = 34.5],[Name = "Peter", Age = 51.5]}),
+    DeclareTableType = type table[Name = text, Age = nullable Number.Type],
+    AscribeType = Value.ReplaceType(Source, DeclareTableType),
+    Transformed = Table.TransformColumns(AscribeType,{{"Age", Int64.From}}),
+    //Schema = Table.Schema(Transformed),
+    TypeClaimFacet = (input as type) as text => Table.SingleRow(Table.Schema(#table(type table [Col1 = input], {})))[TypeName]
+in
+    TypeClaimFacet(Value.Type(Transformed{0}[Age])) // returns  Number.Type, not Int64.Type
+</pre>
+<p>Setting aside the table and using <code>Int64.From</code> directly on a value:</p>
+<pre class="brush:m">
+let
+    Value = 1,
+    Transformed = Int64.From(Value),
+    TypeClaimFacet = (input as type) as text => Table.SingleRow(Table.Schema(#table(type table [Col1 = input], {})))[TypeName]
+in
+    TypeClaimFacet(Value.Type(Transformed)) // Number.Type, not Int64.Type
+</pre>
+<p>Looking at the above, we see that the &#8220;.From&#8221; method itself did not do any special type ascription.</p>
+<p>Does that help?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets?replytocom=88432#respond' data-commentid="88432" data-postid="5009" data-belowelement="comment-88432" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88714">
+		<article id="comment-88714" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Nilton Maganha</b> </cite><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets#comment-88714"><time datetime="2021-06-10T22:15:36-05:00">June 10, 2021 at 10:15 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi thanks for the lesson and congratulations for the quality of the material.</p>
+<p>Do you have any tips to solve an specific error that occurs while trying to get information from Oracle Database using web data source (webservice generated in xml)?</p>
+<p>If a number has decimal places but doesn&#8217;t have an integer part, like 0.15<br />
+Oracle generates this information inside xml as .15   without the 0 (zero) in front of the decimal signal.<br />
+Then, while uploading this data inside Power BI it gives a message that wasn&#8217;t possible to convert .15</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets?replytocom=88714#respond' data-commentid="88714" data-postid="5009" data-belowelement="comment-88714" data-respondelement="respond" data-replyto="Reply to Nilton Maganha" aria-label='Reply to Nilton Maganha'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88715">
+		<article id="comment-88715" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets#comment-88715"><time datetime="2021-06-21T10:07:25-05:00">June 21, 2021 at 10:07 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hmm&#8230;which data type are you converting the number string to? Decimal? Fixed decimal/currency?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets?replytocom=88715#respond' data-commentid="88715" data-postid="5009" data-belowelement="comment-88715" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='5009' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.081 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 04:52:09 -->
+
+<!-- super cache -->

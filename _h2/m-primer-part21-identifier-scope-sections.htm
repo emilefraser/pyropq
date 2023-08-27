@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 21): Identifier Scope &#038; Sections | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 21): Identifier Scope &#038; Sections Comments Feed" href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/5809" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=5809' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F07%2F12%2F5809%2Fpower-query-m-primer-part21-identifier-scope-sections" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2021%2F07%2F12%2F5809%2Fpower-query-m-primer-part21-identifier-scope-sections&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-5809 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-5809" class="post-5809 post type-post status-publish format-standard hentry category-power-query-m-primer category-programming tag-data-transformation tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m tag-variables">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 21): Identifier Scope &#038; Sections</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2021-07-12T15:20:05-05:00">July 12, 2021</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a>, <a href="https://bengribaudo.com/blog/tag/variables" rel="tag">Variables</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p class="has-drop-cap">The same identifier name (think: variable name, field name, etc.) can be defined more than once in the same set of Power Query expressions. If you reference an identifier name that&#8217;s been defined in multiple places, <strong>which of those definitions will your reference point to?</strong></p>
+
+
+
+<p>In this post, let’s learn how M sorts this out. We&#8217;ll also explore sections—the usually hidden &#8220;frame&#8221; at the core of organizing the different expressions that make up a Power Query program.</p>
+
+
+
+<p>Let&#8217;s get to it…and have fun while we&#8217;re at it!</p>
+
+
+
+<span id="more-5809"></span>
+
+
+
+<h1 class="wp-block-heading" id="series-index">Series Index</h1>
+
+
+
+<ul>
+<li><a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers" data-type="post" data-id="4321">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata">Metadata (part 20)</a></li>
+
+
+
+<li>Identifier Scope &amp; Sections (part 21) [this post]</li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="identifier-scope"><strong>Identifier Scope</strong></h2>
+
+
+
+<p class="has-drop-cap">Let&#8217;s start really, really simple. For the moment, assume that the below is all that exists in your Power Query world (so there&#8217;s no standard library, no other queries and no global environment of any kind present as the mashup engine evaluates the expression).</p>
+
+
+
+<p>In this record, what can the expression defining field <var>a</var> &#8220;see&#8221;? To put it in other words, what variables is the code that defines <var>a</var> able to reference?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [2]; title: ; quick-code: false; notranslate" title="">
+&#91;
+  a = 1,
+  b = 2,
+  c = 3
+]
+</pre></div>
+
+
+<p><var>a</var>&#8216;s expression can &#8220;see&#8221; (i.e. is allowed to reference) variables <var>b</var> (whose value is 2) and <var>c</var> (with a value of 3). However, a reference of &#8220;<code>a</code>&#8221; is not allowed.</p>
+
+
+
+<p class="has-drop-cap">In technical terms, an identifier reference in the style of &#8220;<code>a</code>&#8221; is called an <strong>exclusive identifier reference</strong>. &#8220;Exclusive&#8221; implies that the list of identifiers visible to the reference <em>excludes</em> the identifier for the let expression variable or record field currently being defined. Above, the expression defining <var>a</var> cannot contain the reference &#8220;<code>a</code>&#8221; because <var>a</var> is not in the list of identifiers visible to the reference—because <var>a</var> is the identifier currently being defined.</p>
+
+
+
+<p>What happens if you attempt a self-reference? M stops you, raising an error because it can&#8217;t see the name you&#8217;re trying to use.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+&#91;
+  a = a * 10 // raise &quot;Expression.Error: The name 'a' wasn't recognized.  Make sure it's spelled correctly.&quot;
+]
+</pre></div>
+
+
+<p>This limitation against self-references is a good thing. Something like the above doesn&#8217;t make sense. It would result in infinite recursion.</p>
+
+
+
+<h3 class="wp-block-heading" id="inclusive-identifier-references"><strong>Inclusive Identifier References</strong></h3>
+
+
+
+<p class="has-drop-cap">While normally self-references are bad, there is a case where they are not only acceptable but also needful: recursive functions. How do you self-reference here? Use what&#8217;s known as an <strong>inclusive identifier reference</strong>: prepend the variable&#8217;s name with an &#8220;@&#8221;.</p>
+
+
+
+<p>An inclusive identifier reference works exactly the same as an exclusive identifier reference, except that the exclusive reference&#8217;s &#8220;exclude the current let variable or record field&#8221; rule does not apply. So, the set of identifiers visible to an inclusive reference <em>includes</em> the currently being defined variable or field.</p>
+
+
+
+<p>Below, <var>SumConsecutive</var> uses an inclusive identifier reference (notice the prepended &#8220;@&#8221;) to reference itself.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [2]; title: ; quick-code: false; notranslate" title="">
+let
+  SumConsecutive = (x) =&gt; if x &lt;= 0 then 0 else x + @SumConsecutive(x - 1),
+  Result = SumConsecutive(4)
+in
+  Result // returns 10
+</pre></div>
+
+
+<p class="has-drop-cap">There&#8217;s no technical prohibition against using inclusive references where they are not needed (as the below example shows), but doing so doesn&#8217;t serve much of a point.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [5]; title: ; quick-code: false; notranslate" title="">
+let
+  a = 10,
+  b = 20
+in
+  @a * @b // while valid, neither @ is needed here -- a * b works fine and is preferable
+</pre></div>
+
+
+<p>Unnecessarily using this style of reference might even cause confusion as the next developer reading your code might see the &#8220;@&#8221; and then spend time puzzling over why you used it. Recommendation: Only use inclusive references when necessary.</p>
+
+
+
+<p class="has-drop-cap">If the nefarious idea comes that maybe you could use a inclusive identifier reference to self-reference outside the context of a recursive function—say, to code up an expression like <code>a = @a * 10</code>—you&#8217;re treading on dangerous ice. Even so, M tries to keep you safe here: If you ask the engine to evaluate a cyclic reference that it determines will never terminate, it will raise <code>Expression.Error: A cyclic reference was encountered during evaluation.</code> (Note, though, this error willy only be raised if the engine detects the cyclic reference. If it doesn&#8217;t, M will try to evaluate the expression and then may run out of resources.)</p>
+
+
+
+<h3 class="wp-block-heading" id="paternal-merge"><strong>Paternal Merge</strong></h3>
+
+
+
+<p class="has-drop-cap">With these basics out of the way, let&#8217;s make things more complex. Jumping back to the initial example, let&#8217;s wrap it in an outer record. Below, what can <var>inner</var>&#8216;s <var>a</var> see?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [4]; title: ; quick-code: false; notranslate" title="">
+&#91;
+  a = 10,
+  inner = &#91;
+    a = 1, // can see a = 10 (from the outer record), b = 2, c = 3
+    b = 2, // can see a = 1 (from the inner record), c = 3
+    c = 3 // can see a = 1 (from the inner record), b = 2
+  ]
+]
+</pre></div>
+
+
+<p><var>inner</var>&#8216;s <var>a</var> can now see an <var>a</var>—but this <var>a</var> is not itself (not a self-reference); rather, it&#8217;s the <var>a</var> from the parent record (which has a value of 10). In contrast, the reference to <var>a</var> in the expressions for both <var>inner</var> <var>b</var> and <var>c</var> points to <var>inner</var>&#8216;s <var>a</var> (value = 1). These two expressions &#8220;see&#8221; <var>inner</var>&#8216;s <var>a</var>, while <var>inner</var> <var>a</var>&#8216;s exclusive reference cannot; instead, that reference is resolved by falling back to <var>a</var> from the parent record.</p>
+
+
+
+<p>What’s going on? Identifier references are resolved by first looking locally to check for a correspondingly-named identifier. If a match isn&#8217;t found there, the parent is then checked for the identifier.</p>
+
+
+
+<p>As an expression can contain child expressions which themselves define identifiers, and those identifiers&#8217; expressions can themselves define children which define identifiers (and so forth), this checking of the parent for the corresponding identifier happens recursively. The check starts locally then works up through each successive paternal layer (parent, grand-parent, great-grandparent, etc.) all the way to the global environment until a matching identifier is found.</p>
+
+
+
+<p>The preceding example illustrates this behavior using a record nested inside another record, but this behavior is not exclusive to records—it is universally applicable to all identifiers in M (e.g. applies to let expression variables, references between queries, etc.).</p>
+
+
+
+<h3 class="wp-block-heading" id="cross-query-references"><strong>Cross-Query References</strong></h3>
+
+
+
+<p>Speaking of references between queries, consider a file with two queries in it:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// Data
+10
+
+// Query1
+let
+  Data = 100,
+  Result = Data // sees the Data from the let expression (value = 100), not the value from the query named Data (value = 10)
+in
+  Result // returns 100
+</pre></div>
+
+
+<p><var>Query1</var>&#8216;s <var>Result</var> references identifier <var>Data</var>. There are two identifiers named <var>Data</var> in the file. Which one does <var>Result</var>&#8216;s reference point to? The <var>Data</var> defined in the <code>let</code> expression (value = 100).</p>
+
+
+
+<p>Why? Jump back to what we just learned: when two identifiers have the same name, local wins out over paternal. The &#8220;winning&#8221; <var>Data</var> is the <var>Data</var> that is the sibling to <var>Result</var> in the let expression (so is local), not the other <var>Data</var> (which is defined in a paternal scope).</p>
+
+
+
+<h2 class="wp-block-heading" id="sections"><strong>Sections</strong></h2>
+
+
+
+<p class="has-drop-cap">The concept of references between queries leads to an interesting thought. In Query Editor, each query appears as a separate entity in the UI. Yet, as the last example illustrates, these visually separated queries can reference each other. To make this possible, there must be some kind of paternal scope—like some kind of hidden super-let expression or record that holds all of a file&#8217;s queries.</p>
+
+
+
+<p>There is: The parent &#8220;container&#8221; holding the queries is called a <em>section</em>. It&#8217;s defined inside a <em>section document</em>.</p>
+
+
+
+<p>For better or worse, section documents are not currently visible as raw code in Microsoft&#8217;s consumer-facing query editing tools (e.g. Query Editor). This doesn&#8217;t mean they&#8217;re not there—just you don&#8217;t (usually) get to see them. Instead, behind the scenes, the consumer-facing tools automatically mange them for you (e.g. when you create a query, the tool adds it to the appropriate section; when you update a query, it updates the appropriate place in the section; and so forth).</p>
+
+
+
+<p>Nonetheless, sections (even though they&#8217;re hidden) affect how M works, so learning about them will help in your understanding of this language. Besides, who knows, maybe one day you&#8217;ll be in one of those advanced situations where you need to directly edit a section document (like when building a custom data connector using the <a href="https://marketplace.visualstudio.com/items?itemName=Dakahn.PowerQuerySDK" data-type="URL" data-id="https://marketplace.visualstudio.com/items?itemName=Dakahn.PowerQuerySDK" target="_blank" rel="noreferrer noopener">Power Query SDK</a>).</p>
+
+
+
+<p>Below is what the section document for the previous example looks like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; quick-code: false; notranslate" title="">
+section Section1;
+
+shared Data = 10;
+
+shared Query1 = let
+  Data = 100,
+  Result = Data // sees the Data from the let expression (value = 100), not the value from the query named Data (value = 10)
+in
+  Result // returns 100
+;
+</pre></div>
+
+
+<p>(You can see this for yourself by creating the two queries in Microsoft Excel. After you&#8217;ve saved and closed the file, open it in <a href="https://bengribaudo.com/tools/datamashupexplorer" data-type="page" data-id="5119">Data Mashup Explorer</a>, where you&#8217;ll be able to view the section document under <em>Package Parts</em> &gt; <em>Formulas</em> &gt; <em>Section1.m</em>.)</p>
+
+
+
+<p>A section starts with the keyword <code>section</code> followed by a name for the section, followed by a semicolon. Each section name must be unique in the global environment.</p>
+
+
+
+<h3 class="wp-block-heading" id="section-members-a-k-a-queries"><strong>Section Members (a.k.a. Queries)</strong></h3>
+
+
+
+<p class="has-drop-cap">Query Editor&#8217;s UI calls the top-level expressions you define &#8220;queries.&#8221; However, this term is not always an accurate descriptor, as what you can define isn&#8217;t limited to queries: you can also create parameters, functions, etc. Thankfully, sections use a more broadly applicable term for the equivalent concept.</p>
+
+
+
+<p>In the section, each &#8220;query&#8221; from the UI equates to a <strong>section member</strong>. Looking at the above example, notice that it contains two section members. Each is identified by name, then there&#8217;s an equals sign, then the expression for the section member, then a semi-colon.</p>
+
+
+
+<p>(You may have noticed that <code>shared</code> precedes both section member&#8217;s names. We&#8217;ll talk about its meaning shortly.)</p>
+
+
+
+<h3 class="wp-block-heading" id="identifier-reference-resolution"><strong>Identifier Reference Resolution</strong></h3>
+
+
+
+<p class="has-drop-cap">As far as identifier reference resolution goes, <strong>a section is the immediate parent scope to its section members&#8217; expressions</strong>.</p>
+
+
+
+<p>Say one of those members is defined as a let expression which includes a reference to <var>Query1</var>. To resolve this reference, M will first look for an identifier with that name in the let expression. If it doesn&#8217;t find a match, it will checks the section containing the let expression (because it&#8217;s the let expression&#8217;s parent), for an identifier named <var>Query1</var>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+section Section1;
+	
+shared Query1 = …;
+	
+shared Query2 = let 
+  Result = Table.FirstN(Query1, 10)
+in 
+  Result // since there's no Query1 in this expression, the Query1 in the section is what is referenced
+;
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="the-ubiquitous-section1"><strong>The Ubiquitous <var>Section1</var></strong></h3>
+
+
+
+<p class="has-drop-cap">The section documents we&#8217;ve been examining each contain a single section, named &#8220;Section1&#8221;. <var>Section1</var> is the section Microsoft&#8217;s consumer-focused Power Query tools use to store the queries you write.</p>
+
+
+
+<p>Language-wise, there&#8217;s no special significance to this name; it just happens to be what Microsoft decided to use. (You could argue that a more exciting name, say <var>MyReallyCoolPowerQueryCodeThatSolvesTheWorldsProblems</var>, might have been nice, but then, that&#8217;s not as professional as the generic, benign <var>Section1</var>, so it&#8217;s probably a good thing they went with what they did.)</p>
+
+
+
+<h3 class="wp-block-heading" id="storing-invalid-code-in-a-validity-required-world"><strong>Storing Invalid Code in a Validity-Required World</strong></h3>
+
+
+
+<p class="has-drop-cap">A section member&#8217;s expression must be syntactically valid and must be, well, an expression.</p>
+
+
+
+<p>Since a section document is not an expression, a section member cannot contain a nested section document.</p>
+
+
+
+<p>Speaking of valid syntax, in Query Editor, you can set a query&#8217;s expression to something that contains invalid syntax (imagine that you&#8217;re in the process of coding then need to quit for the day so you save your incomplete expression). How is this erroneous code stored if section member expressions must only contain accurate syntax?</p>
+
+
+
+<p>Behind the scenes, your Query Editor escapes any double-quotes in the malformed code then wraps it in a <code>#!"…"</code> literal.</p>
+
+
+
+<p>Here&#8217;s an incomplete expression:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; quick-code: false; notranslate" title="">
+let &quot;hi!&quot;
+</pre></div>
+
+
+<p>In the section document, this translates to the following section member expression:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+#!&quot;let &quot;&quot;hi!&quot;&quot;&quot;;
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="literal-attributes"><strong>Literal Attributes</strong></h3>
+
+
+
+<p class="has-drop-cap">Both sections as well as section members can be decorated with what are called <strong>literal attributes</strong>. These are a set of literal (hard-coded, not computed) values held in a record-like construct that can be used to attach an extra level of metadata-like data to the section as a whole or to individual section members.</p>
+
+
+
+<p>The M language specification does not give special meaning to any particular literal attribute; it simply defines the syntax for setting these attributes. However, tooling can choose to use these attributes to affect how it behaves (such as to implement special behaviors in the tool).</p>
+
+
+
+<p>For example, Query Editor uses literal attribute <var>Description</var> to store the description associated with a section member (a.k.a. query).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; first-line: 1; highlight: [3]; title: ; quick-code: false; notranslate" title="">
+section Section1;
+
+&#91; Description = &quot;Details about the people in our system.&quot; ]
+shared People = let
+    Source = #table(type table &#91;FirstName=text, LastName=text], {{&quot;Joe&quot;, &quot;Smith&quot;}, {&quot;Bob&quot;, &quot;Brown&quot;}})
+in
+    Source;
+</pre></div>
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2022/06/Section-Member-Literal-Attribute-Example.png"><img decoding="async" src="https://bengribaudo.com/wp-content/uploads/2022/06/Section-Member-Literal-Attribute-Example-1024x968.png" alt="Screenshot showing a query/section member's description stored in literal attribute &quot;Description&quot;" class="wp-image-6842" width="512" height="484" srcset="https://bengribaudo.com/wp-content/uploads/2022/06/Section-Member-Literal-Attribute-Example-1024x968.png 1024w, https://bengribaudo.com/wp-content/uploads/2022/06/Section-Member-Literal-Attribute-Example-300x284.png 300w, https://bengribaudo.com/wp-content/uploads/2022/06/Section-Member-Literal-Attribute-Example.png 1747w" sizes="(max-width: 512px) 100vw, 512px" /></a></figure>
+
+
+
+<p>From what I&#8217;ve seen, these attributes are only used in a few other places, like when Query Editor&#8217;s &#8220;<a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/power-query/custom-function" target="_blank">Custom Function</a>&#8221; feature is used (to link the sample expression and auto-updated function together), as well as <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/power-query/handlingdataaccess" target="_blank">during custom data connector development</a>. At any rate, they currently don&#8217;t appear to be applicable outside of limited special cases.</p>
+
+
+
+<p>A key differentiator between literal attributes and metadata is the former&#8217;s literalness. Literal attributes can be used in cases where dynamically computed values would be costly or inappropriate. Reading literal attributes is cheap, safe and predictable, without the potential for recursive references, calls to external systems, etc., all of which can be encountered with metadata (i.e. because expressions can be used when defining the latter, like e.g. <code>value meta [ IsImportant = CheckWhetherShouldBeImportantToday()]</code>).</p>
+
+
+
+<p>As far as literal attribute syntax goes, think of a record whose field values are constrained to only literal strings, numbers, nulls and logical values; hard-coded lists made up of that same set of literal values, and nested records whose fields are similarly constrained. </p>
+
+
+
+<h3 class="wp-block-heading" id="organizational-not-executable"><strong>Organizational, Not Executable</strong></h3>
+
+
+
+<p class="has-drop-cap">Prior to our encountering sections, all of the M code we looked at were expressions. Expressions can be executed and either return results or raise errors.</p>
+
+
+
+<p>That&#8217;s not the case for sections. A section is an organizational structure which helps define the M program. Sections are not themselves executable (and so do not produce values); rather, they <em>contain</em> named expressions which can be executed, if desired. You can&#8217;t execute a section, but you (or the tool you&#8217;re using) can ask the mashup engine to execute a section member that&#8217;s contained in a particular section.</p>
+
+
+
+<h3 class="wp-block-heading" id="sections"><strong>#sections</strong></h3>
+
+
+
+<p class="has-drop-cap">Now that you know what sections are, what if you want to see the sections that are currently present in your environment?</p>
+
+
+
+<p>M defines a special keyword, <code>#sections</code>, that allows you to see all the sections currently in existence. Except in certain advanced scenarios (like when <a href="https://bengribaudo.com/blog/2020/06/04/5298/shedding-light-on-the-mysterious-embedded-value" data-type="post" data-id="5298">Embedded.Value is used</a> or in the realm of custom connector development), only one section will be present: <var>Section1</var>. (How anticlimactic!)</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+#sections
+</pre></div>
+
+
+<figure class="wp-block-image size-medium is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/07/image-3.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/07/image-3-300x63.png" alt="Screenshot showing #sections having returned a record containing a single field: Section1" class="wp-image-5815" width="225" height="47" srcset="https://bengribaudo.com/wp-content/uploads/2021/07/image-3-300x63.png 300w, https://bengribaudo.com/wp-content/uploads/2021/07/image-3-768x160.png 768w, https://bengribaudo.com/wp-content/uploads/2021/07/image-3-624x130.png 624w, https://bengribaudo.com/wp-content/uploads/2021/07/image-3.png 777w" sizes="(max-width: 225px) 100vw, 225px" /></a></figure>
+
+
+
+<p><code>#sections</code> returns a record with one field per section, with the field named after the section. Eachfield value is itself a record which contains a field for each of that section&#8217;s members. These fields can be used to access those members&#8217; values.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+#sections&#91;Section1]
+</pre></div>
+
+
+<figure class="wp-block-image size-medium is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/07/image-2.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/07/image-2-300x103.png" alt="Screenshot showing the result of #sections[Section1]: a record with one field per Section1 section member" class="wp-image-5814" width="225" height="77" srcset="https://bengribaudo.com/wp-content/uploads/2021/07/image-2-300x103.png 300w, https://bengribaudo.com/wp-content/uploads/2021/07/image-2-768x264.png 768w, https://bengribaudo.com/wp-content/uploads/2021/07/image-2-624x214.png 624w, https://bengribaudo.com/wp-content/uploads/2021/07/image-2.png 777w" sizes="(max-width: 225px) 100vw, 225px" /></a></figure>
+
+
+
+<p>Remember the below example from earlier? Using what we just learned about <code>#sections</code>, if you want to make <var>Query1</var>&#8216;s reference to <var>Data</var> point to the query (a.k.a. section member) named <var>Data</var> instead of to the let variable with the same name, you could change the reference from <var>Data</var> to <code>#sections[Section1][Data]</code>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [10]; title: ; quick-code: false; notranslate" title="">
+// Data
+10
+
+// Query1
+let
+  Data = 100,
+  // Previously: 
+  // Result = Data// sees the Data from the let expression (value = 100), not the value from the query named Data (value = 10)
+  // Now:
+  Result = #sections&#91;Section1]&#91;Data] // sees the query named Data (value = 10)
+in
+  Result //returns 10 (previously returned 100)
+</pre></div>
+
+
+<p>This works, though there is a more preferable syntax option that achieves the same effect….</p>
+
+
+
+<h3 class="wp-block-heading" id="section-access-expressions"><strong>Section Access Expressions</strong></h3>
+
+
+
+<p class="has-drop-cap">Instead of <code>#sections[Section1][Data]</code>, a <em>section access expression</em> can be used as a shorter way to specify the same reference:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+Section1!Query1
+</pre></div>
+
+
+<p>Yes, that&#8217;s <em>section&#8217;s identifier + &#8220;!&#8221; + section member&#8217;s identifier</em>. It works just like <code>#section[Section1][Data]</code>, just uses more concise syntax.</p>
+
+
+
+<h3 class="wp-block-heading" id="shared-section-members"><strong>Shared Section Members</strong></h3>
+
+
+
+<p class="has-drop-cap">Above, when sections were introduced, you may have noticed that each section member in the introductory example had a &#8220;shared&#8221; before its name. What&#8217;s this for?</p>
+
+
+
+<p>Let&#8217;s imagine that one day the Power Query ecosystem allows normal users to create multiple sections. You define one section for your personal &#8220;standard library&#8221; of handy-dandy helper functions which you copy-and-paste into all your Power Query-powered report files. Then, in those files, you use the normal Query Editor to define various queries (section members), which the UI, per its default, saves into <var>Section1</var>.</p>
+
+
+
+<p>Let&#8217;s say that in one of those files, the resulting section document looks something like this:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+section Section1; // managed by the GUI Query Editor
+shared CustomerData = …;
+shared OrderData = …;
+	
+section MyHelpers; // from your copy-and-paste
+shared CleanupColumnNames = (input) =&gt; …;
+shared ConvertFromUnixTimestamp = (input) =&gt; …;
+</pre></div>
+
+
+<p>How would one of your queries (section members) in <var>Section1</var> reference a helper in <var>MyHelpers</var>? Based on what we&#8217;ve covered so far, we know that a section access expression will work.</p>
+
+
+
+<p>For example, let&#8217;s say <var>CustomerData</var> (in <var>Section1</var>) wants to use <var>MyHelper</var>&#8216;s <var>CleanupColumnNames</var>. You could achieve this by coding <var>CustomerData</var> to use a section access expression:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [3]; title: ; quick-code: false; notranslate" title="">
+let
+  Source = Sql.Database(…),
+  CleanColumns = MyHelpers!CleanupColumnNames(Source),
+  …
+in
+  Result
+</pre></div>
+
+
+<p>This works; however, the little bit of extra typing required to identify the other section (the <code>MyHelpers!</code> part) can be avoided by <em>sharing</em> the referenced section member. Sharing a section member adds it to the global environment, which is the final place checked for identifier resolution.</p>
+
+
+
+<p>In our example, <var>MyHelper</var>&#8216;s <var>CleanupColumnNames</var> is already marked as shared, so nothing needs to be changed there. We can simply shorten <var>Section1</var>&#8216;s <var>CustomerData</var> reference to:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; highlight: [3]; title: ; quick-code: false; notranslate" title="">
+let
+  Source = Sql.Database(…),
+  CleanColumns = CleanupColumnNames(Source),
+  …
+in
+  Result
+</pre></div>
+
+
+<p class="has-drop-cap">How does identifier resolution work for the above reference to <var>CleanupColumnNames</var>? M first checks locally for an identifier with the specified name. Finding none, it checks the section that contains <var>CustomerData</var> (that would be <var>Section1</var>). Since a &#8220;CleanupColumnNames&#8221; isn&#8217;t defined there, either, M moves on to check the global environment. Here, at last, it finds an identifier named &#8220;CleanupColumnNames&#8221;—which is there because it was shared with the global environment by <var>MyHelper</var>.</p>
+
+
+
+<p>If this is so convenient, why is it even possible to not share section members? Why not force them to all be always shared? </p>
+
+
+
+<p>Not sharing a section member gives you a way to indicate that a value isn&#8217;t intended for general consumption. Not sharing also avoids unnecessarily polluting the global environment and the risk of causing a global name conflict.</p>
+
+
+
+<p>Suppose in section <var>MyHelpers</var>, you have a member named <var>ToUpper</var> that is only intended for internal use by other code in <var>MyHelpers</var>. Not sharing this method helps convey this intention. While the identifier can still be accessed by code in other sections (i.e. if they were to use <code>#sections</code> or a section member access expression), hopefully the extra work involved will discourage potential consumers by cluing them into the fact that you didn&#8217;t intend for them to use the non-shared member.</p>
+
+
+
+<p>As to global name conflicts: Suppose two sections both share a member named <var>DoSomething</var>. An expression is being evaluated that references <var>DoSomething</var> which isn&#8217;t satisfied by any child scope. When M checks the global scope, it finds two <var>DoSomething</var>s (from the two shares). Which should it use to satisfy the reference? It doesn&#8217;t know, so it won&#8217;t use either. Instead, it will raise an error. This ambiguity and the resulting error won&#8217;t occur if only one of the two <var>DoSomething</var>s was shared.</p>
+
+
+
+<p>Don&#8217;t shy away from sharing members, but at the same time, don&#8217;t needlessly share members that really are intended for in-this-section-only use.</p>
+
+
+
+<p>So how do you not share a section member? Simply leave off the &#8220;shared&#8221; before its name.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; quick-code: false; notranslate" title="">
+section MyHelpers; 
+
+// not shared
+ToUpper = (input) =&gt; …; 
+
+// shared
+shared CleanupColumnNames = (input) =&gt; …; 
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="global-environment"><strong>Global Environment</strong></h2>
+
+
+
+<p class="has-drop-cap">Several times in the preceding, the term &#8220;global environment&#8221; has been used. Let&#8217;s define this phrase.</p>
+
+
+
+<p>The <strong>global environment</strong> is the last place (the top of the hierarchy) where M looks to resolve identifier references. Normally, it consists of all <em>shared</em> section members from all sections, as well as any identifiers directly injected into the global scope.</p>
+
+
+
+<p>Directly injecting things into the global scope…can you do this? Not normally—but Microsoft can and does. Specifically, the standard library gets added into the global environment.</p>
+
+
+
+<p>Putting these pieces together, the normal global environment consists of all shared members + the standard library.</p>
+
+
+
+<h3 class="wp-block-heading" id="shared"><strong><code>#shared</code></strong></h3>
+
+
+
+<p class="has-drop-cap">To view the identifiers in the global environment, try <code>#shared</code>. It returns a record with a field for each global identifier. This field&#8217;s values can be used to access the values associated with those identifiers.</p>
+
+
+
+<figure class="wp-block-image size-large is-resized"><a href="https://bengribaudo.com/wp-content/uploads/2021/07/image-4.png"><img decoding="async" loading="lazy" src="https://bengribaudo.com/wp-content/uploads/2021/07/image-4-1024x575.png" alt="Result of evaluating #shared" class="wp-image-5816" width="358" height="201" srcset="https://bengribaudo.com/wp-content/uploads/2021/07/image-4-1024x575.png 1024w, https://bengribaudo.com/wp-content/uploads/2021/07/image-4-300x168.png 300w, https://bengribaudo.com/wp-content/uploads/2021/07/image-4-768x431.png 768w, https://bengribaudo.com/wp-content/uploads/2021/07/image-4-624x350.png 624w, https://bengribaudo.com/wp-content/uploads/2021/07/image-4.png 1247w" sizes="(max-width: 358px) 100vw, 358px" /></a></figure>
+
+
+
+<p>There are some interesting uses for <code>#shared</code>. You could, for example, use it to see which standard library functions your particular install of Power Query includes.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  SharedAsTable = Record.ToTable(#shared),
+  FilteredToStandardLibraryFunctions = Table.SelectRows(SharedAsTable, each Text.Contains(&#91;Name], &quot;.&quot;) and Type.Is(Value.Type(&#91;Value]), type function))
+in
+  FilteredToStandardLibraryFunctions 
+</pre></div>
+
+
+<p>You could even take the above further and pull the documentation for those functions from metadata into a table….</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  SharedAsTable = Record.ToTable(#shared),
+  FilteredToStandardLibraryFunctions = Table.SelectRows(SharedAsTable, each Text.Contains(&#91;Name], &quot;.&quot;) and Type.Is(Value.Type(&#91;Value]), type function)),
+  ExtractTypeMetadata = Table.AddColumn(FilteredToStandardLibraryFunctions, &quot;Docs&quot;, each Value.Metadata(Value.Type(&#91;Value]))),
+  DocumentationToClumns = Table.ExpandRecordColumn(ExtractTypeMetadata, &quot;Docs&quot;, {&quot;Documentation.Name&quot;, &quot;Documentation.Description&quot;, &quot;Documentation.LongDescription&quot;, &quot;Documentation.Category&quot;}),
+  RemoveValueColumn = Table.RemoveColumns(DocumentationToClumns,{&quot;Value&quot;})
+in
+  RemoveValueColumn
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="standard-library-special-names"><strong>Standard Library Special Names</strong></h2>
+
+
+
+<p class="has-drop-cap">Could you ever have a name conflict between a shared section member (e.g. a query you define) and something from the standard library. </p>
+
+
+
+<p>No, not normally.</p>
+
+
+
+<p>Why? No rule in the language specification prevents this. Rather, what guards against it is a convention enforced by Microsoft&#8217;s consumer query editor tools. Those tools don&#8217;t allow you to use the period character in a query&#8217;s name (i.e. in section member&#8217;s name). In contrast, all identifiers defined by the standard library have a period in their name (e.g. <code><a href="https://docs.microsoft.com/en-us/powerquery-m/list-count" target="_blank" rel="noreferrer noopener">Table.SelectRows</a></code>, <code><a href="https://docs.microsoft.com/en-us/powerquery-m/list-count" data-type="URL" data-id="https://docs.microsoft.com/en-us/powerquery-m/list-count" target="_blank" rel="noreferrer noopener">List.Count</a></code>, etc.). Since the UI won&#8217;t let you use a period in a section member name, you can&#8217;t use the UI to define a section member whose name conflicts with the standard library.</p>
+
+
+
+<p>Keep in mind that the period-containing identifier names used by standard library are just that: names. If you come from an object-oriented programming background, this style of naming might lead you to wonder if the name before the period identifies a class and the name after the period identifies particular method on that class. For example, you might be included to wonder if <code><a href="https://docs.microsoft.com/en-us/powerquery-m/text-upper" target="_blank" rel="noreferrer noopener">Text.Upper</a></code> is a reference to the &#8220;Upper&#8221; method of class &#8220;Text&#8221;.</p>
+
+
+
+<p>Nope! There are no classes or objects in M. <code>Text.Upper</code> is simply a name with a period in it. The practice of the standard library using&nbsp; periods in its names is a convention solely for the benefit of human developers.</p>
+
+
+
+<h2 class="wp-block-heading" id="next-time"><strong>Next Time</strong></h2>
+
+
+
+<p class="has-drop-cap">Above, we learned that &#8220;the <em>normal</em> global environment consists of all shared members + the standard library&#8221; (emphasis added) and that we <em>normally</em> can&#8217;t inject things into the global scope. <a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Next time</a>, we&#8217;ll learn about a case when these normalities don&#8217;t hold true—where we have full control over the global environment.</p>
+
+
+
+<p>Also, there&#8217;s one identifier resolution situation we haven&#8217;t looked into—which offers the possibility to code things up that are kind-of, sort-of, maybe like objects.</p>
+
+
+
+<p>Up <a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">next time</a>: <code>Expression.Evaluate</code> and closures. Until then, happy coding!</p>
+
+
+
+<h2 class="wp-block-heading" id="revision-history"><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color">Revision History</mark></h2>
+
+
+
+<ul>
+<li><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2021-07-13</strong>: Revised section on <em>Literal Attributes</em> to describe their syntax, as well as one use for them.</mark></li>
+
+
+
+<li><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2021-07-27</strong>: Revised <em>Literal Attributes</em>, adding commentary and an additional use case.</mark></li>
+
+
+
+<li><mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-medium-gray-color"><strong>2022-06-30</strong>: Updated <em>Literal Attributes</em> to use Query Editor&#8217;s &#8220;query description&#8221; as the use case example.</mark></li>
+</ul>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" rel="bookmark" title="Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures">Power Query M Primer (Part 22): Identifier Scope II – Controlling the Global Environment, Closures</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers" rel="bookmark" title="Power Query M Primer (Part 4): Variables &#038; Identifiers">Power Query M Primer (Part 4): Variables &#038; Identifiers</a></li>
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining" rel="bookmark" title="Power Query M Primer (part 2):&lt;br /&gt;Functions: Defining">Power Query M Primer (part 2):<br />Functions: Defining</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text" rel="bookmark" title="Power Query M Primer (Part 6): Types—Intro &#038; Text (Strings)">Power Query M Primer (Part 6): Types—Intro &#038; Text (Strings)</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			7 thoughts on &ldquo;<span>Power Query M Primer (Part 21): Identifier Scope &#038; Sections</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88726">
+		<article id="comment-88726" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Alex Groberman</b> </cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88726"><time datetime="2021-07-12T16:22:41-05:00">July 12, 2021 at 4:22 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great post, thanks! In regards to &#8220;Paternal Merge&#8221;, in the example you gave is there a way to access the outer &#8220;a&#8221; from &#8220;b&#8221;? Or would you need to use a let expression or some such to give a different name to that value so that there&#8217;s no naming conflict?</p>
+<p>The main use case I&#8217;m thinking of is nested &#8220;each&#8221; expressions, currently if values are needed from both the inner and outer &#8220;each&#8221;, I long-hand one of the &#8220;each&#8221;s to &#8220;(&#8230;) =&gt;&#8221; to avoid the conflict.</p>
+<p>Thanks again!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88726#respond' data-commentid="88726" data-postid="5809" data-belowelement="comment-88726" data-respondelement="respond" data-replyto="Reply to Alex Groberman" aria-label='Reply to Alex Groberman'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88729">
+		<article id="comment-88729" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88729"><time datetime="2021-07-13T07:50:56-05:00">July 13, 2021 at 7:50 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great question! There isn&#8217;t a way to say &#8220;give me the value of <var>a</var> from the previous scope.&#8221; Instead, something like you describe (giving the outer value a different name) is a very good approach. You also might be able to access the value by navigating to it from a section member expression (e.g.: <code>Section1!MyQuery[outer][a]</code>).</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88729#respond' data-commentid="88729" data-postid="5809" data-belowelement="comment-88729" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88731">
+		<article id="comment-88731" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Thomas Edmunds</b> </cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88731"><time datetime="2021-07-15T03:11:09-05:00">July 15, 2021 at 3:11 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi &#8211; really great series of posts. I am learning a lot! </p>
+<p>Just a quick note on the Literal Attributes of section members. I noticed if you create a linked function via the UI (right click a query and choose &#8220;Create Function&#8230;&#8221;) there is no obvious way to tell that that function is linked to a query. The only way in the UI that I am aware of is to right click the function and choose &#8220;Advanced Editor&#8221; and it will give you a warning about the function being linked. </p>
+<p>However looking at the underlying code in the Data Mashup Explorer shows there is a Literal Attribute above the function along the lines of <code>[ FunctionQueryBinding = "{""exemplarFormulaName"":""LinkedQuery""}" ]</code>. So at least we can see what goes on behind the scenes!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88731#respond' data-commentid="88731" data-postid="5809" data-belowelement="comment-88731" data-respondelement="respond" data-replyto="Reply to Thomas Edmunds" aria-label='Reply to Thomas Edmunds'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88735">
+		<article id="comment-88735" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88735"><time datetime="2021-07-27T12:22:26-05:00">July 27, 2021 at 12:22 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thank you, Thomas. When I initially wrote this post, off the top of my head, I was remembering that linkage as being set up using metadata—but it isn&#8217;t; literal attributes are used. Just updated the post to reflect this. Thank you, again, for pointing this out!</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88735#respond' data-commentid="88735" data-postid="5809" data-belowelement="comment-88735" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment even depth-2" id="li-comment-88828">
+		<article id="comment-88828" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Lutz</b> </cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88828"><time datetime="2021-12-24T07:47:38-06:00">December 24, 2021 at 7:47 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>This was bugging me for a long time as well. Thank you for clarifying where to look.</p>
+<p>Would there be any scenario where you would want to break the entanglement, but then decide to re-establish the linking later ? I thought of the linking more as a convenience for casual developers, and a nuisance for more advanced/adventurous developers (as you have to clean up all the folders etc when you break the link).  It would be nice if the automatic linking could be disabled somewhere.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88828#respond' data-commentid="88828" data-postid="5809" data-belowelement="comment-88828" data-respondelement="respond" data-replyto="Reply to Lutz" aria-label='Reply to Lutz'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment odd alt thread-even depth-1" id="li-comment-88973">
+		<article id="comment-88973" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Filippo Bottega</b> </cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88973"><time datetime="2022-12-14T18:34:52-06:00">December 14, 2022 at 6:34 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Great post, thank you!<br />
+Is there a way to get the list of all dependencies between section members?<br />
+The dependencies viewer in the query editor can display them but I can&#8217;t find how to export this type of metadata for later use.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88973#respond' data-commentid="88973" data-postid="5809" data-belowelement="comment-88973" data-respondelement="respond" data-replyto="Reply to Filippo Bottega" aria-label='Reply to Filippo Bottega'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88977">
+		<article id="comment-88977" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#comment-88977"><time datetime="2022-12-30T10:28:15-06:00">December 30, 2022 at 10:28 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>I&#8217;m not aware of a way to do this currently. You might ask about this in Microsoft&#8217;s <a href="https://community.powerbi.com/t5/Power-Query/bd-p/power-bi-services" target="_blank" rel="noopener nofollow ugc">Power Query forum</a> to see if anyone there can share details.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections?replytocom=88977#respond' data-commentid="88977" data-postid="5809" data-belowelement="comment-88977" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='5809' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.089 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 04:52:08 -->
+
+<!-- super cache -->

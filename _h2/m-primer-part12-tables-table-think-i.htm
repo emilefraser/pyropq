@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 12): Tables—Table Think I | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 12): Tables—Table Think I Comments Feed" href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/4778" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=4778' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2019%2F12%2F10%2F4778%2Fpower-query-m-primer-part12-tables-table-think-i" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2019%2F12%2F10%2F4778%2Fpower-query-m-primer-part12-tables-table-think-i&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-4778 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-4778" class="post-4778 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 12): Tables—Table Think I</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2019-12-10T15:12:37-06:00">December 10, 2019</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p>Why should you concern yourself with how Power Query &#8220;thinks&#8221; about tables? After all, you write an expression that outputs the table you want, the mashup engine executes it and everyone is happy without you having to think about how the engine does its thing…right? Yes—at least until you encounter performance problems, values change during processing or a firewall error bites—then what do you do?</p>
+
+
+
+<p>Understanding how M processes tables is an important asset in developing efficient mashups, avoiding unexpected data variability and keeping the data privacy layer happy. Streaming, query folding, buffering, table keys, native query caching and the firewall—all of these relate to how the interpreter thinks about/processes/handles tables. </p>
+
+
+
+<p>There’s so much to cover, we’ll split the list in two. Let’s tackle the first half (streaming, query folding and buffering) in this post and save the remainder (table keys, native query caching and the firewall) for next time.</p>
+
+
+
+<p>Let’s get going!</p>
+
+
+
+<span id="more-4778"></span>
+
+
+
+<h1 class="wp-block-heading" id="series-index">Series Index</h1>
+
+
+
+<ul>
+<li><a href="/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li>Tables—Table Think I (part 12) [this post]</li>
+
+
+
+<li><a href="/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling">Error Handling (part 15)</a></li>
+
+
+
+<li><a href="/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i"></a><a href="https://bengribaudo.com/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i"></a><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata" data-type="post" data-id="5523">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h1 class="wp-block-heading" id="how-data-flows">How
+Data Flows</h1>
+
+
+
+<p>To start, let’s make sure we have a firm grasp of streaming and query folding.</p>
+
+
+
+<p>Imagine you are the
+mashup engine. How would you execute the below? </p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Filtered = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Result = Table.FirstN(Filtered, 3)
+in
+  Result
+</pre></div>
+
+
+<p>A simple way would be to retrieve all the rows returned by <code>SomeDataSourceReturningATable</code> and save them in variable <var>Source</var>. Then, take the contents of that variable, figure out which rows pass the <code>[Office] = "Chicago"</code> test, and save those in variable <var>Filtered</var>. Lastly, grab the first three rows from <var>Filtered</var>, save them in <var>Result</var> and then return <var>Result</var>.</p>
+
+
+
+<p>Logical? Yes. Efficient? No. Why not? For one, there’s resource usage: While at most three rows will be output, the system hosting the mashup engine must have enough capacity to store everything returned from the source (which could be billions of rows). Attempting to do this could lead to that system running out of resources (e.g. memory or disk space).</p>
+
+
+
+<p>Thankfully, Power Query doesn’t handle table expressions in this simplistic way. Instead, M uses streaming, query folding or a combination of these two techniques. We learned about both back in <a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a>; in this post, we’ll try to hone our understanding by delving deeper into their details and walking through several examples. If the general ideas of what streaming and query folding are isn’t sharp in your mind, it’s probably worth <a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">jumping back to part 5</a> for a refresher before continuing on.</p>
+
+
+
+<h2 class="wp-block-heading" id="streaming">Streaming</h2>
+
+
+
+<p>Let’s say M executes the above expression using streaming….</p>
+
+
+
+<p>When <var>Result</var>’s contents are requested, <code><a rel="noreferrer noopener" aria-label="Table.FirstN (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-firstn" target="_blank">Table.FirstN</a></code> in the <var>Result</var> step starts by asking the proceeding step (<var>Filtered</var>) for one row of data. When <var>Filtered</var>’s <code><a rel="noreferrer noopener" aria-label="Table.SelectRows (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-selectrows" target="_blank">Table.SelectRows</a></code> receives this request, it turns around and asks step <var>Source</var> for a row of data, which <var>Source</var> provides. When <var>Filtered</var>’s <code>SelectRows</code> receives this row, it checks whether it passes <var>Filtered</var>’s <code>[Office] = "Chicago"</code> test. If so, <code>SelectRows</code> returns the row to <var>Result</var>; if not, it discards the row then requests another, repeating this process until it finds one that passes the test, which is returned to step <var>Result</var>. Once <var>Result</var>’s <code>FirstN</code> has received a row, it outputs that row then turns around and asks Filtered for a second row (because it’s looking for a total of three rows). <var>Filtered</var>’s <code>SelectRows</code> then picks back up where it left off with <var>Source</var>, asking for one row at a time until it finds another that passes the <code>[Office] = "Chicago"</code> test, which it then passes to <var>Result</var>’s <code>FirstN</code>, which then outputs it. Lastly, this process is repeated one more time to retrieve the third row <code>FirstN</code> needs to satisfy how it was programmed.</p>
+
+
+
+<p>Each step produces rows one at a time, only requesting as many rows as it needs from the preceding step to produce the requested row. By working with <em>just enough</em> data (vs. the hypothetical simplistic approach we started with which stored the entire output of each step in memory), Power Query is able to handle data sets that are too large to be stored locally and doesn’t waste resources storing rows that ultimately are unnecessary to produce the requested output.</p>
+
+
+
+<h3 class="wp-block-heading" id="internal-in-memory-row-storage">Internal
+In-Memory Row Storage</h3>
+
+
+
+<p>Excepting the data
+provider (which, for performance reasons, might fetch rows in chunks from the
+external data source), none of the operations in the proceeding example held
+rows in memory. When a functioned processed a row, it either passed it on or
+discarded it. </p>
+
+
+
+<p>However, this isn’t true for every operations. Let’s say we add a sort step to our example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Filtered = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Sorted = Table.Sort(Filtered,{{&quot;TotalSales&quot;, Order.Descending}}),
+  Result = Table.FirstN(Sorted , 3)
+in
+  Result
+</pre></div>
+
+
+<p>Sorting (generally) requires retrieving all rows from the previous step so that they can be put in proper order. When the above expression is executed, <var>Result</var>’s <code>Table.FirstN</code> asks <var>Sorted</var>’s <code><a rel="noreferrer noopener" aria-label="Table.Sort (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-sort" target="_blank">Table.Sort</a></code> for the first row. To figure out which row to return, <code>Sort</code> gets <em>all</em> rows from <var>Filtered</var>, sorts them, saves the sorted rows in memory, then returns the first row from the sorted set. Each time <code>Sort</code> is asked for a subsequent row, it returns the appropriate row from what it has in memory. After <code>Sort</code> returns a row, it will never need it again, so it can remove that row from its memory (whether or not it purges memory like this is an internal implementation detail—but at least at the theoretical level it’s <em>allowed</em> to do this).</p>
+
+
+
+<p>This internal storing of rows in memory is not a persistent cache; rather, it is limited in scope to a <em>single</em> method invocation during a <em>single</em> execution of the query. There is no sharing of these held in-memory rowsets when a function is invoked multiple times, like <code>Table.Sort</code> is below (both <code>List.Sum(Top3[TotalSales])</code> and <code>List.Average(Top3[TotalSales])</code> end up calling it).&nbsp; </p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Filtered = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Sorted = Table.Sort(Filtered, {{&quot;TotalSales&quot;, Order.Descending}}),
+  Top3 = Table.FirstN(Sorted , 3)
+in
+  { List.Sum(Top3&#91;TotalSales]), List.Average(Top3&#91;TotalSales]) }
+</pre></div>
+
+
+<p>&#8220;Which operations hold rows internally?,&#8221; you might ask. Table at a time operations, like joins (though not always nested joins), sorts, grouping, pivot/unpivot, are all suspects—and obviously buffering. (Unfortunately, other than for buffering, I’m not aware of documentation officially detailing this so anecdotal evidence gathered from testing and answers to <a rel="noreferrer noopener" aria-label=" (opens in a new tab)" href="https://social.technet.microsoft.com/Forums/en-US/471b18e6-9086-489d-9445-12b3a6205120/pq-query-optimization?forum=powerquery)#c133438f-1a0e-413d-b2b2-090819ff3422" target="_blank">forum posts</a> are what we have to go by.)</p>
+
+
+
+<p>Above, the holding of rows was described as &#8220;in memory.&#8221; Keep in mind that memory can be paged to disk. Working with memory paged to disk is much, much, much slower than working with memory stored in RAM. The memory usage point that triggers paging to disk is environment specific. In some environments, paging starts when a query’s total memory use exceeds 256 MB.</p>
+
+
+
+<h3 class="wp-block-heading" id="performance">Performance</h3>
+
+
+
+<p>The order of operations can have a significant impact on how much data must be kept in memory. To see this significance, let’s contrast two variations of an expression. Both that produce the same output but can differ significantly in local resources used.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Sorted = Table.Sort(Source, {{&quot;TotalSales&quot;, Order.Descending}}),
+  Filtered = Table.SelectRows(Sorted, each &#91;Office] = &quot;Chicago&quot;),
+  Result = Table.FirstN(Filtered, 3)
+in
+  Result
+</pre></div>
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Filtered = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Sorted = Table.Sort(Filtered, {{&quot;TotalSales&quot;, Order.Descending}}),
+  Result = Table.FirstN(Sorted, 3)
+in
+  Result
+</pre></div>
+
+
+<p>With the first expression, sorting occurs directly after <var>Source</var>, so all rows from <var>Source</var> are held in memory by the sort function. The second expression sorts after the <code>Table.SelectRows</code> filter so only rows that pass that filter are held by the sort. Say <var>Source</var> contains two billion rows, out of which only 500 that pass the <code>[Office]
+= "Chicago"</code> test. With the first version of the expression, all two
+billion rows are held by the sort; while with the second, only 500 rows are
+held. What a difference! </p>
+
+
+
+<h3 class="wp-block-heading" id="performance">Performance</h3>
+
+
+
+<p>Tip: When streaming
+is in play, if your query contains steps that hold rows in memory, try placing
+any applicable filter steps before the row-holding steps. This way, the
+filtering steps will reduce the quantity of what needs to be in memory. </p>
+
+
+
+<h2 class="wp-block-heading" id="query-folding">Query
+Folding</h2>
+
+
+
+<p>Streaming can involve pulling lots of rows which are later discarded. In the example we’ve been using, it’s potentially necessary to stream billions of rows from the source to produce the three requested output rows. If, instead, you directly interacted with the source, you could probably tell it exactly what you wanted and it would produce just that. </p>
+
+
+
+<p>If the source were a SQL database, you’d write something like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: sql; title: ; notranslate" title="">
+SELECT TOP 3 *
+FROM Customers
+WHERE Office = 'Chicago'
+ORDER BY TotalSales DESC;
+</pre></div>
+
+
+<p>Or if the source is
+an OData REST API, your request might look like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: plain; title: ; notranslate" title="">
+GET /Customers?$filter=Office eq 'Chicago'&amp;$top=3&amp;$orderby=TotalSales
+</pre></div>
+
+
+<p>In either case, you get back at most 3 results. Potentially billions of rows aren’t sent to you for you to sort through to find the three you want; instead, that processing occurs on the external system (utilizing any indexing or caching it may have) and just the final results are sent back (much less data crossing the wire). It should be intuitively obvious which approach is more efficient. 🙂</p>
+
+
+
+<p>Thankfully, M&#8217;s
+query folding offers the ability to leverage the performance of native queries
+without needing to write them yourself. </p>
+
+
+
+<p>Quick recap: Query folding takes one or more Power Query steps and translates them into a native request which is then executed on the source system (again, for a refresher, <a href="/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm#query-folding">jump back to part 5</a>, if needed). </p>
+
+
+
+<p>With query folding,
+if our source system is a SQL database, it&#8217;s <em>almost</em>
+as though the example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  Filtered = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Sorted = Table.Sort(Filtered, {{&quot;TotalSales&quot;, Order.Descending}}),
+  Result = Table.FirstN(Sorted, 3)
+in
+  Result
+</pre></div>
+
+
+<p>Is internally
+replaced by M&#8217;s interpreter with something like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let 
+  Result = Value.NativeQuery(SomeDataSourceReturningATable, &quot;SELECT TOP 3 * FROM Customers WHERE Office = 'Chicago' ORDER BY TotalSales DESC;&quot;)
+in
+  Result
+</pre></div>
+
+
+<p>(Technically, the
+internal mechanism used may work a bit differently, but as far as producing
+rows go, the net effect is approximately the same.)</p>
+
+
+
+<p>In the proceeding,
+the native query to use can be <em>statically</em>
+deduced simply by looking at the expression steps. Power Query&#8217;s query folding
+can also <em>dynamically</em> factor data in when
+it produces native requests. </p>
+
+
+
+<p>For example, take the below expression, which filters data (<var>MainData</var>) pulled from source A using a list of values (<var>FilterData</var>) retrieved from source B.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  MainData = GetFromSourceA(),
+  FilterData = GetFromSourceB(),
+  Result = Table.SelectRows(MainData, each List.Contains(FilterData&#91;ID], &#91;ID]))
+in
+  Result
+</pre></div>
+
+
+<p>At first glance, the expression in step <var>Result</var> may not look like a candidate for query folding because it combines data from two sources. Instead, it may seem necessary for the mashup engine to retrieve all data from both sources then apply the <code>Table.SelectRows</code> filter locally. </p>
+
+
+
+<p>However, Power Query can pull data from one source and <em>write</em>
+that data into the native request it sends to another source. Say <var>FilterData</var> (from source B) contains only a few rows. Power Query might first pull those few rows locally, then decide to push data from those rows into the native request it sends to source A. For example, pretend <var>FilterData</var> contains three rows and those rows&#8217; ID column values are 1, 2 and 3. Power Query&#8217;s query folding might execute step <var>Result</var> by first pulling those values from source B then sending a query like the following query to source A:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: sql; title: ; notranslate" title="">
+SELECT *
+FROM SomeTableInSourceA
+WHERE ID IN (1, 2, 3); -- these values were pulled from FilterData (source B) then written into this query
+</pre></div>
+
+
+<p>The above query tells source A just which rows are needed based on filtering data retrieved from source B. By doing this, it avoids fetching rows that ultimately would have been discarded if the <code>Table.SelectRows</code> filter were applied locally.</p>
+
+
+
+<p>This pulling data from one source then pushing it to another can provide performance benefits and pose security concerns. Power Query&#8217;s environment has a mechanism for managing the latter—something which we&#8217;ll explore shortly.</p>
+
+
+
+<h3 class="wp-block-heading" id="folding-streaming">Folding
++ Streaming</h3>
+
+
+
+<p>As we discussed in
+part 5, not all operations can be query folded. Once a non-foldable operation
+is encountered in an expression chain, any potentially foldable operations that
+come after it won&#8217;t be folded back into the data source that started the chain
+because the non-foldable operation blocks that folding. </p>
+
+
+
+<p>Query folding does
+not eliminate streaming; rather it folds certain steps into a native request
+whose results are <em>then streamed</em> to any
+subsequent steps that weren&#8217;t query folded. To put it another way: With M,
+tables are <strong>always </strong><em>either</em> streamed or query folded then streamed, never just query
+folded without then being streamed.</p>
+
+
+
+<h3 class="wp-block-heading" id="performance">Performance</h3>
+
+
+
+<p>This leads to what
+may be an obvious performance tip: Try to put all foldable operations before
+any non-foldable operations so that the maximum amount of processing can be
+offloaded to the data sources.</p>
+
+
+
+<p>Which steps are
+query folded, as well as how they are folded, can change as the mashup engine
+improves, as the quantity of data involved changes, as library/data source
+functions are revised and as security settings are changed (more on the latter
+shortly). So, there may be times where you may find it advantageous to re-try
+performance tuning even though you haven&#8217;t made any code changes.</p>
+
+
+
+<h2 class="wp-block-heading" id="not-immutable">Tables Are Not Immutable</h2>
+
+
+
+<p>A variable that
+appears to hold a table (or list) actually just holds a <em>handle</em> to the expression that produces the table (or list). When
+accessed, that handle executes logic which produces the requested data. While
+handle is immutable throughout the lifetime of the query&#8217;s execution, the data
+returned when it is invoked<strong> is not</strong>. This
+is because that data is produced on demand <strong>each</strong>
+time the handle is involved. The fact that the data returned is not immutable
+can result in values seeming to change during the execution of an M query.</p>
+
+
+
+<p>The below expression
+returns a pair of tables. One holds all customers associated with the Chicago
+office; the other contains the three customers with the largest total sales
+amounts. Both tables are ultimately pulled from step Source.&nbsp; </p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  ChicagoOffice = Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot;),
+  Top3Sales = Table.FirstN(Table.Sort(Source, {{ &quot;TotalSales&quot;, Order.Descending }}), 3),
+  Result = { ChicagoOffice, Top3Sales }
+in
+  Result
+</pre></div>
+
+
+<p>Let&#8217;s pretend you ran the above and are looking at the rows returned in the first table
+(<var>ChicagoOffice</var>). In them, you find customer ABC:</p>
+
+
+
+<p>CustomerID = 123,
+Customer = &#8216;ABC&#8217;, Office = &#8216;Chicago&#8217;, TotalSales = <span style="background-color: yellow">50255</span></p>
+
+
+
+<p>Looking at the rows
+in the second table (<var>Top3Sales</var>), you also find customer ABC (apparently, it&#8217;s
+assigned to the Chicago office and is one of your top customers):</p>
+
+
+
+<p>CustomerID = 123, Customer = &#8216;ABC&#8217;, Office = &#8216;Chicago&#8217;, TotalSales = <span style="background-color: yellow">62199</span></p>
+
+
+
+<p>Wait a minute! What in the world?! The same customer has a row in each table but the data in those rows is different between the two tables. (The value of <var>TotalSales</var> is different between the two.) How could this happen?</p>
+
+
+
+<p>In light of the fact that table and list variables really just hold handles to the expression that produces the table or list, this behavior makes sense. Both <var>ChicagoOffice</var> and <var>Top3Sales</var> were invoked to produce results. When invoked, each expression chain called back to the ultimate data source to get data. Total sales for ABC must have changed between those two calls to the data source (perhaps another sale was processed during the intervening moment of time). </p>
+
+
+
+<p>To recap: Variable that seem to &#8220;hold&#8221; (e.g. produce or output) a table or list really just holds an immutable reference to an <em>expression</em> that, when invoked, <em>produces</em> the desired output—<strong>the expression is immutable, but the data returned when it is invoked is not</strong>. So, when a particular query pulls from the same source multiple times during execution, there is the possibility that the data pulled could change between accesses. </p>
+
+
+
+<p>If this possibility
+isn&#8217;t acceptable, there are two options: rework the expression to eliminate the
+multiple invocations (which may or may not be possible) or manually cache
+(buffer) the output.</p>
+
+
+
+<p>Please don&#8217;t go away
+thinking that Power Query is flawed because it allows this variability. This
+potential for variability is a necessary side effect of M not always saving all
+rows in memory (and it&#8217;s a good thing it doesn&#8217;t do that!). Instead, M puts you
+in control: if there&#8217;s a point where a data set needs to be cached to provide
+stability, you have the power to do that. By putting you in charge, you control
+when the associated resource and performance costs are paid.</p>
+
+
+
+<h2 class="wp-block-heading" id="buffering">Buffering</h2>
+
+
+
+<p>When you need to
+stabilize a table (or list), how do you do it? By buffering.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+BufferedTable = Table.Buffer(SomeExpressionProducingATable)
+</pre></div>
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+BufferedList = List.Buffer(SomeExpresssionProducingAList)
+</pre></div>
+
+
+<p>The first time <a rel="noreferrer noopener" href="https://docs.microsoft.com/en-us/powerquery-m/table-buffer" target="_blank">Table.Buffer</a> is invoked, a buffer is loaded by reading all values from the source and saving them in memory. The data in memory is then used to service any accesses to that buffer that occur during the query&#8217;s execution (including when multiple method chains in the query reference the same buffer). However, buffers are not shared across separate executions of the same query.</p>
+
+
+
+<p>Adapting our Chicago office + top sales example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Source = SomeDataSourceReturningATable,
+  BufferedSource = Table.Buffer(Source),  ChicagoOffice = Table.SelectRows(BufferedSource , each &#91;Office] = &quot;Chicago&quot;),
+  Top3Sales = Table.FirstN(Table.Sort(BufferedSource , {{ &quot;TotalSales&quot;, Order.Descending }}), 3),
+  Result = { ChicagoOffice, Top3Sales }
+in
+  Result
+</pre></div>
+
+
+<p>Above, the first time step <var>BufferedSource</var> is accessed, Table.Buffer will pull all rows from <var>Source</var> and store them to memory. This stable snapshot of data will then be used to service both steps <var>ChicagoOffice</var> and <var>Top3Sales</var>. Both steps will be offered the exact same rows, with the exact same row values, in the exact same order. Then, when the query finishes executing, the buffer is discarded. If the query is later executed again, a new buffer will be populated from <var>Source</var>.</p>
+
+
+
+<p>Of course, buffering all of <var>Source</var> could pose a resource problem, depending on how much data in contains. Again, the key is that you are in control: you decide when to use buffering, when the benefits it brings are worth the associated cost.</p>
+
+
+
+<p>When you buffer, be consciousness of how much data you&#8217;re buffering. Minimize this quantity where possible. Above, if Source is expected to return more than a small number of rows, see if there is any way to apply filtering before buffering. For example, if you know that all large customers have at least $50,000 in total sales, you could limit buffering to customers with sales above this amount or a Chicago office assignment by changing <var>BufferedSource</var> to:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+BufferedSource = Table.Buffer(Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot; or &#91;TotalSales] &gt;= 50000))Table.Buffer(Table.SelectRows(Source, each &#91;Office] = &quot;Chicago&quot; or &#91;TotalSales] &gt;= 50000))
+</pre></div>
+
+
+<p>A small change like
+this could significantly reduce the quantity buffered, making a vast difference
+on resource usage.</p>
+
+
+
+<h1 class="wp-block-heading" id="performance-thoughts">Performance
+Thoughts</h1>
+
+
+
+<p>Now that you
+hopefully have a solid understanding of streaming, query folding and buffering,
+let&#8217;s test that knowledge by pondering some performance tips. Do the tips below
+make sense (like why/how each impacts performance)? Does the order they&#8217;re in
+make sense (like why would it be unlikely that you would want to do step 3
+before step 1)?</p>
+
+
+
+<p>The following are
+not absolute rules but rather a suggested starting place for addressing
+performance issues. Please don&#8217;t blindly follow these but rather evaluate them
+in conjunction with an understanding of your context and how Power Query
+processes tables.</p>
+
+
+
+<ol>
+<li>Order steps that are query folded first. This offloads as much processing as possible to the external data sources. To determine which steps are being folded, in many cases, you&#8217;ll need to use a trace tool or check logs to see the native requests generated, as the UI doesn&#8217;t always reveal whether/how steps are being folded.</li>
+
+
+
+<li>Next, for those steps that cannot be folded, try for the following order: first filters, then operations that do not internally hold rows in memory, followed by any remaining operations. This way, you discard unneeded rows before performing additional processing or in-memory storage.</li>
+
+
+
+<li>When buffering is necessary, buffer late in the chain of expressions. Why pay the cost for buffering before that data really needs to be buffered?</li>
+
+
+
+<li>If the above steps don&#8217;t produce the desired performance or cost too much in terms of caching and/or buffering resources (e.g. you run out of memory!), hand-crafting a native query which you then have Power Query execute is an alternative. Power Query&#8217;s query folding supports a limited set of possibilities; you may be able to hand-code a native request that incorporates logic that folding doesn&#8217;t know how to produce and so achieve performance or      eliminate buffering in a way that isn&#8217;t possible using automatic query      folding.</li>
+</ol>
+
+
+
+<p>Since data,
+library/data source function, security and environment changes can also effect
+performance, there may be times where you may find it advantageous to re-try
+performance tuning even though you haven&#8217;t made any code changes.</p>
+
+
+
+<h1 class="wp-block-heading" id="next-time">Next
+Time</h1>
+
+
+
+<p>This post, we made good progress exploring how M &#8220;thinks&#8221; about tables at the language and library levels. <a href="/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Next time</a>, we&#8217;ll continue by discussing table keys. Along with that, the plan is to explore two environmental factors, native query caching and the data protection layer/the firewall, that impact how M processes tables. We&#8217;ll also talk about why native queries may be executed more times than you&#8217;d expect.</p>
+
+
+
+<p>Until then, have fun
+mashing up data!</p>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii" rel="bookmark" title="Power Query M Primer (Part 13): Tables—Table Think II">Power Query M Primer (Part 13): Tables—Table Think II</a></li>
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax" rel="bookmark" title="Power Query M Primer (Part 11): Tables—Syntax">Power Query M Primer (Part 11): Tables—Syntax</a></li>
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm" rel="bookmark" title="Power Query M Primer (Part 5): Paradigm">Power Query M Primer (Part 5): Paradigm</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors" rel="bookmark" title="Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors">Power Query M Primer (Part 19): Type System IV – Ascription, Conformance and Equality&#8217;s &#8220;Strange&#8221; Behaviors</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			7 thoughts on &ldquo;<span>Power Query M Primer (Part 12): Tables—Table Think I</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88428">
+		<article id="comment-88428" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Ivan</b> </cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88428"><time datetime="2020-02-13T10:27:56-06:00">February 13, 2020 at 10:27 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>You say this in the last section: &#8220;To determine which steps are being folded, in many cases, you’ll need to use a trace tool or check logs to see the native requests generated&#8221;.</p>
+<p>Can you explain what trace tools to use and what logs to check?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88428#respond' data-commentid="88428" data-postid="4778" data-belowelement="comment-88428" data-respondelement="respond" data-replyto="Reply to Ivan" aria-label='Reply to Ivan'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88430">
+		<article id="comment-88430" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88430"><time datetime="2020-02-25T15:42:49-06:00">February 25, 2020 at 3:42 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>If you&#8217;re using Power BI, you could try the new <a href="https://docs.microsoft.com/en-us/power-query/QueryDiagnostics" target="_blank" rel="noopener noreferrer nofollow ugc">Query Diagnostics</a> feature. Otherwise, try looking in the source system&#8217;s logs/trace tools. For example, if the source is Microsoft SQL Server, run a SQL Profiler trace or Extended Events session, then run your Power Query, then check what SQL queries were captured by the Profiler trace/Extended Events session). If the source is a web service, you could look in the web service&#8217;s logs or use a tool like Fiddler, WireShark or Postman to intercept the calls between Power Query and the web service.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88430#respond' data-commentid="88430" data-postid="4778" data-belowelement="comment-88430" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88583">
+		<article id="comment-88583" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Levente F</b> </cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88583"><time datetime="2020-12-04T08:24:24-06:00">December 4, 2020 at 8:24 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Can I make an entire query/let-in block to be buffered? Executed once, then the result reused, without querying the source again and executing all the steps? I mean, I want the table returned by a query to be stabilized, not just a step in a query. Is this possible? I am trying something like this:</p>
+<pre class="brush:M">
+let
+  Source = AzureStorage.DataLake("https://whatever.dfs.core.windows.net/"),
+  ...
+  #"Final columns" = Table.SelectColumns(#"New files", {"Content", "FileName", "FileType", "Modified"})
+in
+  Table.Buffer(#"Final columns")
+</pre>
+<p>Does not seem to work as I expect. Please advise.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88583#respond' data-commentid="88583" data-postid="4778" data-belowelement="comment-88583" data-respondelement="respond" data-replyto="Reply to Levente F" aria-label='Reply to Levente F'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88585">
+		<article id="comment-88585" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88585"><time datetime="2020-12-04T17:16:37-06:00">December 4, 2020 at 5:16 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Buffers are specific to a single execution. Say the above query is named <var>A</var> and is referenced from queries <var>B</var>C. When those queries are executed, B (paired with A) will be one query execution and C (paired with A) will be another query execution. Since B+A and C+A are separate executions, buffers won&#8217;t be shared between them.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88585#respond' data-commentid="88585" data-postid="4778" data-belowelement="comment-88585" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88825">
+		<article id="comment-88825" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Lutz</b> </cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88825"><time datetime="2021-12-22T17:36:26-06:00">December 22, 2021 at 5:36 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>What if my source system is weak (poor query performance/bad indexes etc.)?  What if I want to fully utilize the oodles of memory that Power BI has at its disposal?  I may not want query folding to happen in such scenarios. I would want to switch query folding off or on, and to (easily) see the performance impact from either option.  Maybe the advice to encourage query folding could be a bit more nuanced.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88825#respond' data-commentid="88825" data-postid="4778" data-belowelement="comment-88825" data-respondelement="respond" data-replyto="Reply to Lutz" aria-label='Reply to Lutz'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-88952">
+		<article id="comment-88952" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Devon</b> </cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88952"><time datetime="2022-09-06T00:52:37-05:00">September 6, 2022 at 12:52 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Really awesome stuff Ben!<br />
+&#8220;Which steps are query folded, as well as how they are folded, can change as the mashup engine improves, as the quantity of data involved changes, as library/data source functions are revised and as security settings are changed (more on the latter shortly). So, there may be times where you may find it advantageous to re-try performance tuning even though you haven’t made any code changes.&#8221;</p>
+<p>Regarding changes in the engine. How do you plan to update the content. Will you add new content at the end or revisit existing section?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88952#respond' data-commentid="88952" data-postid="4778" data-belowelement="comment-88952" data-respondelement="respond" data-replyto="Reply to Devon" aria-label='Reply to Devon'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88975">
+		<article id="comment-88975" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#comment-88975"><time datetime="2022-12-30T10:23:43-06:00">December 30, 2022 at 10:23 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks for the kind words! </p>
+<p>When I update a <em>Primer</em> section, I typically add a &#8220;Revision&#8221; note (with date) at the bottom of the page briefly describing the update made.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i?replytocom=88975#respond' data-commentid="88975" data-postid="4778" data-belowelement="comment-88975" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='4778' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.094 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-26 22:59:41 -->
+
+<!-- super cache -->

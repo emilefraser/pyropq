@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) & !(IE 8)]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Power Query M Primer (Part 15): Error Handling | Ben Gribaudo</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="https://bengribaudo.com/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="https://bengribaudo.com/wp-content/themes/twentytwelve/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name='robots' content='max-image-preview:large' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Feed" href="https://bengribaudo.com/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Comments Feed" href="https://bengribaudo.com/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="Ben Gribaudo &raquo; Power Query M Primer (Part 15): Error Handling Comments Feed" href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling/feed" />
+<script type="text/javascript">
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/bengribaudo.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.2.2"}};
+/*! This file is auto-generated */
+!function(e,a,t){var n,r,o,i=a.createElement("canvas"),p=i.getContext&&i.getContext("2d");function s(e,t){p.clearRect(0,0,i.width,i.height),p.fillText(e,0,0);e=i.toDataURL();return p.clearRect(0,0,i.width,i.height),p.fillText(t,0,0),e===i.toDataURL()}function c(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(o=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},r=0;r<o.length;r++)t.supports[o[r]]=function(e){if(p&&p.fillText)switch(p.textBaseline="top",p.font="600 32px Arial",e){case"flag":return s("\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!s("\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!s("\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!s("\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff","\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff")}return!1}(o[r]),t.supports.everything=t.supports.everything&&t.supports[o[r]],"flag"!==o[r]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[o[r]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(e=t.source||{}).concatemoji?c(e.concatemoji):e.wpemoji&&e.twemoji&&(c(e.twemoji),c(e.wpemoji)))}(window,document,window._wpemojiSettings);
+</script>
+<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 0.07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/style.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-theme-css' href='https://bengribaudo.com/wp-content/plugins/gutenberg/build/block-library/theme.css?ver=16.5.0' type='text/css' media='all' />
+<link rel='stylesheet' id='classic-theme-styles-css' href='https://bengribaudo.com/wp-includes/css/classic-themes.min.css?ver=6.2.2' type='text/css' media='all' />
+<style id='global-styles-inline-css' type='text/css'>
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #21759b;--wp--preset--color--dark-gray: #444;--wp--preset--color--medium-gray: #9f9f9f;--wp--preset--color--light-gray: #e6e6e6;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}body .is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}body .is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}body .is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link rel='stylesheet' id='parent-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/style.css?ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='additional-google-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed%3A300%2C300i%2C700%7COswald%3A400%2C500%2C700%7CBad+Script&#038;ver=6.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-fonts-css' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C400%2C700&#038;subset=latin%2Clatin-ext&#038;display=fallback' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve-child/style.css?ver=20221101' type='text/css' media='all' />
+<link rel='stylesheet' id='twentytwelve-block-style-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/blocks.css?ver=20190406' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='twentytwelve-ie-css' href='https://bengribaudo.com/wp-content/themes/twentytwelve/css/ie.css?ver=20150214' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery.min.js?ver=3.6.4' id='jquery-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.0' id='jquery-migrate-js'></script>
+<link rel="https://api.w.org/" href="https://bengribaudo.com/wp-json/" /><link rel="alternate" type="application/json" href="https://bengribaudo.com/wp-json/wp/v2/posts/4883" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://bengribaudo.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://bengribaudo.com/wp-includes/wlwmanifest.xml" />
+<meta name="generator" content="WordPress 6.2.2" />
+<link rel="canonical" href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling" />
+<link rel='shortlink' href='https://bengribaudo.com/?p=4883' />
+<link rel="alternate" type="application/json+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F01%2F15%2F4883%2Fpower-query-m-primer-part-15-error-handling" />
+<link rel="alternate" type="text/xml+oembed" href="https://bengribaudo.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbengribaudo.com%2Fblog%2F2020%2F01%2F15%2F4883%2Fpower-query-m-primer-part-15-error-handling&#038;format=xml" />
+</head>
+
+<body class="post-template-default single single-post postid-4883 single-format-standard wp-embed-responsive custom-font-enabled single-author">
+<div id="page" class="hfeed site">
+	<header id="masthead" class="site-header" role="banner">
+		<a href="https://bengribaudo.com/" title="Ben Gribaudo (home)"  rel="home"><img id="site-logo" src="https://bengribaudo.com/wp-content/themes/twentytwelve-child/images/Logo.png" width="288" height="74" alt="Ben Gribaudo - Solutions Engineer, Senior Developer &amp; Database Engineer" /></a>
+
+		<nav id="site-navigation" class="main-navigation" role="navigation">
+			<button class="menu-toggle">Menu</button>
+			<a class="assistive-text" href="#content" title="Skip to content">Skip to content</a>
+			<div class="menu-main-navigation-container"><ul id="menu-main-navigation" class="nav-menu"><li id="menu-item-2431" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-2431"><a href="https://bengribaudo.com/">Home/Blog</a></li>
+<li id="menu-item-3761" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-3761"><a href="https://bengribaudo.com/consulting">Consulting</a>
+<ul class="sub-menu">
+	<li id="menu-item-6440" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6440"><a href="https://bengribaudo.com/consulting/architecture-review">Architecture Review</a></li>
+	<li id="menu-item-6362" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6362"><a href="https://bengribaudo.com/consulting/power-query">Power Query</a></li>
+	<li id="menu-item-6934" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6934"><a href="https://bengribaudo.com/consulting/power-query-custom-connectors">Power Query Custom Connectors</a></li>
+	<li id="menu-item-5777" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5777"><a href="https://bengribaudo.com/consulting/microsoft-power-bi">Microsoft Power BI</a></li>
+</ul>
+</li>
+<li id="menu-item-6286" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-6286"><a href="https://bengribaudo.com/courses">Courses/Training</a>
+<ul class="sub-menu">
+	<li id="menu-item-6287" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6287"><a href="https://bengribaudo.com/courses/mastering-m">Mastering M: A Deep Dive Into the Language That Powers Power Query (live web course)</a></li>
+	<li id="menu-item-7349" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7349"><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Power Query Custom Connector Deep Dive Workshop</a></li>
+	<li id="menu-item-6348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6348"><a href="https://bengribaudo.com/courses/custom-training">Custom Training/Mentoring</a></li>
+</ul>
+</li>
+<li id="menu-item-6686" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6686"><a href="https://bengribaudo.com/power-query-m-primer">Power Query M Primer</a></li>
+<li id="menu-item-5398" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-5398"><a href="https://bengribaudo.com/tools">Tools</a>
+<ul class="sub-menu">
+	<li id="menu-item-5399" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5399"><a href="https://bengribaudo.com/tools/datamashupexplorer">Data Mashup Explorer</a></li>
+	<li id="menu-item-5401" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5401"><a href="https://bengribaudo.com/tools/datamashupcmdlets">Data Mashup Cmdlets</a></li>
+	<li id="menu-item-6835" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6835"><a href="https://bengribaudo.com/tools/hubspot-power-bi-connector">HubSpot -> Power BI Connector</a></li>
+</ul>
+</li>
+<li id="menu-item-3762" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3762"><a href="https://bengribaudo.com/about-me">About</a></li>
+<li id="menu-item-6257" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6257"><a href="https://bengribaudo.com/email">Email List Signup</a></li>
+</ul></div>		</nav><!-- #site-navigation -->
+
+			</header><!-- #masthead -->
+
+	<div id="main" class="wrapper">
+	<div id="primary" class="site-content">
+		<div id="content" role="main">
+
+			
+				
+	<article id="post-4883" class="post-4883 post type-post status-publish format-standard hentry category-power-query-m-primer tag-data-transformation tag-errors tag-microsoft-excel tag-microsoft-power-bi tag-power-query-m">
+				<header class="entry-header">
+			
+						<h1 class="entry-title">Power Query M Primer (Part 15): Error Handling</h1>
+						
+			
+			<div class="post-details">
+				<time class="entry-date" datetime="2020-01-15T10:18:54-06:00">January 15, 2020</time></a>									&bull; <span class="tag-list"><a href="https://bengribaudo.com/blog/tag/data-transformation" rel="tag">Data Transformation</a>, <a href="https://bengribaudo.com/blog/tag/errors" rel="tag">Errors</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-excel" rel="tag">Microsoft Excel</a>, <a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" rel="tag">Microsoft Power BI</a>, <a href="https://bengribaudo.com/blog/tag/power-query-m" rel="tag">Power Query M</a></span>
+							</div>
+		</header><!-- .entry-header -->
+
+				<div class="entry-content">
+			
+<p>Your Power Query is skipping merrily along its mashup way. Then, bam! Something bad happens! Uh oh! What do you do when an error raises its ugly head? Or, for that matter, what if code you write detects an anomaly and you want to announce this fact in an informative manner?</p>
+
+
+
+<p>Thankfully, M has error handling capabilities, allowing you to both raise and handle runtime errors. We&#8217;ll learn how to do both.</p>
+
+
+
+<p><strong>Important:</strong> If you&#8217;re familiar with the idea of an exception from other programming languages, Power Query&#8217;s error handling is different in at least one significant respect from what you may be familiar with.</p>
+
+
+
+<p>Let&#8217;s get going!</p>
+
+
+
+<span id="more-4883"></span>
+
+
+
+<h2 class="wp-block-heading" id="series-index">Series Index</h2>
+
+
+
+<ul>
+<li> <a href="https://bengribaudo.com/blog/2017/11/17/4107/power-query-m-primer-part1-introduction-simple-expressions-let">Introduction, Simple Expressions &amp; <code>let</code> (part 1)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/11/28/4199/power-query-m-primer-part2-functions-defining">Functions: Defining (part 2)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2017/12/08/4270/power-query-m-primer-part3-functions-function-values-passing-returning-defining-inline-recursion">Functions: Function Values, Passing, Returning, Defining Inline, Recursion (part 3)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/01/19/4321/power-query-m-primer-part4-variables-identifiers">Variables &amp; Identifiers (part 4)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/02/28/4391/power-query-m-primer-part5-paradigm">Paradigm (part 5)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/06/26/4470/power-query-m-primer-part6-types-intro-text">Types—Intro &amp; Text (Strings) (part 6)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/07/31/4497/power-query-m-primer-part7-types-numbers">Types—Numbers (part 7)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/08/15/4557/power-query-m-primer-part8-types-the-temporal-family">Types—The Temporal Family (part 8)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/09/13/4617/power-query-m-primer-part9-types-logical-null-binary">Types—Logical, Null, Binary (part 9)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2018/10/30/4644/power-query-m-primer-part10-types-list-record">Types—List, Record (part 10)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/09/19/4713/power-query-m-primer-part11-tables-syntax">Tables—Syntax (part 11)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/10/4778/power-query-m-primer-part12-tables-table-think-i">Tables—Table Think I (part 12)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2019/12/20/4805/power-query-m-primer-part13-tables-table-think-ii">Tables—Table Think II (part 13)</a></li>
+
+
+
+<li><a href="/blog/2020/01/06/4844/power-query-m-primer-part14-control-structure">Control Structure (part 14)</a></li>
+
+
+
+<li>Error Handling (part 15) [this post]</li>
+
+
+
+<li><a href="/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">Type System I – Basics (part 16)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/02/28/5009/power-query-m-primer-part17-type-system-ii-facets">Type System II – Facets (part 17)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/06/02/5259/power-query-m-primer-part18-type-system-iii-custom-types">Type System III – Custom Types (part 18)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2020/09/03/5408/power-query-m-primer-part19-type-system-iv-ascription-conformance-and-equalitys-strange-behaviors">Type System IV – Ascription, Conformance and Equality’s “Strange” Behaviors (part 19)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/03/17/5523/power-query-m-primer-part20-metadata">Metadata (part 20)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/07/12/5809/power-query-m-primer-part21-identifier-scope-sections" data-type="post" data-id="5809">Identifier Scope &amp; Sections (part 21)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2021/09/01/5989/power-query-m-primer-part22-identifier-scope-ii-controlling-the-global-environment-closures" data-type="post" data-id="5989">Identifier Scope II – Controlling the Global Environment, Closures (part 22)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/01/20/6500/power-query-m-primer-part-23-query-folding-i" data-type="post" data-id="6500">Query Folding I (part 23)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/03/21/6620/power-query-m-primer-part24-query-folding-i" data-type="post" data-id="6620">Query Folding II (part 24)</a></li>
+
+
+
+<li><a href="https://bengribaudo.com/blog/2022/12/23/7130/power-query-m-primer-part25-extending-the-global-environment">Extending the Global Environment (part 25)</a></li>
+
+
+
+<li>More to come!</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="announcing-an-error">Announcing an Error</h2>
+
+
+
+<p>In Power Query, each expression <em>must</em> produce something. Ideally, this is the expected value. However, there&#8217;s an alternative: an expression can raise an error, which is a special way of indicating that the expression could not produce a value.</p>
+
+
+
+<p>The main way to raise an error is by using keyword <code>error</code> accompanied with a record describing the problem. </p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+error &#91;
+  Reason = &quot;Business Rule Violated&quot;, 
+  Message = &quot;Item codes must start with a letter&quot;, 
+  Detail = &quot;Non-conforming Item Code: 456&quot;
+]
+</pre></div>
+
+
+<p>In the <em>error definition record</em>, five fields are relevant: <var>Reason</var>, <var>Message</var>, <var>Message.Format</var>, <var>Message.Parameters</var> and <var>Detail</var>. Technically, all these fields are optional, and any extra fields included in the error definition record will be ignored. </p>
+
+
+
+<p>Special behavior applies to field <var>Reason</var> and the <code>Message</code>* trio of fields: </p>
+
+
+
+<ul>
+<li><var>Reason</var>—If this field is missing, the error that&#8217;s raised will have its reason defaulted to &#8220;Expression.Error&#8221; (at least, this is true with the version of the mashup engine I&#8217;m using—technically, the language specification doesn&#8217;t mandate this defaulting).</li>
+
+
+
+<li><var>Message*</var> Fields—Two options are available for defining the error&#8217;s message: Directly specify a <var>Message</var>, or use <var>Message.Format</var> + <var>Message.Parameters</var> to define a structured error message (see <em><a href="https://bengribaudo.com/blog/2022/05/24/6753/new-m-feature-structured-error-messages" data-type="post" data-id="6753">New M Feature: Structured Error Messages</a></em> for more details).  </li>
+</ul>
+
+
+
+<p>As an alternate to creating the error definition record by hand, helper method <code><a rel="noreferrer noopener" aria-label="Error.Record (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/error-record" target="_blank">Error.Record</a></code> can be used to build the record. The function&#8217;s first argument maps to field <var>Reason</var>. The second to either field <var>Message</var> or, if a list is passed as <code>Error.Record</code>&#8216;s forth argument, to <var>Message.Format</var>. Arguments three and four map to <var>Detail</var> and <var>Message.Parameters</var>, respectively. Unlike the above build-your-own-record approach, <code>Error.Record</code> requires that you provide a <var>Reason</var>; its other arguments are optional.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+error Error.Record(&quot;Business Rule Violated&quot;, &quot;Item codes must start with a letter&quot;, &quot;Non-conforming Item Code: 456&quot;)
+</pre></div>
+
+
+<p>It&#8217;s up to you as to whether you prefer to create error definition records using <code>[...]</code> syntax or with <code>Error.Record</code>. In either case, ultimately, a record is being created which you hand over to <code>error</code> when you&#8217;re ready for the error to be raised.</p>
+
+
+
+<p>Both of the above examples produce an equivalent error:</p>
+
+
+
+<figure class="wp-block-image size-medium"><img decoding="async" width="300" height="55" src="https://bengribaudo.com/wp-content/uploads/2020/01/ErrorScreenshot-300x55.png" alt="Business Rule Violated: Item codes must start with a letter 
+Details: Non-conforming Item Code: 456 " class="wp-image-4884" srcset="https://bengribaudo.com/wp-content/uploads/2020/01/ErrorScreenshot-300x55.png 300w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorScreenshot-768x142.png 768w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorScreenshot-624x115.png 624w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorScreenshot.png 959w" sizes="(max-width: 300px) 100vw, 300px" /></figure>
+
+
+
+<p>Looking at the above screenshot, it&#8217;s easy to see how the three values that were provided map to the error messaging that&#8217;s displayed.</p>
+
+
+
+<p>In lieu of a record, error also accepts a string. The resulting error will have its <var>Message</var> set to the provided string and its <var>Reason</var> set to &#8220;Expression.Error&#8221; (at least, that&#8217;s the default <var>Reason</var> with the mashup engine version I&#8217;m using—technically, the language specification doesn&#8217;t mandate this defaulting).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+error &quot;help!&quot; 
+</pre></div>
+
+
+<figure class="wp-block-image size-medium"><img decoding="async" loading="lazy" width="300" height="33" src="https://bengribaudo.com/wp-content/uploads/2020/01/ErrorFromStringScreenshot-300x33.png" alt="Expression.Error: help! " class="wp-image-4887" srcset="https://bengribaudo.com/wp-content/uploads/2020/01/ErrorFromStringScreenshot-300x33.png 300w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorFromStringScreenshot-768x84.png 768w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorFromStringScreenshot-624x68.png 624w, https://bengribaudo.com/wp-content/uploads/2020/01/ErrorFromStringScreenshot.png 963w" sizes="(max-width: 300px) 100vw, 300px" /></figure>
+
+
+
+<h3 class="wp-block-heading" id="ellipsis-shortcut">Ellipsis Shortcut</h3>
+
+
+
+<p>There&#8217;s also a shortcut operator for raising errors which comes in handy during development.</p>
+
+
+
+<p>Let&#8217;s say you want to test a mashup that&#8217;s under development where you haven&#8217;t yet implemented every branch of each expression. Of course, since each branch must either return a value or raise an error, you can&#8217;t test run your query without putting something as a placeholder in those unimplemented branches, but what should you use?</p>
+
+
+
+<p>When you encounter a situation like this, consider the ellipsis operator (<code>...</code>). When invoked, <code>...</code> raises an error something like &#8220;Expression.Error: Not Implemented&#8221; or &#8220;Expression.Error: Value was not specified&#8221; (the exact wording depends on your mashup engine version).</p>
+
+
+
+<p>Here&#8217;s a bit of code where the developer hasn&#8217;t yet implemented the <code>if</code> statement&#8217;s <code>else</code> branch so is using <code>...</code> as a placeholder:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+if Value then DoSomething() else ... // when Value evaluates to false, &quot;...&quot; is called, which raises the placeholder error
+</pre></div>
+
+
+<p>(Notice how keyword <code>error</code> is not used. The ellipsis operator <strong>both</strong> defines <em>and </em>raises the error. Very short, sweet and simple to use.)</p>
+
+
+
+<h2 class="wp-block-heading" id="special-behavior">Special Behavior</h2>
+
+
+
+<p>What exactly happens when an error is raised? What special behavior does raising an error entail that sets it apart from simply returning an ordinary value?</p>
+
+
+
+<p>Let&#8217;s start with an expression:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+SomeFunction(GetValue())
+</pre></div>
+
+
+<p>When evaluated under normal circumstances, first <code>GetValue()</code> is executed. Then, the value it produces is passed into <code>SomeFunction()</code>. Lastly, <code>SomeFunction()</code>&#8216;s result is returned as the expression&#8217;s output.</p>
+
+
+
+<p>Heaven forbid, but suppose instead that <code>GetValue()</code> raises an error. Immediately, further execution of the expression stops. <code>SomeFunction()</code> is not called. Instead, <code>GetValue()</code>&#8216;s error becomes the expression&#8217;s output: it is propagated (a.k.a. raised) to whomever or whatever invoked the expression.</p>
+
+
+
+<p>What happens next depends on whether that whomever or whatever can hold a value: the error may be contained or may become the mashup&#8217;s top-level error. Only in case of the latter does the error cause the mashup as a whole to terminate.</p>
+
+
+
+<h3 class="wp-block-heading" id="error-containment">Error Containment</h3>
+
+
+
+<p>If the error is encountered by an expression that defines <em>something</em> holding a value (like the expression for a record field, a table cell or a let variable), <strong>the error is contained</strong> by that <em>something</em>—its effects are limited to that <em>something</em> and any logic that attempts to access that <em>something&#8217;s</em> value.</p>
+
+
+
+<p>Below, the effects of <code>GetValue()</code>&#8216;s error are contained to the portion of the larger mashup affected by it. <strong>The error does not terminate the entire mashup</strong>; rather, the mashup completes successfully and returns a valid record. <strong>Only <var>FieldB</var> and <var>FieldC</var> are errored</strong> because they are the only &#8220;somethings&#8221; affected by the error.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  GetValue = () =&gt; error &quot;Something bad happened!&quot;,
+  DoSomething = (input) =&gt; input + 1,
+  Result = &#91;
+    FieldA = 25,
+    FieldB = DoSomething(GetValue),
+    FieldC = FieldA + FieldB
+  ]
+in
+  Result
+</pre></div>
+
+
+<figure class="wp-block-image size-medium"><img decoding="async" loading="lazy" width="300" height="53" src="https://bengribaudo.com/wp-content/uploads/2020/01/RecordContainingSomeErroredFields-300x53.png" alt="[ FieldA = 25, FieldB = Error, FieldC = Error ]" class="wp-image-4889" srcset="https://bengribaudo.com/wp-content/uploads/2020/01/RecordContainingSomeErroredFields-300x53.png 300w, https://bengribaudo.com/wp-content/uploads/2020/01/RecordContainingSomeErroredFields-768x135.png 768w, https://bengribaudo.com/wp-content/uploads/2020/01/RecordContainingSomeErroredFields-624x110.png 624w, https://bengribaudo.com/wp-content/uploads/2020/01/RecordContainingSomeErroredFields.png 965w" sizes="(max-width: 300px) 100vw, 300px" /></figure>
+
+
+
+<p>This containment of errors brings with it another special behavior: When an error is contained, <strong>the error is saved into the <em>something</em> that contains it</strong>. Throughout the remainder of the mashup&#8217;s execution, <strong>any attempt to access that something&#8217;s value causes the saved error to be re-raised</strong>. When an access attempt occurs, the logic that originally caused the error is <em>not</em> re-evaluated to see if it now will produce a valid value; that logic is skipped and the previously saved error is simply re-raised.</p>
+
+
+
+<p>Below, <var>Data</var>&#8216;s <code>GetDataFromWebService()</code> is only evaluated once, even though <var>Data</var> itself is accessed twice. The second access attempt receives the error saved from the first access.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = GetDataFromWebService() // raises an error
+in
+  { List.Sum(Data&#91;Amount]), List.Max(Data&#91;TransactionDate]) }
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="top-level-errors">Top-Level Errors</h3>
+
+
+
+<p>When an error is encountered, if nothing contains it, the error is propagated from the mashup&#8217;s top-level expression (the mashup&#8217;s output clause) to the host environment as the mashup&#8217;s result. Execution of the mashup then stops.</p>
+
+
+
+<p>This mashup&#8217;s top-level expression errors. Nothing is present to contain the error, so the mashup dies, outputting the error as its result:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  GetValue= () =&gt; error &quot;Something bad happened!&quot;,
+  SomeFunction = (input) =&gt; input + 1
+in
+  SomeFunction(GetValue())
+</pre></div>
+
+
+<p>The below mashup&#8217;s error is first contained in <var>Result</var> but then the top-level expression accesses <var>Result</var> which results in the error being re-raised to the top-level expression. Since nothing contains the error this time, it becomes the mashup&#8217;s output—like the preceding, the mashup dies with the error.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  GetValue= () =&gt; error &quot;Something bad happened!&quot;,
+  SomeFunction = (input) =&gt; input + 1,
+  Result = SomeFunction(GetValue())
+in
+  Result
+</pre></div>
+
+
+<h3 class="wp-block-heading" id="containment-vs-exceptions">Containment vs. Exceptions</h3>
+
+
+
+<p>Power Query&#8217;s error containment behavior sets it apart from typical exception-based programming languages. In the world of exceptions, an error automatically propagates all the way to the host environment and so causes the program to die with an error—unless special handling is put in place. With M, an error is automatically contained, so long as something is present to contain it, allowing the mashup as a whole to complete successfully even if select data items could not be computed.</p>
+
+
+
+<p>Error containment is a great behavior considering M&#8217;s target use case: processing data. Suppose the expression defining a table column value errors for one cell out of the entire table. In an exception-based world, this error might cause all processing to terminate. In M&#8217;s world, the error simply affects that single cell and any code that accesses that cell. Processing continues and the decision of whether the error is significant is left to whatever code consumes the cell&#8217;s value.</p>
+
+
+
+<p>In fact, due to M&#8217;s laziness, if nothing ever attempts to use that cell&#8217;s value, its expression may not be evaluated, and so the error never raised. Why should the mashup engine waste effort computing something that will just be thrown away untouched?</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Col1&quot;}, {{&quot;SomeValue&quot;}, { error &quot;bad&quot; }})
+in
+  Table.RowCount(Data)
+</pre></div>
+
+
+<p>Above, row and column values are not needed to produce the requested output (the count of rows), so the second row&#8217;s error expression has no effect.</p>
+
+
+
+<p>While error containment is a great default behavior, what if it doesn&#8217;t suit your needs? In particular, with tables, what if it&#8217;s important to differentiate between rows with errors and those without? Perhaps you&#8217;re not accessing row contents directly, so aren&#8217;t doing anything that would trigger error propagation, but still want to know which rows have an error somewhere in them and which do not. <code><a rel="noreferrer noopener" aria-label="Table.SelectRowsWithErrors (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-selectrowswitherrors" target="_blank">Table.SelectRowsWithErrors</a></code> and <code><a rel="noreferrer noopener" aria-label="Table.RemoveRowsWithErrors (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-removerowswitherrors" target="_blank">Table.RemoveRowsWithErrors</a></code> are likely just what you need.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Col1&quot;}, {{&quot;SomeValue&quot;}, { error &quot;bad&quot; }})
+in
+  &#91;
+    RowsWithErrors = Table.RowCount(Table.SelectRowsWithErrors(Data)),
+    RowsWithoutErrors = Table.RowCount(Table.RemoveRowsWithErrors(Data))
+  ]
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="handling-errors">Handling Errors</h2>
+
+
+
+<p>With an understanding of raising errors tucked away, what do you do if you&#8217;re handed an error? Surely there&#8217;s a graceful way to handle it—some way to try to resolve it!</p>
+
+
+
+<p>That&#8217;s it—that&#8217;s the keyword: <code>try</code>. <code>try</code> allows you to attempt to <em>handle </em>an error by taking remedial action.</p>
+
+
+
+<p><code>try</code> comes in three main variants:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; gutter: false; title: ; quick-code: false; notranslate" title="">
+// try otherwise
+try ExpressionToTry otherwise FallbackExpression
+
+// try catch
+try ExpressionToTry catch (e) =&gt; FunctionBody
+try ExpressionToTry catch () =&gt; FunctionBody
+
+// plain try
+try ExpressionToTry
+</pre></div>
+
+
+<h3 class="wp-block-heading">try otherwise</h3>
+
+
+
+<p>The first version, <em>try otherwise</em>, tries to execute the <em>expression to try</em>. If that expression returns a value, <code>try</code> simply returns that value. If, instead, the expression errors, that error is ignored, the <em>otherwise expression</em> is evaluated and whatever that expression produces becomes the output of the <em>try otherwise</em> expression. In essence, if the first expression (the &#8220;to try&#8221; expression) errors, fallback to the second expression (the &#8220;otherwise&#8221; expression).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+try Number.FromText(input) otherwise 0
+</pre></div>
+
+
+<p>If <code>Number.FromText</code> returns a value, then that value is returned from <code>try</code>. Instead, if <code>Number.FromText</code> raises an error, <code>try</code> handles that error, replacing it with the output produced by the otherwise expression (in this case, the value 0). So, if <var>input</var> can be parsed to a number, that number is returned; otherwise, a default value of 0 is returned.</p>
+
+
+
+<p>Keep in mind that only the expression directly to the right of <code>try</code> will have its errors caught and replaced. If the otherwise expression returns an error, that error won&#8217;t be handled by the <code>try</code> coming before it. Of course, since the otherwise expression is itself just an expression, you could put a <code>try</code> inside <em>that</em> expression to handle errors raised from it.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+try GetFromPrimary()
+  otherwise try GetFromSecondary()
+    otherwise &quot;Having problems with both servers. Take the rest of the day off.&quot;
+</pre></div>
+
+
+<p><em>Try otherwise</em> works well in a situations like text-to-number parsing but it can leave something to be desired in more complex scenarios. Why? The catch is that the otherwise is indiscriminate: it replaces <em>any</em> error by evaluating the fallback expression. Sometimes, the desired remedial action differs based on the specifics of the error encountered.</p>
+
+
+
+<h3 class="wp-block-heading">try catch</h3>
+
+
+
+<p><em>try catch</em> allows us to handle this possibility. If the tried expression completes successfully (i.e. it returns a value), the value it produces is output. If, instead, the expression being tried raises an error, the catch function is invoked. This sounds very much like <em>try otherwise</em>, and it is—except for <strong>one very significant difference</strong>.</p>
+
+
+
+<p>The catch function can be defined as accepting zero arguments or one argument. If a zero-argument function is used, then <em>try catch</em> is identical in behavior to <em>try otherwise</em>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// both are equivalent in behavior
+try Number.FromText(input) catch () =&gt; 0
+try Number.FromText(input) otherwise 0
+</pre></div>
+
+
+<p>On the other hand, if the catch function is defined as accepting an argument, then when that function is invoked, it will be passed a record with details about the error that just occurred. This presents <strong>the possibility to dynamically adapt how the error is handled based on its specifics</strong>—a significant ability not possible with <em>try otherwise</em>.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  Source = 
+    try GetDataFromPrimary()
+    catch (e) =&gt;
+      // if the error is because primary is unreachable, fall back to secondary
+      if e&#91;Reason] = &quot;External Source Error&quot; and e&#91;Message] = &quot;Server is unreachable&quot; 
+      then GetDataFromSecondary() 
+
+     // if primary had a different problem, reraise the error instead of falling back to secondary
+      else error e 
+in
+  Source
+</pre></div>
+
+
+<p>An <em>error details record</em>s (passed into the one-parameter catch function above, and also included in plain <em>try</em>&#8216;s output, as we&#8217;ll learn shortly) will contain the five fields that make up an error in M: <var>Reason</var>, <var>Message</var>, <var>Message.Format</var>, <var>Message.Parameters</var> and <var>Details</var>. This is true even if the record originally used to define the error left off one or more of these fields (remember: they&#8217;re optional when defining the error) or if that record included extra fields.</p>
+
+
+
+<p><em>try catch</em> has some interesting syntax rules for the <em>catch</em> function:</p>
+
+
+
+<ul>
+<li>It must be <strong>defined inline</strong>. Defining the function elsewhere and then simply referencing it by name isn&#8217;t allowed.</li>
+
+
+
+<li>Its parameter list must be defined using <strong>parenthesis syntax</strong>. The <code>each</code> shortcut isn&#8217;t allowed.</li>
+
+
+
+<li><strong>Type assertions</strong> may not be used in the definition.</li>
+</ul>
+
+
+
+<p>These rules make all of the following illegal:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+// Not allowed -- catch needs to be defined inline; it cannot be a reference to a function defined elsewhere
+let
+  ErrorHandler = (e) =&gt; ...some code...
+in
+  try SomeFunction() catch ErrorHandler
+</pre></div>
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+// Not allowed -- each cannot be used here
+try SomeFunction() catch each ...some code...
+</pre></div>
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+// Not allowed - type assertions may not be used here
+try SomeFunction() catch (e as record) as any =&gt; ...some code...
+</pre></div>
+
+
+<h3 class="wp-block-heading">try</h3>
+
+
+
+<p>Last but not lease, plain vanilla <em>try</em> evaluates the provided expression, then returns a record with details about the expression&#8217;s result.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+try SomeExpression
+</pre></div>
+
+
+<p>If the tried expression completed successfully, the record try outputs is in the form of:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+&#91;
+  HasError = false, 
+  Value = (whatever value the tried expression returned)
+]
+</pre></div>
+
+
+<p>For example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  DoSomething = () =&gt; 45,
+  Result = try DoSomething()
+in
+  Result // &#91;HasError = false, Value = 45]
+</pre></div>
+
+
+<p>If the tried expression raised an error, the returned record looks like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+&#91;
+  HasError = true,
+  Error = (error details record)
+]
+</pre></div>
+
+
+<p>Example:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  DoSomething = () =&gt; error &quot;bad&quot;,
+  Result = try DoSomething()
+in
+  Result
+// &#91;
+//    HasError = true, 
+//    Error = &#91;
+//       Reason = &quot;Expression.Error&quot;,
+//       Message = &quot;bad&quot;,
+//       Detail = null,
+//       Message.Format = &quot;bad,
+//       Message.Parameters = null
+//    ]]
+//  ]
+</pre></div>
+
+
+<p>Prior to try catch being added to M, implementing conditional remediation logic required using try with some boilerplate code, resulting in verbose expression like:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Primary = try GetDataFromPrimary(),
+  Source = 
+    // if primary is good, use what it returns
+    if Primary&#91;HasError] = false 
+    then Primary&#91;Value] 
+
+    // if the error is because primary is unreachable, fall back to secondary
+    else if Primary&#91;Error]&#91;Reason] = &quot;External Source Error&quot; and Primary&#91;Error]&#91;Message] = &quot;Server is unreachable&quot; 
+    then GetDataFromSecondary()
+
+    // if primary had a different problem, reraise the error instead of falling back to secondary
+    else error Primary&#91;Error]
+in
+  Source
+</pre></div>
+
+
+<p><em>try catch</em> achieves the same effect with less code, as this example (repeated from earlier) demonstrates:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; quick-code: false; notranslate" title="">
+let
+  Source = 
+    try GetDataFromPrimary()
+    catch (e) =&gt;
+      // if the error is because primary is unreachable, fall back to secondary
+      if e&#91;Reason] = &quot;External Source Error&quot; and e&#91;Message] = &quot;Server is unreachable&quot;
+      then GetDataFromSecondary() 
+ 
+     // if primary had a different problem, reraise the error instead of falling back to secondary
+      else error e 
+in
+  Source
+</pre></div>
+
+
+<p>Again, <em>try catch</em> didn&#8217;t used to be part of M. Today, you may still find plain <em>try</em> used to implement adaptive error handling in legacy cases, but hopefully new adaptive handling logic will use the more succinct <em>try catch</em> syntax instead. </p>
+
+
+
+<p>Moving forward, you (likely) will see plain <em>try</em> used much less. </p>
+
+
+
+<h3 class="wp-block-heading" id="scope">Scope</h3>
+
+
+
+<p>In order have an effect, error handing must occur at a level where the error is encountered. Error handling has no effect on errors that are contained at a different level.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Amount&quot;}, {{10}, {error &quot;help!&quot;}, {error &quot;save me!&quot;}})
+in
+  try Data otherwise 0
+
+</pre></div>
+
+
+<p><var>Result</var>&#8216;s <code>try</code> doesn&#8217;t do anything for this mashup. Apparently, the developer hoped it would replace any column errors with zero, but that&#8217;s not how it was applied. The way things were wired up, if the expression defining <var>Data</var> raises an error, <code>try</code> will replace that error with zero. However, in this case, <var>Data</var> returns a valid table. True, there are cells in that table with errors, but those errors are <em>contained </em>at the cell level. Since they do not affect <var>Data</var>&#8216;s<em> table-level </em>expression, the <code>try</code> at the table expression level has no practical effect.</p>
+
+
+
+<p><code>try</code> does help with the following, but its effect may not be what the developer intended.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Amount&quot;}, {{10}, {error &quot;help!&quot;}, {error &quot;save me!&quot;}})
+in
+  try List.Sum(Data&#91;Amount]) otherwise 0
+
+</pre></div>
+
+
+<p>Above, <code><a rel="noreferrer noopener" aria-label="List.Sum (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/list-sum" target="_blank">List.Sum</a></code> iterates through the values in <var>Data[Amount]</var>, adding them up. If an expression defining an item value raises an error, that error is propagated out of <code>List.Sum</code>, causing the summation as a whole to abort. <code>try</code> handles this error, returning 0 in place of the total <code>List.Sum</code> would have output in error-free circumstances.</p>
+
+
+
+<p>If that was the intention, great! However, if the intention was to replace any erroring items with 0 while allowing the summation as a whole to complete, <code>try</code> must be applied so that it handles errors at the table cell level—it needs to be wired in to receive errors from column value expressions.</p>
+
+
+
+<p>At first glance, <code>Table.TransformColumns(Data, {"Col1", (input) =&gt; try input otherwise 0})</code> might seem like an option. Perhaps surprisingly, this logic does <strong>not</strong> catch errors raised by column value expressions. Why not? A function&#8217;s arguments are eagerly evaluated <em>before</em> their values are passed into the function. If that evaluation results in an error, the function is not invoked so never sees the error; instead, the error is propagated out to the caller. In the case of <a rel="noreferrer noopener" aria-label="Table.TransformColumns (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-transformcolumns" target="_blank"><code>Table.TransformColumns</code></a>, if a column value expression raises an error, the transformation function (e.g. <code>(input) =&gt; ...</code>) is not called, so its try cannot handle the error; instead, the error is propagated back to <code>Table.TransformColumns</code>.</p>
+
+
+
+<p>The problem is that the column value expression needs to be evaluated inside the <code>try</code>. To achieve this, try stepping back to the row level. Wire in a function that receives a reference to the entire row. Then, inside your function, use the row reference to access the column&#8217;s value, wrapped in a <code>try</code> expression. Now, any errors raised as a result of that evaluation will be propagated to your <code>try</code> expression which can then handle them appropriately.</p>
+
+
+
+<p>It&#8217;s not simple, but one of the simplest ways to get a column&#8217;s value via a row reference, work with it, then save the resulting output back to the table is to replace the column of interest by using <a rel="noreferrer noopener" aria-label="Table.AddColumn (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-addcolumn" target="_blank"><code>Table.AddColumn</code></a> followed by <a rel="noreferrer noopener" aria-label="Table.RemoveColumns (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-removecolumns" target="_blank"><code>Table.RemoveColumns</code></a> + <a rel="noreferrer noopener" aria-label="Table.RenameColumns (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-renamecolumns" target="_blank"><code>Table.RenameColumns</code></a>:&nbsp;</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Amount&quot;}, {{10}, {error &quot;help!&quot;}, {error &quot;save me!&quot;}}),
+  ErrorsReplacedWithZero = Table.AddColumn(Data, &quot;NewAmount&quot;, (row) =&gt; try row&#91;Amount] otherwise 0),
+  RemoveOldAmount = Table.RemoveColumns(ErrorsReplacedWithZero, {&quot;Amount&quot;}),
+  RenameNewAmount = Table.RenameColumns(RemoveOldAmount, {&quot;NewAmount&quot;, &quot;Amount&quot;})
+in
+  List.Sum(RenameNewAmount&#91;Amount]) // returns 10
+</pre></div>
+
+
+<p>I agree with you—the above is a complex solution to achieve something that seems like it should be straightforward. If you want to use an elaborate <code>try</code>, unfortunately, some form of working with the table at the row level is required. However, if all you need is to simply replace any error in a particular column with a default value (which is all the above example&#8217;s <code>try</code> does), <a rel="noreferrer noopener" aria-label="Table.ReplaceErrorValues (opens in a new tab)" href="https://docs.microsoft.com/en-us/powerquery-m/table-replaceerrorvalues" target="_blank"><code>Table.ReplaceErrorValues</code></a> is your friend.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = #table({&quot;Amount&quot;}, {{10}, {error &quot;help!&quot;}, {error &quot;save me!&quot;}}),
+  ErrorsReplacedWithZero = Table.ReplaceErrorValues(Data, {{&quot;Amount&quot;, 0}}) // replaces any errors in column Amount with 0
+in
+  List.Sum(ErrorsReplacedWithZero&#91;Amount]) // returns 10
+</pre></div>
+
+
+<div class="wp-block-group is-layout-flow wp-block-group-is-layout-flow"><div class="wp-block-group__inner-container">
+<p>Applying similar behavior to items in a list is more complex. There’s no <code>List.ReplaceErrorValues</code> library function and <code>List.Transform(Data, (input) =&gt; ...)</code> doesn&#8217;t help for the same reason that <code>Table.TransformColumns</code> doesn&#8217;t help with tables. Instead, the simplest solution may be to turn the list into a table, handle the error appropriately, then convert the table back to a list.</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = {10, error &quot;help!&quot;, error &quot;save me!&quot;},
+  DataAsTable = Table.FromValue(Data),
+  ErrorsReplacedWithZero = Table.ReplaceErrorValues(DataAsTable, {{&quot;Value&quot;, 0}}),
+  BackToList = ErrorsReplacedWithZero&#91;Value]
+in
+  List.Sum(BackToList) // returns 10
+</pre></div>
+
+
+<h2 class="wp-block-heading" id="rule-violations">Rule Violations</h2>
+
+
+
+<p>You may not find yourself raising errors that often. Typically, the errors you encounter may come from data connectors and library functions. Don&#8217;t forget, though, that you can use errors to announce violations of expectations, such as to signify that a particular data item failed to conform to a business rule.</p>
+
+
+
+<p>Say you&#8217;re processing a CSV file where values in the <var>ItemCode</var> column should always start with an &#8220;A&#8221;. Early in your mashup, you could check values for conformance to this rule, replacing abnormal values with errors. Later processing steps which access the column will be alerted if they attempt to work with rule-violating values (because of the errors that will be raised).</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = GetData(), // for testing use: #table({&quot;ItemCode&quot;}, {{&quot;1&quot;}, {&quot;A2&quot;}})
+  Validated = Table.TransformColumns(Data, {&quot;ItemCode&quot;, each if Text.StartsWith(_, &quot;A&quot;) then _ else error Error.Record(&quot;Invalid Data&quot;, &quot;ItemCode does not start with expected letter&quot;, _) })
+in
+  Validated
+</pre></div>
+
+
+<p>This approach may be of particular interest when writing a base query that several other queries will pull from, as it allows you to centralize your validation (think: <a rel="noreferrer noopener" aria-label="the DRY principle (opens in a new tab)" href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank">the DRY principle</a>) while ensuring that attempted users of erroneous data are forcibly alerted to the presence of the anomalies.</p>
+
+
+
+<p>By no means is this the only means of centralizing validation logic. Another option is simply to define an extra column for the rule, set to <code>true</code> or <code>false</code>, based on whether the rule is complied with:</p>
+
+
+<div class="wp-block-syntaxhighlighter-code "><pre class="brush: m; title: ; notranslate" title="">
+let
+  Data = GetData(), // for testing use: #table({&quot;ItemCode&quot;}, {{&quot;1&quot;}, {&quot;A2&quot;}})
+  Validated = Table.AddColumn(Data, &quot;ValidItemCode&quot;, each Text.StartsWith(_&#91;ItemCode], &quot;A&quot;), type logical)
+in
+  Validated
+</pre></div>
+
+
+<p>With this option, logic that cares whether <var>ItemCode</var> is valid is responsible to check <var>ValidItemCode</var>. If the developer forgets to perform this check, invalid data may be treated as valid. In contrast, the <em>replace invalid data with errors</em> approach ensures that logic attempting to access an invalid value is forced to recon with its nonconformance (because the access attempt raises an error). </p>
+
+
+
+<p>Whether either of these options is appropriate will depend on your context.</p>
+</div></div>
+
+
+
+<h2 class="wp-block-heading" id="next-time">Next Time</h2>
+
+
+
+<p>That&#8217;s it! There you have M&#8217;s error handling. Hopefully you don&#8217;t encounter too many errors in your Power Query work, but when you do, you know know how to handle them. You also know how to raise your own errors, for cases where you detect an anomaly or need a development placeholder.</p>
+
+
+
+<p>Soon the plan is to talk about the behind the scenes way Power Query organizes things (sections) and the faculty M provides to annotate values with additional information (metadata). Before then, though, it&#8217;s time to look at <a href="/blog/2020/02/05/4948/power-query-m-primer-part16-type-system-i">how the type system works</a> in Power Query.</p>
+
+
+
+<p>Until then, happy coding!</p>
+
+
+
+<h2 class="wp-block-heading has-medium-gray-color has-text-color" id="revision-history">Revision History</h2>
+
+
+
+<ul class="has-medium-gray-color has-text-color">
+<li><strong>2020-02-10</strong>: Updated section <em>Scope</em>, explaining how to use a <code>try</code> expressions to handle errors in table cells.</li>
+
+
+
+<li><strong>2022-06-09</strong>: Revised to reflect M&#8217;s new <code>try catch</code> syntax, as well as to incorporate rudimentary mentions of M&#8217;s new structured error message functionality. </li>
+</ul>
+<div class='yarpp yarpp-related yarpp-related-website yarpp-template-list'>
+<!-- YARPP List -->
+<h3>Related posts:</h3><ol>
+<li><a href="https://bengribaudo.com/blog/2022/05/20/6741/the-elusive-uncatchable-error" rel="bookmark" title="The Elusive, Uncatchable Error?">The Elusive, Uncatchable Error?</a></li>
+<li><a href="https://bengribaudo.com/blog/2020/12/10/5498/adding-an-error-details-column" rel="bookmark" title="Adding an Error Details Column">Adding an Error Details Column</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/05/24/6753/new-m-feature-structured-error-messages" rel="bookmark" title="New M Feature: Structured Error Messages">New M Feature: Structured Error Messages</a></li>
+<li><a href="https://bengribaudo.com/blog/2022/02/21/6561/enhancing-an-errors-detail" rel="bookmark" title="Enhancing an Error&#8217;s Detail">Enhancing an Error&#8217;s Detail</a></li>
+</ol>
+</div>
+					</div><!-- .entry-content -->
+		
+		<footer class="entry-meta">
+											</footer><!-- .entry-meta -->
+	</article><!-- #post -->
+
+				
+<div id="comments" class="comments-area">
+
+	
+			<h2 class="comments-title">
+			12 thoughts on &ldquo;<span>Power Query M Primer (Part 15): Error Handling</span>&rdquo;		</h2>
+
+		<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-88528">
+		<article id="comment-88528" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="https://www.buckinghamshire.gov.uk/" class="url" rel="ugc external nofollow">Gavin</a></b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88528"><time datetime="2020-09-01T07:57:31-05:00">September 1, 2020 at 7:57 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Another really helpful article, helping me to build my understanding of M.  However I can&#8217;t quite get my head around how I can best use this technique in my situation.    I simply want to know if one ofd my queries does not complete due to an error.<br />
+Currently I use 32Bit Excel 2013 with pq and pp as add-ons.   So I have a set of queries that manipulate and clean my source data into a results dataset that will be used by other queries.  My colleagues and I run the query using Data&gt;&gt;Refresh&gt;&gt;All or some VBA code.<br />
+But if something fails to refresh (lets say a field name has changed) there is no alert.  The only way I know of telling is by viewing the queries in the  PowerQuery Pane and looking for the orange warning triangles.  I would like to either return an error to a table or to detect the error in VBA.<br />
+The next step might be to explore how I can use the info in your blog to get a more sophisticated message or handle the error.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88528#respond' data-commentid="88528" data-postid="4883" data-belowelement="comment-88528" data-respondelement="respond" data-replyto="Reply to Gavin" aria-label='Reply to Gavin'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88545">
+		<article id="comment-88545" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88545"><time datetime="2020-09-29T15:45:13-05:00">September 29, 2020 at 3:45 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi Gavin,</p>
+<p>Interesting question. I&#8217;m not sure on the VBA side. On the idea of returning &#8220;an error to a table&#8221;, are you hoping to have a separate table that lists errors from your various queries (so all errors in one place) or instead to have the table whose query encountered the error return say only one row stating that an error occurred?</p>
+<p>Ben</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88545#respond' data-commentid="88545" data-postid="4883" data-belowelement="comment-88545" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88579">
+		<article id="comment-88579" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Alex</b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88579"><time datetime="2020-11-26T14:43:11-06:00">November 26, 2020 at 2:43 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi!<br />
+When I meet errors in the middle of my multi query calculation, speed drops significantly. I want to move from queries like this</p>
+<pre class="brush:m">
+let .... in result
+to this:
+let .... in ThrowErrorIfTableContainsAnyErrors(result)
+</pre>
+<p>Because in my calculation I need to stop on error.  Is there any way to transform errors from the table (or at least first of them) to string and then to raise a new exception? I can&#8217;t find a way to access error message.<br />
+I tried doing like this: Table.AddColumn(xx, &#8220;Msg&#8221;, each try _), it doesnt work. It results in Containment error again.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88579#respond' data-commentid="88579" data-postid="4883" data-belowelement="comment-88579" data-respondelement="respond" data-replyto="Reply to Alex" aria-label='Reply to Alex'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88587">
+		<article id="comment-88587" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88587"><time datetime="2020-12-07T14:51:37-06:00">December 7, 2020 at 2:51 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Does something like this help as a starting place? For example, you could modify it to throw the error from the first non-null Errors column value.</p>
+<pre class="brush:m">
+let
+    Source = #table(null, { {1, error "help"}, { 2, "B"}, { error "bad", "C"} }),
+    RowErrorsToTable = 
+        (row as record) as nullable table => let
+            Table = Record.ToTable(row),
+            AddedErrorsColumn = Table.AddColumn(Table, "Errors", each let Test = try [Value] in if Test[HasError] = true then Test[Error] else null),
+            RemovedDataColumn = Table.RemoveColumns(AddedErrorsColumn, {"Value"}),
+            FilteredToErrors = Table.SelectRows(RemovedDataColumn, each [Errors] <> null)
+        in
+            if Table.IsEmpty(FilteredToErrors) then null else FilteredToErrors,
+    AddedErrorsColumn = Table.AddColumn(Source, "Errors", RowErrorsToTable)
+in
+    AddedErrorsColumn
+</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88587#respond' data-commentid="88587" data-postid="4883" data-belowelement="comment-88587" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88667">
+		<article id="comment-88667" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Alex Groberman</b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88667"><time datetime="2021-03-23T15:54:51-05:00">March 23, 2021 at 3:54 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi, I&#8217;ve created a couple of functions for dealing with errors in lists (along with an examples), hope these help!</p>
+<p>-Alex</p>
+<pre class="brush:m">let
+    List.CustomRemoveErrors = (List as list) as list =&gt;
+        let
+            FirstItem = List{0},
+            FirstItemHasError = (try FirstItem)[HasError],
+            FirstItemAsList = if FirstItemHasError then {} else {FirstItem}
+        in
+            if List.IsEmpty(List) then {} else FirstItemAsList &amp; @List.CustomRemoveErrors(List.RemoveFirstN(List, 1)),
+
+    List.CustomReplaceErrors = (List as list, Replace as any) as list =&gt;
+        let
+            FirstItemAsList = {try List{0} otherwise Replace}
+        in
+            if List.IsEmpty(List) then {} else FirstItemAsList &amp; @List.CustomReplaceErrors(List.RemoveFirstN(List, 1), Replace),
+    
+    ExampleList = {1, error "a", 2},
+    ExampleRemove = List.CustomRemoveErrors(ExampleList),
+    ExampleReplace = List.CustomReplaceErrors(ExampleList, "error")
+in
+    ExampleReplace</pre>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88667#respond' data-commentid="88667" data-postid="4883" data-belowelement="comment-88667" data-respondelement="respond" data-replyto="Reply to Alex Groberman" aria-label='Reply to Alex Groberman'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88668">
+		<article id="comment-88668" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88668"><time datetime="2021-03-24T07:49:30-05:00">March 24, 2021 at 7:49 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Thanks for sharing, Alex.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88668#respond' data-commentid="88668" data-postid="4883" data-belowelement="comment-88668" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-odd thread-alt depth-1" id="li-comment-88703">
+		<article id="comment-88703" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">Peter Morris</b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88703"><time datetime="2021-05-04T12:52:09-05:00">May 4, 2021 at 12:52 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hi, </p>
+<p>I&#8217;m using PQ to collate a number of files from a folder.  I&#8217;m quite happy with converting errors to something understandable and that seems to work.  But on occasion an error occurs which is not being captured and so the whole import fails &#8211; which is very annoying.  I&#8217;m afraid I cant even think where to start &#8211; the overall process has many steps and I cant imagine covering each line with a &#8216;try/otherwise&#8217; structure.</p>
+<p>Any ideas gratefully received.</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88703#respond' data-commentid="88703" data-postid="4883" data-belowelement="comment-88703" data-respondelement="respond" data-replyto="Reply to Peter Morris" aria-label='Reply to Peter Morris'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88710">
+		<article id="comment-88710" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88710"><time datetime="2021-05-28T07:09:24-05:00">May 28, 2021 at 7:09 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Are the errors that are not getting captured at the table cell level?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88710#respond' data-commentid="88710" data-postid="4883" data-belowelement="comment-88710" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		<li class="comment even thread-even depth-1" id="li-comment-88896">
+		<article id="comment-88896" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">GWP</b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88896"><time datetime="2022-04-29T15:23:44-05:00">April 29, 2022 at 3:23 pm</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Hello sir,</p>
+<p>First, thank you very much! Your primers are invaluable.</p>
+<p>Second, I&#8217;m running into difficulties applying your error containment technique to errors emanating from <code>Folder.Files()</code>. This function throws an error when it encounters a path of length greater than 260 characters. It seems to occur at such a root level that I can&#8217;t discern how to get &#8216;underneath&#8217; or &#8216;before&#8217; the error.</p>
+<p>Admittedly, super-long paths maybe shouldn&#8217;t exist ideally, but they do in reality, and I&#8217;m struggling to handle them.</p>
+<p>Any advice would be greatly appreciated! Thank you 🙂</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88896#respond' data-commentid="88896" data-postid="4883" data-belowelement="comment-88896" data-respondelement="respond" data-replyto="Reply to GWP" aria-label='Reply to GWP'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment byuser comment-author-bgribaudo bypostauthor odd alt depth-2" id="li-comment-88899">
+		<article id="comment-88899" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88899"><time datetime="2022-05-04T11:39:32-05:00">May 4, 2022 at 11:39 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>Does the hard to catch error scenario happen only if the <strong>first</strong> file has a really long path? If you change the first file to have a shorter path, does the error situation change?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88899#respond' data-commentid="88899" data-postid="4883" data-belowelement="comment-88899" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+		<li class="comment byuser comment-author-bgribaudo bypostauthor even depth-2" id="li-comment-88904">
+		<article id="comment-88904" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn"><a href="http://www.bengribaudo.com/" class="url" rel="ugc external nofollow">Ben Gribaudo</a></b> <span>Post author</span></cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88904"><time datetime="2022-05-20T09:34:48-05:00">May 20, 2022 at 9:34 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>A new post on <em><a href="https://bengribaudo.com/blog/2022/05/20/6741/the-elusive-uncatchable-error">The Elusive, Uncatchable Error?</a></em> just when live here on the blog. Does it help with your situation?</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88904#respond' data-commentid="88904" data-postid="4883" data-belowelement="comment-88904" data-respondelement="respond" data-replyto="Reply to Ben Gribaudo" aria-label='Reply to Ben Gribaudo'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				<ol class="children">
+		<li class="comment odd alt depth-3" id="li-comment-88905">
+		<article id="comment-88905" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<cite><b class="fn">GWP</b> </cite><a href="https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#comment-88905"><time datetime="2022-05-23T07:36:43-05:00">May 23, 2022 at 7:36 am</time></a>				</header><!-- .comment-meta -->
+
+				
+				
+				<section class="comment-content comment">
+				<p>The error does not necessarily occur on the first file. It occurs on the first file encountered by <code>Folder.Files</code> that exceeds the folder path &gt;248 char or full path &gt;260 char constraints.</p>
+<p>The use case is as follows: </p>
+<p>I pass <code>Folder.Files</code> a string such as <code>C:\Users\MyName\OneDrive - MyOrg</code>.</p>
+<p><code>Folder.Files</code> chugs along (streaming, presumably, as you suggest in your &#8220;Elusive&#8221; post), until it hits either a folder path &gt;248 char or a full path &gt;260 char. Then it errors on that particular row.</p>
+<p>Since the error doesn&#8217;t occur on row 1, the &#8220;Elusive&#8221; fix doesn&#8217;t trap it.</p>
+<p>I can trap the error using <code>try Table.Buffer()</code>. This returns <code>HasError = true</code> and the Error Record Message &#8220;The file name &#8216;C:\Users\blah&#8230;*&#8217; is longer than the system-defined maximum length.&#8221;<br />
+So I can trap it, but I&#8217;m not sure what to do at that point, since all I have is an error record.</p>
+<p>What I&#8217;d like to do is get a table of all the files at a given location, skipping files/folders that throw path-too-long errors.</p>
+<p>I&#8217;ve worked around this issue using <code>Folder.Contents</code> recursively. This is a little more forgiving because you start on safe territory (path &lt; 248 char), then recursively explore subfolders, taking care to only fetch the contents of a subfolder if the total path length will be &lt; 248 char. This allows us to programmatically avoid the error situation altogether.</p>
+<p>But it still leaves me curious if there is a way to trap and handle errors that occur when <code>Folder.Files</code> (or <code>Folder.Contents</code>, for that matter) encounters a path-too-long situation.</p>
+<p>Thank you for your &quot;Elusive&quot; post 🙂</p>
+								</section><!-- .comment-content -->
+
+				<div class="reply">
+				<a rel='nofollow' class='comment-reply-link' href='https://bengribaudo.com/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling?replytocom=88905#respond' data-commentid="88905" data-postid="4883" data-belowelement="comment-88905" data-respondelement="respond" data-replyto="Reply to GWP" aria-label='Reply to GWP'>Reply</a> <span>&darr;</span>				</div><!-- .reply -->
+			</article><!-- #comment-## -->
+				</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+</ol><!-- .children -->
+</li><!-- #comment-## -->
+		</ol><!-- .commentlist -->
+
+		
+		
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/blog/2020/01/15/4883/power-query-m-primer-part-15-error-handling#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://bengribaudo.com/wp-comments-post.php" method="post" id="commentform" class="comment-form"><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> <span class="required-field-message">Required fields are marked <span class="required">*</span></span></p><p class="comment-form-comment"><label for="comment">Comment <span class="required">*</span></label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" autocomplete="name" required="required" /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" autocomplete="email" required="required" /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" autocomplete="url" /></p>
+	<p class="comment-form-caslastname"><label for="caslastname">Last name of the person who runs this blog <span class="required">*</span></label> <input type="text" name="caslastname" id="caslastname" size="30" aria-required="true" /></p>
+	<p class="comment-form-ssspamstopper"><label for="sssstopper-answer">What is the last name of the person who runs this blog?<span class="required">*</span></label> <input type="text" name="sssstopper-answer" id="sssstopper-answer" size="30" aria-required="true" required="required" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='4883' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments .comments-area -->
+
+			
+		</div><!-- #content -->
+	</div><!-- #primary -->
+
+
+			<div id="secondary" class="widget-area" role="complementary">
+			<aside id="custom_html-2" class="widget_text widget widget_custom_html"><div class="textwidget custom-html-widget"><img src="/wp-content/uploads/2017/09/Profile-Picture-2017-09.jpg" alt="Profile Picture" />
+
+<div style="text-align: center">
+<a href="https://twitter.com/bgribaudo" target="_blank" rel="noopener">Twitter</a>  &bull; <a href="https://linkedin.com/in/bengribaudo/" target="_blank" rel="noopener">LinkedIn</a> &bull; <a href="mailto:ben@bengribaudo.com">Email</a>
+</div></div></aside><aside id="block-2" class="widget widget_block widget_text">
+<p><strong><span style="color:#bc0306" class="has-inline-color">Email List Sign Up</span></strong>—What to join my email list? <a href="https://bengribaudo.com/email" data-type="page" data-id="6244"><em>Subscribe today!</em></a></p>
+</aside><aside id="block-12" class="widget widget_block widget_text">
+<p><strong>Upcoming <a href="https://bengribaudo.com/courses/meet-m" data-type="page" data-id="6277"><em>Mastering M</em> Courses</a></strong> <br>- TBD: Late Summer 2023?</p>
+</aside><aside id="block-14" class="widget widget_block widget_text">
+<p><strong><a href="https://bengribaudo.com/courses/power-query-custom-connector-workshop">Custom Connector Deep Dive Workshop</a></strong><br>- Summer 2023</p>
+</aside><aside id="block-3" class="widget widget_block widget_text">
+<p><strong>Need help</strong> with a BI, data or development project? <em><a href="mailto:ben@bengribaudo.com">Let's talk!</a></em></p>
+</aside><aside id="custom_html-4" class="widget_text widget widget_custom_html"><h3 class="widget-title">Featured Videos</h3><div class="textwidget custom-html-widget"><p><a href="/blog/2020/08/26/5417/how-power-query-thinks">
+<img src="/wp-content/uploads/2021/07/HowPowerQueryThinksThumbnail.png" alt="How Power Query Thinks Thumbnail" />
+<br />
+How Power Query Thinks: Taking the Mystery Out of Streaming and Query Folding
+</a>
+<br /><br />
+<a href="/blog/2017/09/19/3763/t-sql-on-the-wire-what-takes-place-between-client-and-server">
+<img src="/wp-content/uploads/2017/09/TabularDataStreamPresentationThumbnail.png" alt="Tabular Data Stream Presentation Thumbnail" />
+<br />
+T-SQL on the Wire: What takes place between client and server</a></p></div></aside><aside id="tag_cloud-3" class="widget widget_tag_cloud"><h3 class="widget-title">Tags</h3><div class="tagcloud"><ul class='wp-tag-cloud' role='list'>
+	<li><a href="https://bengribaudo.com/blog/tag/net" class="tag-cloud-link tag-link-6 tag-link-position-1" style="font-size: 16.676056338028pt;" aria-label=".Net (22 items)">.Net</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/net-core" class="tag-cloud-link tag-link-81 tag-link-position-2" style="font-size: 8pt;" aria-label=".Net Core (2 items)">.Net Core</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/auto-generation" class="tag-cloud-link tag-link-10 tag-link-position-3" style="font-size: 10.169014084507pt;" aria-label="Auto-Generation (4 items)">Auto-Generation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/bug" class="tag-cloud-link tag-link-8 tag-link-position-4" style="font-size: 8pt;" aria-label="Bug (2 items)">Bug</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/c-sharp" class="tag-cloud-link tag-link-5 tag-link-position-5" style="font-size: 16.676056338028pt;" aria-label="C# (22 items)">C#</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/conversion-operators" class="tag-cloud-link tag-link-90 tag-link-position-6" style="font-size: 8pt;" aria-label="Conversion Operators (2 items)">Conversion Operators</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pq-custom-connector" class="tag-cloud-link tag-link-137 tag-link-position-7" style="font-size: 14.901408450704pt;" aria-label="Custom Connector (14 items)">Custom Connector</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data" class="tag-cloud-link tag-link-76 tag-link-position-8" style="font-size: 12.633802816901pt;" aria-label="Data (8 items)">Data</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-mashup-cmdlets" class="tag-cloud-link tag-link-113 tag-link-position-9" style="font-size: 10.169014084507pt;" aria-label="Data Mashup Cmdlets (4 items)">Data Mashup Cmdlets</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/data-transformation" class="tag-cloud-link tag-link-101 tag-link-position-10" style="font-size: 19.042253521127pt;" aria-label="Data Transformation (39 items)">Data Transformation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/dataverse-web-api" class="tag-cloud-link tag-link-120 tag-link-position-11" style="font-size: 14.901408450704pt;" aria-label="Dataverse Web API (14 items)">Dataverse Web API</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/errors" class="tag-cloud-link tag-link-111 tag-link-position-12" style="font-size: 11.647887323944pt;" aria-label="Errors (6 items)">Errors</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/functions" class="tag-cloud-link tag-link-104 tag-link-position-13" style="font-size: 9.1830985915493pt;" aria-label="functions (3 items)">functions</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ienumerable" class="tag-cloud-link tag-link-79 tag-link-position-14" style="font-size: 8pt;" aria-label="IEnumerable (2 items)">IEnumerable</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/indexes" class="tag-cloud-link tag-link-70 tag-link-position-15" style="font-size: 8pt;" aria-label="Indexes (2 items)">Indexes</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/json" class="tag-cloud-link tag-link-139 tag-link-position-16" style="font-size: 8pt;" aria-label="JSON (2 items)">JSON</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/lazy-evaluation" class="tag-cloud-link tag-link-74 tag-link-position-17" style="font-size: 8pt;" aria-label="Lazy Evaluation (2 items)">Lazy Evaluation</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/magento" class="tag-cloud-link tag-link-30 tag-link-position-18" style="font-size: 13.521126760563pt;" aria-label="Magento (10 items)">Magento</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-excel" class="tag-cloud-link tag-link-98 tag-link-position-19" style="font-size: 21.30985915493pt;" aria-label="Microsoft Excel (66 items)">Microsoft Excel</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/microsoft-power-bi" class="tag-cloud-link tag-link-99 tag-link-position-20" style="font-size: 22pt;" aria-label="Microsoft Power BI (78 items)">Microsoft Power BI</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/nuget" class="tag-cloud-link tag-link-82 tag-link-position-21" style="font-size: 8pt;" aria-label="NuGet (2 items)">NuGet</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ordering" class="tag-cloud-link tag-link-69 tag-link-position-22" style="font-size: 8pt;" aria-label="Ordering (2 items)">Ordering</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/pdf" class="tag-cloud-link tag-link-28 tag-link-position-23" style="font-size: 11.647887323944pt;" aria-label="PDF (6 items)">PDF</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/php" class="tag-cloud-link tag-link-27 tag-link-position-24" style="font-size: 11.647887323944pt;" aria-label="PHP (6 items)">PHP</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/power-query-m" class="tag-cloud-link tag-link-100 tag-link-position-25" style="font-size: 22pt;" aria-label="Power Query M (78 items)">Power Query M</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/powershell" class="tag-cloud-link tag-link-115 tag-link-position-26" style="font-size: 8pt;" aria-label="PowerShell (2 items)">PowerShell</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/privacy-levels-data-protection-firewall" class="tag-cloud-link tag-link-138 tag-link-position-27" style="font-size: 8pt;" aria-label="Privacy Levels/Data Protection Firewall (2 items)">Privacy Levels/Data Protection Firewall</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/prolog" class="tag-cloud-link tag-link-49 tag-link-position-28" style="font-size: 9.1830985915493pt;" aria-label="Prolog (3 items)">Prolog</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/query-folding" class="tag-cloud-link tag-link-133 tag-link-position-29" style="font-size: 9.1830985915493pt;" aria-label="Query Folding (3 items)">Query Folding</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/refactoring" class="tag-cloud-link tag-link-45 tag-link-position-30" style="font-size: 8pt;" aria-label="Refactoring (2 items)">Refactoring</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ruby" class="tag-cloud-link tag-link-39 tag-link-position-31" style="font-size: 10.957746478873pt;" aria-label="Ruby (5 items)">Ruby</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/security" class="tag-cloud-link tag-link-87 tag-link-position-32" style="font-size: 10.169014084507pt;" aria-label="Security (4 items)">Security</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql" class="tag-cloud-link tag-link-132 tag-link-position-33" style="font-size: 14.211267605634pt;" aria-label="SQL (12 items)">SQL</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/sql-server" class="tag-cloud-link tag-link-71 tag-link-position-34" style="font-size: 13.12676056338pt;" aria-label="SQL Server (9 items)">SQL Server</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssis" class="tag-cloud-link tag-link-64 tag-link-position-35" style="font-size: 8pt;" aria-label="SSIS (2 items)">SSIS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/ssrs" class="tag-cloud-link tag-link-31 tag-link-position-36" style="font-size: 11.647887323944pt;" aria-label="SSRS (6 items)">SSRS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/switch-case" class="tag-cloud-link tag-link-20 tag-link-position-37" style="font-size: 9.1830985915493pt;" aria-label="switch/case (3 items)">switch/case</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/table-view" class="tag-cloud-link tag-link-136 tag-link-position-38" style="font-size: 10.169014084507pt;" aria-label="Table.View (4 items)">Table.View</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/tds" class="tag-cloud-link tag-link-86 tag-link-position-39" style="font-size: 10.169014084507pt;" aria-label="TDS (4 items)">TDS</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/types" class="tag-cloud-link tag-link-109 tag-link-position-40" style="font-size: 13.915492957746pt;" aria-label="Types (11 items)">Types</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/unit-testing" class="tag-cloud-link tag-link-38 tag-link-position-41" style="font-size: 10.169014084507pt;" aria-label="Unit Testing (4 items)">Unit Testing</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/upsert" class="tag-cloud-link tag-link-122 tag-link-position-42" style="font-size: 8pt;" aria-label="Upsert (2 items)">Upsert</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/variables" class="tag-cloud-link tag-link-65 tag-link-position-43" style="font-size: 10.169014084507pt;" aria-label="Variables (4 items)">Variables</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/web-services" class="tag-cloud-link tag-link-47 tag-link-position-44" style="font-size: 9.1830985915493pt;" aria-label="Web Services (3 items)">Web Services</a></li>
+	<li><a href="https://bengribaudo.com/blog/tag/wpf" class="tag-cloud-link tag-link-4 tag-link-position-45" style="font-size: 13.915492957746pt;" aria-label="WPF (11 items)">WPF</a></li>
+</ul>
+</div>
+</aside>
+		<aside id="recent-posts-3" class="widget widget_recent_entries">
+		<h3 class="widget-title">Recent Posts</h3>
+		<ul>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/07/25/7371/privacy-levels-in-dataflows-click-to-continue-or-not">Privacy Levels in Dataflows: Click to Continue? (Or Not!)</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/06/02/7352/rowexpression-from-itemexpression-from">RowExpression.From/ItemExpression.From</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/04/14/7321/on-premises-data-gateway-not-just-for-private-resource-access">On-Premises Data Gateway: Not Just for Private Resource Access</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/03/03/7292/lazy-streamed-immutable-try-building-a-table">Lazy, Streamed, Immutable: Try Building a Table</a>
+									</li>
+											<li>
+					<a href="https://bengribaudo.com/blog/2023/02/15/7268/value-replacetype-table-column-renames-bug-warning">Value.ReplaceType &amp; Table Column Renames (Bug Warning!)</a>
+									</li>
+					</ul>
+
+		</aside>		</div><!-- #secondary -->
+		</div><!-- #main .wrapper -->
+	<footer id="colophon" role="contentinfo">
+		<div class="site-info">
+									Copyright &copy; 2011&#8211;2023 Ben Gribaudo								
+				<br />
+				
+				<div style="font-size:xx-small; "><a href="/privacy">Privacy Policy</a> • All trademarks property of their respective owners.</div>
+							
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<!-- Matomo --><script type="text/javascript">
+var _paq = window._paq = window._paq || [];
+_paq.push(['disableCookies']);
+_paq.push(['enableJSErrorTracking']);_paq.push(['trackPageView']);_paq.push(['enableLinkTracking']);_paq.push(['alwaysUseSendBeacon']);_paq.push(['setTrackerUrl', "\/\/bengribaudo.com\/wp-content\/plugins\/matomo\/app\/matomo.php"]);_paq.push(['setSiteId', '1']);var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+g.type='text/javascript'; g.async=true; g.src="\/\/bengribaudo.com\/wp-content\/uploads\/matomo\/matomo.js"; s.parentNode.insertBefore(g,s);
+</script>
+<!-- End Matomo Code --><script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b' id='syntaxhighlighter-core-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0.9b' id='syntaxhighlighter-brush-as3-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushArduino.js?ver=3.0.9b' id='syntaxhighlighter-brush-arduino-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0.9b' id='syntaxhighlighter-brush-bash-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0.9b' id='syntaxhighlighter-brush-coldfusion-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushClojure.js?ver=20090602' id='syntaxhighlighter-brush-clojure-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b' id='syntaxhighlighter-brush-cpp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0.9b' id='syntaxhighlighter-brush-csharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0.9b' id='syntaxhighlighter-brush-css-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0.9b' id='syntaxhighlighter-brush-delphi-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0.9b' id='syntaxhighlighter-brush-diff-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0.9b' id='syntaxhighlighter-brush-erlang-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushFSharp.js?ver=20091003' id='syntaxhighlighter-brush-fsharp-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGo.js?ver=3.0.9b' id='syntaxhighlighter-brush-go-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushGroovy.js?ver=3.0.9b' id='syntaxhighlighter-brush-groovy-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushHaskell.js?ver=3.0.9b' id='syntaxhighlighter-brush-haskell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0.9b' id='syntaxhighlighter-brush-java-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0.9b' id='syntaxhighlighter-brush-javafx-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0.9b' id='syntaxhighlighter-brush-jscript-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushLatex.js?ver=20090613' id='syntaxhighlighter-brush-latex-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushMatlabKey.js?ver=20091209' id='syntaxhighlighter-brush-matlabkey-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushObjC.js?ver=20091207' id='syntaxhighlighter-brush-objc-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0.9b' id='syntaxhighlighter-brush-perl-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0.9b' id='syntaxhighlighter-brush-php-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0.9b' id='syntaxhighlighter-brush-plain-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0.9b' id='syntaxhighlighter-brush-powershell-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0.9b' id='syntaxhighlighter-brush-python-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/third-party-brushes/shBrushR.js?ver=20100919' id='syntaxhighlighter-brush-r-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0.9b' id='syntaxhighlighter-brush-ruby-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0.9b' id='syntaxhighlighter-brush-scala-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0.9b' id='syntaxhighlighter-brush-sql-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSwift.js?ver=3.0.9b' id='syntaxhighlighter-brush-swift-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0.9b' id='syntaxhighlighter-brush-vb-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0.9b' id='syntaxhighlighter-brush-xml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushYaml.js?ver=3.0.9b' id='syntaxhighlighter-brush-yaml-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/PowerQueryMBrush/shBrushM.js?ver=1.1.0' id='syntaxhighlighter-brush-m-js'></script>
+<script type='text/javascript'>
+	(function(){
+		var corecss = document.createElement('link');
+		var themecss = document.createElement('link');
+		var corecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b";
+		if ( corecss.setAttribute ) {
+				corecss.setAttribute( "rel", "stylesheet" );
+				corecss.setAttribute( "type", "text/css" );
+				corecss.setAttribute( "href", corecssurl );
+		} else {
+				corecss.rel = "stylesheet";
+				corecss.href = corecssurl;
+		}
+		document.head.appendChild( corecss );
+		var themecssurl = "https://bengribaudo.com/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b";
+		if ( themecss.setAttribute ) {
+				themecss.setAttribute( "rel", "stylesheet" );
+				themecss.setAttribute( "type", "text/css" );
+				themecss.setAttribute( "href", themecssurl );
+		} else {
+				themecss.rel = "stylesheet";
+				themecss.href = themecssurl;
+		}
+		document.head.appendChild( themecss );
+	})();
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = 'Can\'t find brush for: ';
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = 'Brush wasn\'t configured for html-script option: ';
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+	SyntaxHighlighter.all();
+
+	// Infinite scroll support
+	if ( typeof( jQuery ) !== 'undefined' ) {
+		jQuery( function( $ ) {
+			$( document.body ).on( 'post-load', function() {
+				SyntaxHighlighter.highlight();
+			} );
+		} );
+	}
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css' href='https://bengribaudo.com/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=5.30.5' type='text/css' media='all' />
+<script type='text/javascript' src='https://bengribaudo.com/wp-includes/js/comment-reply.min.js?ver=6.2.2' id='comment-reply-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/themes/twentytwelve/js/navigation.js?ver=20141205' id='twentytwelve-navigation-js'></script>
+<script type='text/javascript' src='https://bengribaudo.com/wp-content/plugins/page-links-to/dist/new-tab.js?ver=3.3.6' id='page-links-to-js'></script>
+</body>
+</html>
+<!-- Dynamic page generated in 0.089 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2023-08-27 04:52:10 -->
+
+<!-- super cache -->
