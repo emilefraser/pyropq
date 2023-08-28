@@ -1,0 +1,28 @@
+Validation	e	1		0	Entry	[Empty]
+Validation	e	2		0	Entry	[Empty]
+Inspection.Scope	s	3	2	0	Entry	[Empty]
+Inspection.Scope	d	4	3	0	Entry	[Empty]
+Inspection.Scope	d	4	3	0	Exit	[Empty]
+Inspection.Scope	s	5	2	0	Entry	[Empty]
+Inspection.Scope	d	6	5	0	Entry	[Empty]
+Inspection.Scope	d	6	5	0	Exit	[Empty]
+Inspection.Scope	s	3	2	0	Exit	[Empty]
+Inspection.Scope	s	5	2	0	Exit	[Empty]
+Validation	c	7	2	0	Entry	[Empty]
+Validation	c	7	2	1	Exit	[Empty]
+Validation	e	2		1	Exit	[Empty]
+Validation	e	8	1	0	Entry	[Empty]
+Validation	s	9	8	0	Entry	[Empty]
+Validation	p	10	9	0	Entry	{"numIds":0}
+Validation	s	9	8	0	Exit	[Empty]
+Validation	d	11	8	0	Entry	[Empty]
+Validation	p	12	11	0	Entry	{"numIds":0}
+Validation	d	11	8	0	Exit	[Empty]
+Validation	c	13	8	0	Entry	[Empty]
+Validation	p	14	13	0	Entry	{"numIds":0}
+Validation	c	13	8	0	Exit	[Empty]
+Validation	m	15	8	0	Entry	[Empty]
+Validation	p	16	15	0	Entry	{"numIds":0}
+Validation	m	15	8	0	Exit	[Empty]
+Validation	e	8	1	0	Exit	[Empty]
+Validation	e	1		3	Exit	[Empty]

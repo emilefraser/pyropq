@@ -1,6 +1,30 @@
-let
-    output =
-        (sDT as datetime, eDT as datetime, sH as time, eH as time) as number =>
+/**
+ 
+* @name DateTime
+* @license MIT (c) 2023 emilefraser
+* @author https://github.com/emilefraser
+* @version 20230828
+*
+**/ 
+
+section DateTime;
+
+/**
+* Returns Get Hours Between Start and End DateTime
+* 
+* @name GetHoursBetween
+* @section DateTime, 
+* @license MIT (c) 2023 emilefraser
+* @author https://github.com/emilefraser
+* @version 20230828
+
+*/ 
+shared DateTime.GetHoursBetween = (
+  sDT as datetime, 
+  eDT as datetime, 
+  sH as time,
+  eH as time
+ ) as number =>
             let
                 startDateTime = sDT,
                 startDate = Date.From(startDateTime),
@@ -106,4 +130,32 @@ in
             Value.Type(output),
             documentation
         )
-    )
+    );
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+/**
+* Gets Hours List
+* 
+* @name GetHoursBetween
+* @section DateTime, 
+* @license MIT (c) 2023 emilefraser
+* @author https://github.com/emilefraser
+* @version 20230828
+
+*/ 
+shared DateTime.GetDatesAndHourList = () =>
+
+let
+    startDateTime = #datetime(2018,1,1,0,0,0),
+    endDateTime = #datetime(2019,12,31,23,0,0),
+    totalHours = Duration.TotalHours(endDateTime - startDateTime) + 1,
+    listHours = List.DateTimes(startDateTime, totalHours, #duration(0,1,0,0)),
+    #"Converted to Table" = Table.FromList(listHours, Splitter.SplitByNothing(), type table [DateTime = datetime], null, ExtraValues.Error)
+in
+    #"Converted to Table"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 

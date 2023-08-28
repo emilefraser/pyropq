@@ -1,4 +1,15 @@
 /**
+ 
+* @name DateTime
+* @license MIT (c) 2023 emilefraser
+* @author https://github.com/emilefraser
+* @version 20230828
+*
+**/ 
+
+section DateTime;
+
+/**
 * Normalizes a datetime value to the specified part.
 * 
 * @name DateTime_Normalize
@@ -8,9 +19,11 @@
 * @version 20210121-1
 * @example getDateTimeNormalized(#date(2021,1,1,8,21,34),"minutes", 15) = 01.01.2021 08:15:00
 */ 
-
-let
-  func = (dtValue as datetime, partToNormalize as text, normalizeTo as number)=>
+shared DateTime.GetDateTimeNormalized = (
+  dtValue as datetime, 
+  partToNormalize as text, 
+  normalizeTo as number
+) =>
   let
     Map = #table(
       {"PartType", "func"}, 
@@ -75,4 +88,7 @@ let
     ]
 
 in
-  Value.ReplaceType(func, fnMetaInfo)
+  Value.ReplaceType(func, fnMetaInfo);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
