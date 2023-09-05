@@ -70,3 +70,19 @@ in
             documentation
         )
     )
+
+
+
+
+
+    (a as number, b as number) as number =>
+    let
+                outsum = a + b 
+    in 
+        outsum
+
+
+
+        6cabc5ea-0b95-4d30-8ae3-db6549ee2471
+        29003415-84db-4ed6-ac3a-82b429be1a24
+        9d413f01-4c96-443b-a09e-c2d9cdc1c582

@@ -1,0 +1,155 @@
+{
+	"name": "sa_lotto",
+	"description": "",
+	"version": "1.0",
+	"culture": "en-US",
+	"modifiedTime": "2023-08-29T08:33:56.2218857+00:00",
+	"ppdf:outputFileFormat": "Csv",
+	"pbi:mashup": {
+		"fastCombine": true,
+		"allowNativeQueries": false,
+		"queriesMetadata": {
+			"DrawTime": {
+				"queryId": "207549d6-25fb-4a8f-8e8f-cf08261a67a1",
+				"queryName": "DrawTime",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"ContainerName": {
+				"queryId": "0ef52e6e-b882-4e09-9009-c62afb4817a3",
+				"queryName": "ContainerName",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"Country": {
+				"queryId": "f9e36561-a26b-4115-8e54-89f595350378",
+				"queryName": "Country",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"CurrentYear": {
+				"queryId": "280d809e-0f87-407d-a039-0bd165ac0e66",
+				"queryName": "CurrentYear",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"Game": {
+				"queryId": "01a73f16-a857-4b50-a40f-6abdb2964a37",
+				"queryName": "Game",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"Results": {
+				"queryId": "67c551e2-b019-4302-9e8f-506770968525",
+				"queryName": "Results",
+				"queryGroupId": "12ba3b4a-c7db-408e-9ab5-16b2051e82f2",
+				"loadEnabled": true
+			},
+			"ResultCurrent": {
+				"queryId": "04d11457-980a-4459-ba42-46d069a807be",
+				"queryName": "ResultCurrent",
+				"queryGroupId": "09202840-ee2b-4ab2-a251-5ca23a33a54c"
+			},
+			"ResultHistoric": {
+				"queryId": "a295b1e8-5434-443e-9ac9-b8a87e5bcfc8",
+				"queryName": "ResultHistoric",
+				"queryGroupId": "09202840-ee2b-4ab2-a251-5ca23a33a54c"
+			},
+			"ResultsPreferredColumNames": {
+				"queryId": "8b23322e-c112-4f52-bb22-886e97ac806a",
+				"queryName": "ResultsPreferredColumNames",
+				"queryGroupId": "bf973bf1-bec0-4579-8603-72fed4092aff"
+			},
+			"StorageAccountUri": {
+				"queryId": "a8fd9c60-7eae-4793-82a9-6216e73a6878",
+				"queryName": "StorageAccountUri",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"ProviderName01": {
+				"queryId": "1880f30b-dfee-40d8-b003-fd5a71ae39ee",
+				"queryName": "ProviderName01",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"StorageAccountName": {
+				"queryId": "4f43134b-4bb0-453d-8b48-1a77f75cbe70",
+				"queryName": "StorageAccountName",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"GameId": {
+				"queryId": "dc179d75-59d2-4862-b11f-b1424906a679",
+				"queryName": "GameId",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			},
+			"ProviderUri01": {
+				"queryId": "9cfb3cd4-0a34-4f1b-8107-8e7f31dd4036",
+				"queryName": "ProviderUri01",
+				"queryGroupId": "d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc"
+			}
+		},
+		"queryGroups": [
+			{
+				"id": "2b7dc21a-4209-4bf4-a1f3-29bc877e6d3b",
+				"name": "test queries",
+				"description": "AutoML: test queries",
+				"parentId": null,
+				"order": 0
+			}
+		],
+		"document": "section Section1;\r\nshared DrawTime = \"203000\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text];\r\n[Description = \"Container Name\"]\r\nshared ContainerName = \"source\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text];\r\nshared Country = \"south-africa\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text, List = {\"south-africa\", \"usa\"}, DefaultValue = \"south-africa\"];\r\nshared CurrentYear = 2023 meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type any];\r\nshared Game = \"daily_lotto\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text, List = {\"daily_lotto\", \"lotto\", \"lotto_plus_1\", \"lotto_plus_2\", \"powerball\", \"powerball_plus\"}, DefaultValue = \"daily_lotto\"];\r\nshared Results = let\n    Source = Table.Combine({ResultCurrent, ResultHistoric}),\n    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"Number5\", Int64.Type}, {\"Number4\", Int64.Type}, {\"Number3\", Int64.Type}, {\"Number2\", Int64.Type}, {\"Number1\", Int64.Type}}),\r\n  #\"Added DateKey\" = Table.AddColumn(#\"Changed Type\", \"DateKey\", each Number.ToText(Date.Year([DrawDate]))  & \r\nText.End(\"0\" & Number.ToText(Date.Month([DrawDate])),2) &\r\nText.End(\"0\" & Number.ToText(Date.Day([DrawDate])),2), Int64.Type),\r\n  AddedDateTimeKey = Table.AddColumn(#\"Added DateKey\", \"DateTimeKey\", each [DateKey] & DrawTime, Int64.Type),\r\n  #\"Added GameId\" = Table.AddColumn(AddedDateTimeKey, \"GameId\", each GameId, type text),\n    #\"Sorted Rows\" = Table.Sort(#\"Added GameId\",{{\"DrawDate\", Order.Descending}}),\n    #\"Added Index\" = Table.AddIndexColumn(#\"Sorted Rows\", \"Index\", 0, 1, Int64.Type),\r\n  #\"Added ResultId\" = Table.AddColumn(#\"Added Index\", \"ResultId\", each [GameId] & \"__\" & Number.ToText([Index]),type text),\r\n  #\"Marked key columns\" = Table.AddKey(#\"Added ResultId\", {\"ResultId\"}, false)\nin\n    #\"Marked key columns\";\r\n[Description = \"Resutls from Lottology\"]\r\nshared ResultCurrent = let\n    Source = Web.Contents(ProviderUri01),\n    #\"Extracted Results Table\" = Html.Table(Source, {{\"Column1\", \"TABLE.table.table-balls > * > TR > :nth-child(1)\"}, {\"Column2\", \"TABLE.table.table-balls > * > TR > :nth-child(2)\"}}, [RowSelector=\"TABLE.table.table-balls > * > TR\"]),\r\n  #\"Promoted headers\" = Table.PromoteHeaders(#\"Extracted Results Table\", [PromoteAllScalars = true]),\n   \n    #\"Changed Type\" = Table.TransformColumnTypes(#\"Promoted headers\",{{\"Date\", type date}, {\"SERIES\", type text}}),\n    #\"Renamed Columns\" = Table.RenameColumns(#\"Changed Type\",{{\"SERIES\", \"NumbersSelected\"}, {\"Date\", \"DrawDate\"}}),\n    #\"FormatResults\" = Table.TransformColumns(#\"Renamed Columns\", {{\"NumbersSelected\", each\n            Text.Middle(Text.From(_, \"en-ZA\"), 0, 2)& \".\" \n    & Text.Middle(Text.From(_, \"en-ZA\"), 2, 2)& \".\" \n    & Text.Middle(Text.From(_, \"en-ZA\"), 4, 2)& \".\" \n    & Text.Middle(Text.From(_, \"en-ZA\"), 6, 2)& \".\" \n    & Text.Middle(Text.From(_, \"en-ZA\"), 8, 2), type text}}),\n    #\"Added Number1\" = Table.AddColumn(#\"FormatResults\", \"Number1\", each Number.FromText(Text.Split([NumbersSelected], \".\"){0}), Int32.Type),\n    #\"Added Number2\" = Table.AddColumn(#\"Added Number1\", \"Number2\", each Number.FromText(Text.Split([NumbersSelected], \".\"){1}), Int32.Type),\n    #\"Added Number3\" = Table.AddColumn(#\"Added Number2\", \"Number3\", each Number.FromText(Text.Split([NumbersSelected], \".\"){2}), Int32.Type),\n    #\"Added Number4\" = Table.AddColumn(#\"Added Number3\", \"Number4\", each Number.FromText(Text.Split([NumbersSelected], \".\"){3}), Int32.Type),\n    #\"Added Number5\" = Table.AddColumn(#\"Added Number4\", \"Number5\", each Number.FromText(Text.Split([NumbersSelected], \".\"){4}), Int32.Type)\nin\n    #\"Added Number5\";\r\n[Description = \"Resutls in csv in folders\"]\r\nshared ResultHistoric = let\n    Source = AzureStorage.DataLake(StorageAccountUri),\n    #\"Filtered Rows1\" = Table.SelectRows(Source, each not Text.EndsWith([Name], Number.ToText(CurrentYear) & \".csv\") and not Text.EndsWith([Name], \"0000.csv\")),\n    #\"Renamed Columns\" = Table.RenameColumns(#\"Filtered Rows1\",{{\"Name\", \"FileName\"}}),\n    #\"Added FilePath\" = Table.AddColumn(#\"Renamed Columns\", \"FilePath\", each [Folder Path] & [FileName], type text),\n    #\"Add CSV Content\"= Table.AddColumn(#\"Added FilePath\", \"Content_CSV\", each Csv.Document([Content])),\n    #\"Expanded Content_CSV\" = Table.ExpandTableColumn(#\"Add CSV Content\", \"Content_CSV\", {\"Column1\", \"Column2\", \"Column3\", \"Column4\", \"Column5\", \"Column6\", \"Column7\"}, {\"Column1\", \"Column2\", \"Column3\", \"Column4\", \"Column5\", \"Column6\", \"Column7\"}),\n    #\"Removed Unnesseccary Columns\" = Table.RemoveColumns(#\"Expanded Content_CSV\",{\"Content\", \"Extension\", \"Date accessed\", \"Date created\", \"Attributes\", \"Folder Path\", \"Column2\", \"Date modified\"}),\n    #\"Changed Type\" = Table.TransformColumnTypes(#\"Removed Unnesseccary Columns\",{{\"FileName\", type text}, {\"Column1\", type date}, {\"Column3\", Int64.Type}, {\"Column4\", Int64.Type}, {\"Column5\", Int64.Type}, {\"Column6\", Int64.Type}, {\"Column7\", Int64.Type}}),\n\n\n    #\"Column Headers Applied\" = Table.RenameColumns(#\"Changed Type\", List.Zip({List.Transform(Table.ColumnNames(#\"Changed Type\"), each _), ResultsPreferredColumNames})),\n    #\"Added NumbersSelected\" = Table.AddColumn(#\"Column Headers Applied\", \"NumbersSelected\", each Text.PadStart(Number.ToText([Number1]),2,\"0\") & \".\" &\nText.PadStart(Number.ToText([Number2]),2,\"0\") & \".\" &\nText.PadStart(Number.ToText([Number3]),2,\"0\") & \".\" &\nText.PadStart(Number.ToText([Number4]),2,\"0\") & \".\" &\nText.PadStart(Number.ToText([Number5]),2,\"0\"), type text),\n    #\"Removed File Columns\" = Table.RemoveColumns(#\"Added NumbersSelected\",{\"FileName\", \"FilePath\"}),\n    #\"Reordered Columns\" = Table.ReorderColumns(#\"Removed File Columns\",{\"DrawDate\", \"NumbersSelected\", \"Number1\", \"Number2\", \"Number3\", \"Number4\", \"Number5\"})\nin\n    #\"Reordered Columns\";\r\n[Description = \"Resutls in csv in folders\"]\r\nshared ResultsPreferredColumNames = let\r\n  Source = AzureStorage.DataLake(StorageAccountUri),\r\n  #\"Filtered Rows\" = Table.SelectRows(Source, each Text.EndsWith([Name], \"0000.csv\")),\r\n  #\"Added Custom\" = Table.AddColumn(#\"Filtered Rows\", \"Headers\", each Csv.Document([Content])),\r\n  #\"Expanded Headers\" = Table.ExpandTableColumn(#\"Added Custom\", \"Headers\", {\"Column1\", \"Column2\", \"Column3\", \"Column4\", \"Column5\", \"Column6\"}, {\"Column1\", \"Column2\", \"Column3\", \"Column4\", \"Column5\", \"Column6\"}),\r\n  #\"Removed Columns\" = Table.RemoveColumns(#\"Expanded Headers\", {\"Content\", \"Name\", \"Extension\", \"Date accessed\", \"Date modified\", \"Date created\", \"Attributes\", \"Folder Path\"}),\r\n  #\"Promoted Headers\" = Table.PromoteHeaders(#\"Removed Columns\", [PromoteAllScalars = true]),\r\n  HeaderList = List.Combine({{\"FileName\", \"FilePath\"}, Table.ColumnNames(#\"Promoted Headers\")}),\r\n  #\"Convert to table\" = Table.FromValue(HeaderList),\r\n  #\"Transform columns\" = Table.TransformColumnTypes(#\"Convert to table\", {{\"Value\", type text}}),\r\n  #\"Converted to list\" = #\"Transform columns\"[Value]\r\nin\r\n  #\"Converted to list\";\r\n[Description = \"Root Path of the Historical Files\"]\r\nshared StorageAccountUri = let\n    Source = \"https://\" & StorageAccountName & \".dfs.core.windows.net/\" & ContainerName & \"/source=\" & ProviderName01 & \"/type=results/country=\" & Country & \"/game=\" & Game & \"/\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]\nin\n    Source;\r\nshared ProviderName01 = \"lottology\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text, List = {\"azure_data_lake\", \"ithuba\", \"lottoland\", \"standard_bank\", \"lotto_extreme\", \"statlotto\", \"lottology\", \"\"}, DefaultValue = \"lottology\"];\r\n[Description = \"Storage Account Name\"]\r\nshared StorageAccountName = \"azsdlsstgdevsan01\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text];\r\nshared GameId = \"sa__daily_lotto\" meta [IsParameterQuery = true, IsParameterQueryRequired = true, Type = type text];\r\n[Description = \"Data Source of the Data\"]\r\nshared ProviderUri01 = \"https://www.\" & ProviderName01 & \".com/\" & Country & \"/\" & Game & \"/past-draws-archive/\";\r\n",
+		"connectionOverrides": [
+			{
+				"path": "https://www.lottology.com/south-africa/lotto/past-draws-archive",
+				"kind": "Web",
+				"provider": "CdsA",
+				"authenticationKind": null,
+				"environmentName": null,
+				"apiName": null,
+				"connectionName": "{\"kind\":\"Web\",\"path\":\"https://www.lottology.com/south-africa/lotto/past-draws-archive\"}",
+				"audience": null
+			},
+			{
+				"path": "https://azsdlsstgdevsan01.dfs.core.windows.net/source/source=lottology/type=results/country=south-africa/game=lotto",
+				"kind": "AzureDataLakeStorage",
+				"provider": "CdsA",
+				"authenticationKind": null,
+				"environmentName": null,
+				"apiName": null,
+				"connectionName": "{\"kind\":\"AzureDataLakeStorage\",\"path\":\"https://azsdlsstgdevsan01.dfs.core.windows.net/source/source=lottology/type=results/country=south-africa/game=lotto\"}",
+				"audience": null
+			}
+		]
+	},
+	"annotations": [
+		{
+			"name": "pbi:QueryGroups",
+			"value": "[{\"id\":\"d998ecce-3276-42ab-bdb2-7e2cb1d4e3dc\",\"name\":\"Parameters\",\"description\":\"\",\"parentId\":null,\"order\":0},{\"id\":\"12ba3b4a-c7db-408e-9ab5-16b2051e82f2\",\"name\":\"Results\",\"description\":\"\",\"parentId\":null,\"order\":4},{\"id\":\"09202840-ee2b-4ab2-a251-5ca23a33a54c\",\"name\":\"Raw\",\"description\":\"\",\"parentId\":\"12ba3b4a-c7db-408e-9ab5-16b2051e82f2\",\"order\":0},{\"id\":\"bf973bf1-bec0-4579-8603-72fed4092aff\",\"name\":\"Columns\",\"description\":\"\",\"parentId\":\"12ba3b4a-c7db-408e-9ab5-16b2051e82f2\",\"order\":1}]"
+		}
+	],
+	"entities": [
+		{
+			"$type": "LocalEntity",
+			"name": "Results",
+			"description": "",
+			"pbi:refreshPolicy": {
+				"$type": "FullRefreshPolicy",
+				"location": "Results.csv"
+			},
+			"attributes": [
+				{ "name": "DrawDate", "dataType": "date" },
+				{ "name": "NumbersSelected", "dataType": "string" },
+				{ "name": "Number1", "dataType": "int64" },
+				{ "name": "Number2", "dataType": "int64" },
+				{ "name": "Number3", "dataType": "int64" },
+				{ "name": "Number4", "dataType": "int64" },
+				{ "name": "Number5", "dataType": "int64" },
+				{ "name": "DateKey", "dataType": "int64" },
+				{ "name": "DateTimeKey", "dataType": "int64" },
+				{ "name": "GameId", "dataType": "string" },
+				{ "name": "Index", "dataType": "int64" },
+				{ "name": "ResultId", "dataType": "string" }
+			],
+			"partitions": [
+				{
+					"name": "FullRefreshPolicyPartition",
+					"refreshTime": "2023-08-29T08:35:31.6096046+00:00",
+					"location": "https://azsdlsstgdevsan01.dfs.core.windows.net/powerbi/PyroLotto_Dev/sa__daily_lotto/Results/Results.csv.snapshots/Results.csv@snapshot=2023-08-29T08:35:31.5158931Z"
+				}
+			]
+		}
+	]
+}

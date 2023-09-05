@@ -104,7 +104,8 @@ shared Date.GetDateRangeAlternate = (From as date, To as date, optional Selectio
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-shared Date.DatesBetween = Document(
+shared Date.DatesBetween = () => 
+  Document(
     "Date.DatesBetween",
     "Returns a list of dates in a given span (inclusive). Start and end parameters can be any order",
     {[Description = "Date range", Code = "PBI[Date.DatesBetween](""1/1/2016"", ""1/3/2016"")", Result="{""1/1/2016"", ""1/2/2016"", ""1/3/2016""}" ]},

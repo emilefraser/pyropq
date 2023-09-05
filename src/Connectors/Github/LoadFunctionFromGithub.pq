@@ -24,13 +24,13 @@ Parameters:
     optional BasePath: the file path to look in for the text file; default path hardcoded
 
 Usage:
-    // loads the function Type.ToText from file 'Type.ToText.pq' in the load path
+     loads the function Type.ToText from file 'Type.ToText.pq' in the load path
 let
     Type.ToText = Load("Type.ToText")
 in
     Type.ToText(type {number})
 
-// Result: "list"
+ Result: "list"
 
 Warning: this function may triggers a Formula.Firewall error for referencing both an external query 
 	(LoadPath) as well as external files.

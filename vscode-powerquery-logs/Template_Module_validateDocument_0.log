@@ -1,4 +1,0 @@
-Validation	e	1		0	Entry	[Empty]
-Validation	e	1		0	Exit	[Empty]
-handleError	validateDocument	2		0	Entry	[Empty]
-handleError	validateDocument	2		0	Exit	{"vscodeMessage":"unknown error value '[object Object]' during validateDocument."}
